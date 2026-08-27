@@ -36,3 +36,5 @@ jobs:
           fi
           git commit -m 'chore: sync stable app into test repo'
           git push origin main
+
+# retrigger after enabling Actions
