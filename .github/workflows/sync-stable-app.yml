@@ -6,37 +6,11 @@ on:
     paths:
       - '.github/workflows/sync-stable-app.yml'
 
-permissions:
-  contents: write
-
 jobs:
-  sync:
+  checkout-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout test repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Clone stable application
-        run: git clone --depth 1 https://github.com/VMRADIO-SITE/APPLIVMRADIO.git /tmp/vmradio-stable
-
-      - name: Copy stable application
-        run: |
-          rsync -a --delete \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            /tmp/vmradio-stable/ ./
-          printf 'app-test.vmradio.fr\n' > CNAME
-
-      - name: Commit synchronized copy
-        run: |
-          git config user.name 'VM RADIO Test Sync'
-          git config user.email 'actions@users.noreply.github.com'
-          git add -A
-          if git diff --cached --quiet; then
-            echo 'No changes to commit.'
-            exit 0
-          fi
-          git commit -m 'chore: sync stable app into test repo'
-          git push origin main
+      - name: Confirm checkout
+        run: echo "checkout OK"
