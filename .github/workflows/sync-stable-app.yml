@@ -7,10 +7,11 @@ on:
       - '.github/workflows/sync-stable-app.yml'
 
 jobs:
-  checkout-test:
+  git-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Confirm checkout
-        run: echo "checkout OK"
+      - name: Clone stable repository with Git
+        run: |
+          git clone --depth 1 https://github.com/VMRADIO-SITE/APPLIVMRADIO.git /tmp/vmradio-stable
+          test -f /tmp/vmradio-stable/index.html
+          echo "stable clone OK"
