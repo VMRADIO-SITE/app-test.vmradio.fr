@@ -6,12 +6,32 @@ on:
     paths:
       - '.github/workflows/sync-stable-app.yml'
 
+permissions:
+  contents: write
+
 jobs:
-  git-test:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone stable repository with Git
+      - name: Copy stable application with Git
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          rm -rf /tmp/vmradio-stable /tmp/vmradio-test
           git clone --depth 1 https://github.com/VMRADIO-SITE/APPLIVMRADIO.git /tmp/vmradio-stable
-          test -f /tmp/vmradio-stable/index.html
-          echo "stable clone OK"
+          git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vmradio-test
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            /tmp/vmradio-stable/ /tmp/vmradio-test/
+          printf 'app-test.vmradio.fr\n' > /tmp/vmradio-test/CNAME
+          cd /tmp/vmradio-test
+          git config user.name 'VM RADIO Test Sync'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'chore: sync stable app into test repo'
+          git push origin main
