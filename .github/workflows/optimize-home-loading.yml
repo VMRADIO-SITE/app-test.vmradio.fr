@@ -1,0 +1,97 @@
+name: Optimize home loading
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/optimize-home-loading.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Patch test application
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          rm -rf /tmp/vmradio-test
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vmradio-test
+          cd /tmp/vmradio-test
+          python3 - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          s = index.read_text(encoding='utf-8')
+
+          old = 'const app=initializeApp(firebaseConfig,"vmRadioTopTitresRules"); const auth=getAuth(app),db=getFirestore(app); const fallback="https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg"; let user=null,items=[];'
+          new = '''const app=initializeApp(firebaseConfig,"vmRadioTopTitresRules"); const auth=getAuth(app),db=getFirestore(app); const fallback="https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg"; let user=null,items=[];
+const TOP_CACHE_KEY="vmradio-top-titres-cache-v2";
+function saveTopCache(){try{localStorage.setItem(TOP_CACHE_KEY,JSON.stringify(items.slice(0,10)));}catch(e){}}
+function loadTopCache(){try{const cached=JSON.parse(localStorage.getItem(TOP_CACHE_KEY)||"[]");if(Array.isArray(cached)&&cached.length){items=cached;render();return true;}}catch(e){}return false;}'''
+          if s.count(old) != 1:
+              raise SystemExit(f'index init marker count={s.count(old)}')
+          s = s.replace(old, new, 1)
+
+          old2 = 'onAuthStateChanged(auth,u=>{user=u;syncHeart();});signInAnonymously(auth).catch(e=>console.error("Firebase Auth anonyme:",e));const q=query(collection(db,"topTitres"),orderBy("votes","desc"),limit(10));onSnapshot(q,s=>{items=s.docs.map(d=>({id:d.id,...d.data()}));render();},e=>console.error("TOP TITRES Firebase:",e));if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();'
+          new2 = 'loadTopCache();onAuthStateChanged(auth,u=>{user=u;syncHeart();});signInAnonymously(auth).catch(e=>console.error("Firebase Auth anonyme:",e));const q=query(collection(db,"topTitres"),orderBy("votes","desc"),limit(10));onSnapshot(q,s=>{items=s.docs.map(d=>({id:d.id,...d.data()}));saveTopCache();render();},e=>{console.error("TOP TITRES Firebase:",e);if(!items.length)loadTopCache();});if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();'
+          if s.count(old2) != 1:
+              raise SystemExit(f'index snapshot marker count={s.count(old2)}')
+          s = s.replace(old2, new2, 1)
+          index.write_text(s, encoding='utf-8')
+
+          central = Path('vm-radio-flux-central.js')
+          c = central.read_text(encoding='utf-8')
+
+          old3 = "const REFRESH=1000;\nwindow.__VMRADIO_STREAM_URL__=STREAM;"
+          new3 = "const REFRESH=1000;\nconst ENGINE_CACHE_KEY='vmradio-engine-cache-v2';\nwindow.__VMRADIO_STREAM_URL__=STREAM;"
+          if c.count(old3) != 1:
+              raise SystemExit(f'central constants marker count={c.count(old3)}')
+          c = c.replace(old3, new3, 1)
+
+          old4 = "  const previous=(history||[]).filter(x=>x&&x.id!==current.id&&x.type==='music').slice(0,3);const last=previous[0];\n  if(last){setText('[data-news-last],#previousTitle,#programPrevious',last.title);setText('[data-news-last-artist],#previousArtist',last.artist);setText('[data-news-last-time]',clock(last.time));setImage('[data-news-last-cover],#previousCover',last.cover)}"
+          new4 = """  const previous=(history||[]).filter(x=>x&&x.id!==current.id&&x.type==='music').slice(0,3);const last=previous[0];
+  if(last){setText('[data-news-last],#previousTitle,#programPrevious',last.title);setText('[data-news-last-artist],#previousArtist',last.artist);setText('[data-news-last-time]',clock(last.time));setImage('[data-news-last-cover],#previousCover',last.cover)}
+  const previousBox=document.querySelector('[data-previous]');
+  if(previousBox){
+    previousBox.innerHTML='';
+    previous.forEach(x=>{
+      const row=document.createElement('div');
+      row.className='vm-programme-previous-item';
+      row.innerHTML='<img alt=""><div class="previous-info"><strong class="previous-title"></strong><small class="previous-artist"></small><em class="previous-time"></em></div>';
+      const im=row.querySelector('img');
+      im.src=x.cover||'';
+      row.querySelector('.previous-title').textContent=x.title||'';
+      row.querySelector('.previous-artist').textContent=x.artist||DEFAULT_ARTIST;
+      row.querySelector('.previous-time').textContent=x.time?'Diffusé à '+clock(x.time):'';
+      previousBox.appendChild(row);
+    });
+  }"""
+          if c.count(old4) != 1:
+              raise SystemExit(f'central history marker count={c.count(old4)}')
+          c = c.replace(old4, new4, 1)
+
+          old5 = "let refreshing=false;\nasync function refresh(){if(refreshing)return;refreshing=true;try{const d=await getEngineRaw();render(track(d?.now_playing?.song,d?.now_playing),track(d?.playing_next?.song,d?.playing_next),(Array.isArray(d?.song_history)?d.song_history:[]).map(x=>track(x?.song,x)).filter(Boolean))}catch(e){console.warn('VM RADIO moteur indisponible',e)}finally{refreshing=false}}"
+          new5 = """function renderRaw(d){render(track(d?.now_playing?.song,d?.now_playing),track(d?.playing_next?.song,d?.playing_next),(Array.isArray(d?.song_history)?d.song_history:[]).map(x=>track(x?.song,x)).filter(Boolean))}
+function loadEngineCache(){try{const cached=JSON.parse(localStorage.getItem(ENGINE_CACHE_KEY)||'null');if(cached){renderRaw(cached);return true}}catch(_){}return false}
+let refreshing=false;
+async function refresh(){if(refreshing)return;refreshing=true;try{const d=await getEngineRaw();try{localStorage.setItem(ENGINE_CACHE_KEY,JSON.stringify(d))}catch(_){}renderRaw(d)}catch(e){console.warn('VM RADIO moteur indisponible',e);loadEngineCache()}finally{refreshing=false}}"""
+          if c.count(old5) != 1:
+              raise SystemExit(f'central refresh marker count={c.count(old5)}')
+          c = c.replace(old5, new5, 1)
+
+          old6 = "window.VMRadioPlayer={play:()=>liveAudio.play(),pause:()=>liveAudio.pause(),stream:STREAM,audio:liveAudio};syncPlayer();loadRequestUi();refresh();setInterval(refresh,REFRESH);"
+          new6 = "window.VMRadioPlayer={play:()=>liveAudio.play(),pause:()=>liveAudio.pause(),stream:STREAM,audio:liveAudio};syncPlayer();loadRequestUi();loadEngineCache();refresh();setInterval(refresh,REFRESH);"
+          if c.count(old6) != 1:
+              raise SystemExit(f'central init marker count={c.count(old6)}')
+          c = c.replace(old6, new6, 1)
+          central.write_text(c, encoding='utf-8')
+          PY
+          git config user.name 'VM RADIO Test Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html vm-radio-flux-central.js
+          git commit -m 'fix: speed up top titres and previous tracks loading'
+          git push origin main
