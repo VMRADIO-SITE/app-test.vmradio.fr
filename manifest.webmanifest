@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "VM RADIO",
+  "short_name": "VM RADIO",
+  "description": "VM RADIO — votre radio, partout avec vous.",
+  "start_url": "./notifications-gate.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050207",
+  "theme_color": "#09020f",
+  "icons": [
+    {
+      "src": "./vmradio-app-icon-192.png?v=12",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./vmradio-app-icon-512.png?v=12",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VM RADIO — Test notifications</title>
+<style>
+body{margin:0;min-height:100vh;background:#050308;color:#fff;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}.card{width:min(720px,100%);padding:30px;border:2px solid #b85cff;border-radius:24px;background:#0d0714;box-shadow:0 0 30px rgba(151,48,255,.4)}h1{margin-top:0;color:#c05cff}p{color:#d4ceda;line-height:1.5}button{border:0;border-radius:14px;padding:15px 20px;background:linear-gradient(135deg,#c05cff,#6d20ed);color:#fff;font-weight:800;font-size:16px;cursor:pointer}textarea{width:100%;min-height:150px;margin-top:18px;background:#050308;color:#fff;border:1px solid #8b2cff;border-radius:12px;padding:12px;box-sizing:border-box}#status{margin-top:15px;color:#d4ceda}.ok{color:#73f0a5!important}
+</style>
+<script src="vm-radio-flux-central.js"></script>
+</head>
+<body>
+<main class="card">
+<h1>VM RADIO — Test notifications</h1>
+<p>Cette page récupère le jeton FCM de <strong>cet appareil</strong> afin de pouvoir envoyer une notification de test depuis Firebase.</p>
+<button id="get">Récupérer mon jeton</button>
+<div id="status">En attente…</div>
+<textarea id="token" readonly placeholder="Le jeton apparaîtra ici"></textarea>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-messaging.js";
+
+const firebaseConfig={apiKey:"AIzaSyB0LSbKdAAEfLg48c4DJO2hdyvjx0TySko",authDomain:"vm-radio-notifications.firebaseapp.com",projectId:"vm-radio-notifications",storageBucket:"vm-radio-notifications.firebasestorage.app",messagingSenderId:"573483400068",appId:"1:573483400068:web:5e3b80a9ac49dc284ebbd1",measurementId:"G-ZJPS49DKG3"};
+const VAPID_KEY="BPfmffszHy-sXlIEqIOJDTxPkC6-hn-4ThlFfZy9fgIp5DBxE_8XgqVzQLwIDnjlQv4phiUS_o8zfB9bjLGY3FY";
+const status=document.getElementById("status"), tokenBox=document.getElementById("token"), button=document.getElementById("get");
+
+button.onclick=async()=>{
+  button.disabled=true; status.textContent="Préparation…";
+  try{
+    if(!("Notification" in window)||!("serviceWorker" in navigator)) throw new Error("Les notifications Web ne sont pas disponibles sur cet appareil.");
+    const permission=await Notification.requestPermission();
+    if(permission!=="granted") throw new Error("Permission de notification refusée.");
+    const app=initializeApp(firebaseConfig,"vmRadioNotificationTest");
+    const messaging=getMessaging(app);
+    const registration=await navigator.serviceWorker.register("./sw.js?vm=test",{scope:"./"});
+    const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:registration});
+    if(!token) throw new Error("Firebase n'a pas fourni de jeton FCM.");
+    tokenBox.value=token;
+    localStorage.setItem("vmRadioFcmToken",token);
+    status.textContent="Jeton récupéré. Copie-le pour le test Firebase.";
+    status.className="ok";
+    try{await navigator.clipboard.writeText(token);status.textContent="Jeton récupéré et copié dans le presse-papiers.";}catch(_){ }
+  }catch(error){status.textContent="Erreur : "+(error?.message||error);status.className="";button.disabled=false;}
+};
+</script>
+</body>
+</html>

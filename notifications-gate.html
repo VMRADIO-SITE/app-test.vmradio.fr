@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09020f">
+<title>VM RADIO — Notifications</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#050308;color:#fff;font-family:Arial,Helvetica,sans-serif}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:18px}
+.gate{display:none;width:min(100%,1360px);padding:54px 60px 52px;border:2px solid #b85cff;border-radius:34px;background:linear-gradient(145deg,#050308,#0d0714 55%,#050308);box-shadow:0 0 38px rgba(151,48,255,.55),inset 0 0 34px rgba(151,48,255,.07);transition:opacity .18s ease,transform .18s ease}
+.gate.vm-ready{display:block}.gate.closing{opacity:0;transform:scale(.98);pointer-events:none}
+.layout{display:grid;grid-template-columns:minmax(260px,34%) 1fr;gap:50px;align-items:center}
+.logo{width:min(100%,200px);aspect-ratio:1;margin:auto;padding:8px;border:2px solid #9c3dff;border-radius:24px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 45%,rgba(113,32,198,.14),rgba(0,0,0,.82) 72%);box-shadow:0 0 18px rgba(157,61,255,.36),inset 0 0 18px rgba(157,61,255,.08);overflow:hidden}
+.logo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:16px;filter:drop-shadow(0 0 10px rgba(170,75,255,.28))}
+h1{margin:0;font-size:clamp(50px,5.6vw,92px);line-height:.98;font-weight:900;letter-spacing:-2px}h1 span{color:#7e22ff;text-shadow:0 0 18px rgba(139,44,255,.55)}
+.line{height:3px;margin:30px 0 34px;background:linear-gradient(90deg,#8b2cff 0%,#8b2cff 48%,transparent);box-shadow:0 0 8px rgba(139,44,255,.6)}
+p{margin:0;color:#d4ceda;font-size:clamp(22px,2vw,34px);line-height:1.42}p span{color:#9c35ff}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px;padding:0 10px}
+button{border-radius:24px;padding:20px 24px;color:#fff;font-weight:800;font-size:clamp(20px,2vw,30px);cursor:pointer;min-height:100px;display:flex;align-items:center;justify-content:center;gap:18px}#later{background:rgba(5,3,9,.86);border:2px solid rgba(176,74,255,.58)}#accept{border:0;background:linear-gradient(135deg,#c05cff,#6d20ed);box-shadow:0 0 28px rgba(145,45,255,.5)}button:disabled{opacity:.55;cursor:wait}.icon{width:40px;height:40px;flex:0 0 40px}
+@media(max-width:800px){body{padding:10px}.gate{padding:24px 18px 22px;border-radius:26px}.layout{grid-template-columns:1fr;gap:16px}.logo{width:150px;max-width:150px;padding:6px;border-radius:20px}.logo img{border-radius:14px}h1{font-size:clamp(38px,12vw,62px)}.line{margin:18px 0 20px}p{font-size:clamp(17px,5vw,23px)}.actions{gap:10px;margin-top:28px;padding:0}button{min-height:68px;padding:12px 8px;border-radius:17px;font-size:clamp(15px,4vw,19px);gap:9px}.icon{width:28px;height:28px;flex-basis:28px}}
+</style>
+<script src="vm-radio-flux-central.js"></script>
+</head>
+<body>
+<main class="gate" id="notificationGate">
+<div class="layout"><div class="logo"><img src="./vmradio-app-logo.png?v=15" alt="VM RADIO"></div><div><h1>Restez<br><span>informé</span> !</h1><div class="line"></div><p>Activez les notifications pour ne rien manquer de nos <span>nouveautés</span>, <span>informations</span> et <span>mises à jour</span> sur <span>VM Radio</span>.</p></div></div>
+<div class="actions"><button id="later" type="button"><svg class="icon" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="25" stroke="currentColor" stroke-width="4"/><path d="M32 17v16l10 7" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>Plus tard</button><button id="accept" type="button"><svg class="icon" viewBox="0 0 64 64" fill="none"><path d="M18 28c0-9 6-15 14-15s14 6 14 15v10l6 8H12l6-8V28Z" stroke="currentColor" stroke-width="4"/><path d="M26 51c1 4 3 6 6 6s5-2 6-6" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>Activer</button></div>
+</main>
+<script>
+const gate=document.getElementById("notificationGate");
+const go=()=>{localStorage.setItem("vmRadioNotificationPromptShownV4","1");location.replace("./index.html?notifications=done")};
+const closeGate=()=>{gate.classList.remove("vm-ready");gate.classList.add("closing");setTimeout(()=>gate.remove(),180)};
+
+// Signale anonymement le premier lancement en mode application (PWA).
+// Le relais Cloudflare accepte uniquement POST et transmet un repository_dispatch à GitHub.
+const PWA_RELAY_URL="https://vmradio-pwa-relay.valentinrasle7070-vr.workers.dev";
+const PWA_RELAY_SENT_KEY="vmRadioPwaRelaySentV1";
+const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+async function reportPwaStandaloneLaunch(){
+  if(!isStandalone()||localStorage.getItem(PWA_RELAY_SENT_KEY)==="1")return;
+  try{
+    const response=await fetch(PWA_RELAY_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({timestamp:new Date().toISOString()})});
+    if(response.ok)localStorage.setItem(PWA_RELAY_SENT_KEY,"1");
+    else console.warn("VM RADIO PWA relay:",response.status);
+  }catch(error){
+    console.warn("VM RADIO PWA relay indisponible:",error);
+  }
+}
+reportPwaStandaloneLaunch();
+
+// Le cadre est masqué par CSS dès le premier rendu : aucune apparition furtive.
+if(typeof Notification!=="undefined"&&Notification.permission==="granted"){
+  go();
+}else{
+  gate.classList.add("vm-ready");
+  document.getElementById("later").onclick=()=>{closeGate();setTimeout(go,180)};
+  document.getElementById("accept").onclick=async()=>{
+    const b=document.getElementById("accept");
+    try{
+      b.disabled=true;
+      if(!(window.Notification)||!("serviceWorker" in navigator))throw new Error("Notifications indisponibles");
+      const p=await Notification.requestPermission();
+      if(p!=="granted"){go();return}
+      const [{initializeApp},{getMessaging,getToken}]=await Promise.all([import("https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js"),import("https://www.gstatic.com/firebasejs/12.17.1/firebase-messaging.js")]);
+      const firebaseConfig={apiKey:"AIzaSyB0LSbKdAAEfLg48c4DJO2hdyvjx0TySko",authDomain:"vm-radio-notifications.firebaseapp.com",projectId:"vm-radio-notifications",storageBucket:"vm-radio-notifications.firebasestorage.app",messagingSenderId:"573483400068",appId:"1:573483400068:web:5e3b80a9ac49dc284ebbd1",measurementId:"G-ZJPS49DKG3"};
+      const VAPID_KEY="BPfmffszHy-sXlIEqIOJDTxPkC6-hn-4ThlFfZy9fgIp5DBxE_8XgqVzQLwIDnjlQv4phiUS_o8zfB9bjLGY3FY";
+      const app=initializeApp(firebaseConfig,"vmRadioNotificationsGate");
+      const messaging=getMessaging(app);
+      const reg=await navigator.serviceWorker.register("./sw.js?vm=19",{scope:"./"});
+      const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
+      if(token)localStorage.setItem("vmRadioFcmToken",token);
+      go();
+    }catch(e){console.error("VM RADIO notifications gate:",e);go()}
+  };
+}
+</script>
+<script src="./pwa-install-tracker.js?v=20260827-2"></script>
+</body>
+</html>

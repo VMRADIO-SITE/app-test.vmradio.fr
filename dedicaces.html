@@ -1,0 +1,2133 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07050d"><title>VM Radio — Dédicaces</title>
+<style>
+*{box-sizing:border-box}
+:root{--p:#b85cff;--line:#2a2038;--card:#0d0a13;--muted:#aaa5b4}
+html,body{margin:0;min-height:100%;background:#05040a;color:#fff;font-family:Arial,sans-serif}
+body{background:radial-gradient(circle at 50% 0%,rgba(126,42,210,.20),transparent 34%),linear-gradient(180deg,#07050d 0%,#090610 52%,#05040a 100%);-webkit-text-size-adjust:100%}
+.app-shell{width:100%;max-width:520px;min-height:100dvh;margin:auto;padding:calc(10px + env(safe-area-inset-top)) 12px calc(92px + env(safe-area-inset-bottom))}
+.ticker{height:42px;overflow:hidden;border:1px solid #65249a;border-radius:12px;background:#0b0711;display:flex;align-items:center;box-shadow:0 0 14px #6c22a644}
+.ticker-label{flex:0 0 100px;height:100%;display:flex;align-items:center;padding:0 12px;border-right:1px solid #5c267d;font-size:10px;font-weight:800;background:#0b0711}
+.ticker-track{white-space:nowrap;overflow:hidden;color:#e4dbea;font-size:10px;padding-left:12px}
+.brand{text-align:center;padding:7px 0 8px}.brand img{width:190px;height:62px;object-fit:contain;display:block;margin:auto}
+.page-title{text-align:center;margin:4px 0 13px}.page-title h1{margin:0;font-size:21px}.page-title p{margin:5px 0 0;color:var(--muted);font-size:10px}
+.module{background:linear-gradient(145deg,#11101a,#08080e);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:11px}
+.module h2{font-size:15px;margin:0 0 5px;color:#d076ff}.module p{font-size:10px;color:var(--muted)}
+.bottom-nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:520px;height:74px;padding:6px 7px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:rgba(9,5,14,.97);backdrop-filter:blur(15px)}
+.bottom-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#8e8599;text-decoration:none;font-size:9px;font-weight:800}
+.bottom-nav a i{display:grid;place-items:center;width:35px;height:29px;border-radius:11px;font-style:normal;font-size:18px}
+.bottom-nav a.active{color:#d68cff}.bottom-nav a.active i{background:#2b153d;color:#df9aff}
+
+*{box-sizing:border-box}html,body{margin:0;background:#05050a;color:#fff;font-family:Arial,sans-serif}
+:root{--p:#b85cff;--line:#2a2038;--card:#0c0b13;--muted:#aaa5b4}
+.page{max-width:1180px;margin:auto;padding:20px}
+.ticker{position:relative;height:46px;overflow:hidden;border:1px solid #65249a;border-radius:11px;background:#0b0711;display:flex;align-items:center;box-shadow:0 0 14px #6c22a644}
+.ticker-label{position:relative;z-index:3;flex:0 0 155px;height:100%;display:flex;align-items:center;font-weight:800;padding:0 16px;border-right:1px solid #5c267d;white-space:nowrap;background:#0b0711}.ticker-track{position:absolute;z-index:1;left:155px;right:0;top:0;height:100%;display:flex;align-items:center;white-space:nowrap;padding-left:100%;animation:scroll 22s linear infinite;color:#e4dbea;font-size:13px}@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.brand{text-align:center;padding:13px 0}.brand img{width:275px;height:95px;object-fit:contain;border-radius:10px;background:#05050a;display:block;margin:auto}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid #5e2690;border-radius:14px;padding:5px;background:#080711}.nav a{text-decoration:none;color:#eee;text-align:center;padding:12px;font-weight:700}.nav a.active{color:var(--p);border-bottom:2px solid var(--p)}
+.program-title{text-align:center;font-size:27px;font-weight:800;margin:20px 0}.program-title span{color:#fff}
+.grid-top{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.card{background:linear-gradient(145deg,#11101a,#08080e);border:1px solid var(--line);border-radius:15px;padding:18px}.card h2{font-size:18px;margin:0 0 14px;color:#d076ff}.live{background:#b72839;border-radius:5px;padding:4px 7px;font-size:10px;margin-left:6px}
+.now{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:center}.cover{width:180px;height:180px;border-radius:12px;object-fit:cover;border:1px solid #6d2a95}.title{font-size:25px;font-weight:700}.artist{font-size:14px;color:var(--p);margin-top:6px}.wave{color:var(--p);font-size:21px;letter-spacing:2px;margin:20px 0}.time{font-size:13px;color:#c2bdca}
+.next{display:grid;grid-template-columns:170px 1fr;gap:20px;align-items:center}.next .cover{width:170px;height:170px}.next .title{font-size:24px}
+.track-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #211b2d}.track-row:last-child{border-bottom:0}.track-row img{width:48px;height:48px;border-radius:7px;object-fit:cover}.track-info{flex:1}.track-info b{display:block}.track-info span{display:block;color:var(--p);font-size:12px;margin-top:3px}.track-time{color:#aaa5b4;font-size:12px}.heart{background:none;border:0;color:#777;font-size:25px;cursor:pointer}.heart.active{color:var(--p)}
+.hint{margin-top:12px;border:1px solid #5d278a;border-radius:9px;padding:10px;color:#ce8dff;text-align:center;font-size:12px}
+.promo{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;background:linear-gradient(135deg,#140a20,#07070d);border:1px solid #67249a;border-radius:16px;padding:20px;margin-top:14px}.promo h2{margin:0;color:var(--p);font-size:27px}.promo p{color:#bbb5c5;line-height:1.5}.btn{display:inline-block;background:#8e35e5;border-radius:8px;padding:10px 15px;font-size:12px;font-weight:bold}.release{border-left:1px solid #392348;padding-left:20px}.release strong{color:#d18cff;font-size:13px}.release-date{font-size:23px;color:var(--p);font-weight:bold;margin:9px 0 13px}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.mini{background:#0b0a12;border:1px solid var(--line);border-radius:13px;padding:16px;min-height:130px}.mini b{font-size:13px}.mini p{font-size:11px;color:#aaa5b4;line-height:1.4}.mini span{color:#d28cff;font-size:10px}
+.syncbar{display:flex;justify-content:space-between;margin-top:12px;border:1px solid var(--line);border-radius:11px;padding:12px 16px;color:#bbb5c5;font-size:12px}.dot{width:8px;height:8px;background:#31d17b;border-radius:50%;display:inline-block;margin-right:6px}
+
+
+@media(max-width:700px){
+  
+}
+
+
+.footer-status{grid-column:1/-1;border-top:1px solid #211b2d;margin-top:4px;padding-top:9px;text-align:center;color:#aaa5b4;font-size:10px}
+.footer-status .dot{display:inline-block;width:7px;height:7px;background:#31d17b;border-radius:50%;margin-right:5px;box-shadow:0 0 7px #31d17b}
+@media(max-width:700px){.footer-status{font-size:9px;padding-top:8px}}
+
+
+}
+
+
+body{background:
+ radial-gradient(circle at 50% 0%,rgba(126,42,210,.18),transparent 32%),
+ linear-gradient(180deg,#07050d 0%,#080510 55%,#05040a 100%) !important}
+.page{max-width:1180px;padding:16px 18px 24px !important}
+.brand{padding:10px 0 8px !important}
+.brand img{width:300px !important;height:106px !important;object-fit:contain !important;border-radius:14px !important;display:block;margin:0 auto}
+.nav{max-width:650px;margin:0 auto 8px !important;background:linear-gradient(180deg,#0c0715,#07060d) !important;border-color:#6d2ca0 !important;box-shadow:0 0 18px rgba(121,44,188,.15)}
+.program-title{margin:17px 0 14px !important;font-size:25px !important;letter-spacing:.2px}
+.grid-top{gap:12px !important}
+.grid-bottom{grid-template-columns:1fr 1fr !important;gap:12px !important;margin-top:12px !important}
+.card{background:linear-gradient(145deg,rgba(17,12,27,.92),rgba(7,7,12,.96)) !important;border-color:#37264a !important}
+.hero,.now,.next{min-height:0}
+.promo{background:linear-gradient(135deg,#16081f,#09070d) !important;border-color:#6125a0 !important;box-shadow:0 0 22px rgba(105,37,170,.10)}
+.mini-grid{grid-template-columns:repeat(3,1fr) !important;gap:12px !important}
+.mini{background:linear-gradient(145deg,#110a1a,#08070d) !important}
+
+/* Footer compact */
+.footer-site{
+  width:100%;
+  margin:10px 0 0;
+  padding:11px 14px 9px;
+  border:1px solid #2b2037;
+  border-radius:11px;
+  background:#09070e;
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-areas:
+    "logo logo logo"
+    "tiktok tiktok tiktok"
+    "credit credit credit"
+    "links links links"
+    "sync sync sync";
+  gap:7px 12px;
+  align-items:center;
+}
+.footer-logo img{width:125px;height:42px;object-fit:contain;display:block;margin:0 auto}
+.footer-center{
+  grid-area:credit;
+  text-align:center;
+  color:#aaa5b4;
+  font-size:9px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+.footer-center strong{
+  color:#cf8cff;
+  font-size:9px;
+  font-weight:700;
+}
+.footer-tiktok{
+  grid-area:tiktok;
+  display:flex;
+  justify-content:center;
+}
+.footer-tiktok a{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border:1px solid #33253f;
+  border-radius:7px;
+  color:#eee;
+  text-decoration:none;
+  font-size:8px;
+}
+.tiktok-icon{font-size:14px}
+.footer-links{
+  grid-area:links;
+  padding-top:6px;
+  border-top:1px solid #1e1727;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.footer-links a{
+  color:#cfc8d8;
+  text-decoration:none;
+  font-size:8px;
+}
+.footer-sync{
+  grid-area:sync;
+  padding-top:5px;
+  border-top:1px solid #1e1727;
+  text-align:center;
+  color:#938c9d;
+  font-size:8px;
+}
+.footer-sync .dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  margin-right:4px;
+  border-radius:50%;
+  background:#31d17b;
+  box-shadow:0 0 5px #31d17b;
+}
+.footer-progress{
+  height:2px;
+  margin:0 auto 5px;
+  max-width:300px;
+  overflow:hidden;
+  border-radius:99px;
+  background:#21182b;
+}
+.footer-progress span{
+  display:block;
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,#7c28c8,#c75cff);
+}
+@media(max-width:700px){
+  .footer-site{
+    margin-top:8px;
+    padding:9px 8px 8px;
+    grid-template-columns:1fr;
+    grid-template-areas:"logo" "credit" "tiktok" "links" "sync";
+    gap:5px;
+  }
+  .footer-logo img{
+    width:120px;
+    height:40px;
+    margin:auto;
+  }
+  .footer-center{font-size:8px}
+  .footer-center strong{font-size:8.5px}
+  .footer-tiktok{justify-content:center}
+  .footer-tiktok a{font-size:8px;padding:4px 7px}
+  .footer-links{gap:8px;padding-top:5px}
+  .footer-links a{font-size:7.5px}
+  .footer-sync{font-size:7.5px;padding-top:4px}
+  .footer-progress{max-width:220px;margin-bottom:4px}
+}
+
+.footer-logo{grid-area:logo;width:100%;display:flex;justify-content:center;align-items:center;text-align:center}
+/* NEWS SECTION — layout stable et responsive */
+.news-section{margin-top:14px;width:100%;min-width:0}
+.news-section-title{text-align:center;margin:0 0 11px}
+.news-section-title h2{margin:0;color:#fff;font-size:21px;line-height:1.2}
+.news-section-title span{color:#b85cff}
+.news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;width:100%;min-width:0}
+.news-card{min-width:0;width:100%;min-height:155px;background:linear-gradient(145deg,rgba(17,12,27,.94),rgba(7,7,12,.97));border:1px solid #39254d;border-radius:13px;padding:15px;overflow:hidden;display:flex;flex-direction:column}
+.news-icon{font-size:22px;line-height:1;color:#c36bff}
+.news-card h3{margin:8px 0 5px;font-size:13px;line-height:1.25}
+.news-now{display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;gap:10px;margin-top:7px;min-width:0;width:100%}
+.news-cover{width:58px;height:58px;border-radius:9px;object-fit:cover;border:1px solid #4b2863;display:block;flex:0 0 58px;background:#0b0711}
+.news-now-info{min-width:0;width:100%;overflow:hidden}
+.news-value{margin:0!important;color:#d18cff;font-size:12px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.news-artist{font-size:9px;color:#b85cff;margin-top:3px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.news-time{font-size:8px;color:#8f8998;margin-top:5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){.news-grid{grid-template-columns:1fr}.news-card{min-height:0}}
+
+
+.before-footer-space{height:24px;width:100%;display:block}
+
+
+
+.vm-top-cover{width:42px;height:42px;flex:0 0 42px;object-fit:cover;border-radius:7px;display:block;border:1px solid #5b277d;background:#0b0711}
+@media(max-width:700px){.vm-top-cover{width:36px;height:36px;flex-basis:36px}}
+
+
+/* V10 — bouton Player dans la navigation */
+.nav{position:relative;align-items:stretch !important;}
+.nav-player-btn{
+  appearance:none !important;
+  border:1px solid #8d2cff !important;
+  border-radius:9px !important;
+  background:linear-gradient(180deg,#241039,#10071b) !important;
+  color:#fff !important;
+  font:700 10px/1 Inter,Arial,sans-serif !important;
+  padding:8px 7px !important;
+  min-width:58px !important;
+  cursor:pointer !important;
+  box-shadow:0 0 12px rgba(142,44,255,.18) !important;
+}
+.nav-player-btn:active{transform:scale(.97)}
+@media(max-width:700px){
+  .nav{grid-template-columns:repeat(5,1fr) !important;gap:3px !important;}
+  .nav a,.nav-player-btn{font-size:9px !important;padding:8px 2px !important;min-width:0 !important;}
+}
+/* Accueil — bloc À LA UNE / programme : structure compacte et stable */
+#accueil{width:100% !important;box-sizing:border-box !important;}
+#accueil .card{
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  width:100% !important;
+  background:linear-gradient(145deg,rgba(17,12,27,.96),rgba(7,7,12,.98)) !important;
+  border:1px solid rgba(188,84,255,.28) !important;
+  border-radius:14px !important;
+}
+#accueil .card h2{
+  margin:0 0 10px !important;
+  font-size:15px !important;
+  line-height:1.2 !important;
+  color:#fff !important;
+}
+#accueil .now,#accueil .next{
+  box-sizing:border-box !important;
+  align-items:center !important;
+}
+#accueil .cover{
+  display:block !important;
+  object-fit:cover !important;
+  margin:0 !important;
+  flex:none !important;
+}
+#accueil .title,#accueil .artist,#accueil .time{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#accueil .title{white-space:nowrap !important;}
+#accueil .artist{white-space:nowrap !important;}
+#accueil .wave{display:none !important;}
+@media(max-width:700px){
+  .program-title{
+    margin:10px 0 9px !important;
+    font-size:18px !important;
+    line-height:1.2 !important;
+    text-align:center !important;
+  }
+  #accueil .card{padding:12px !important;margin-bottom:9px !important;}
+  #accueil .now{
+    display:grid !important;
+    grid-template-columns:96px minmax(0,1fr) !important;
+    gap:12px !important;
+    min-height:96px !important;
+  }
+  #accueil .now .cover{
+    width:96px !important;height:96px !important;
+    border-radius:10px !important;
+  }
+  #accueil .next{
+    display:grid !important;
+    grid-template-columns:80px minmax(0,1fr) !important;
+    gap:10px !important;
+    min-height:80px !important;
+  }
+  #accueil .next .cover{
+    width:80px !important;height:80px !important;
+    border-radius:9px !important;
+  }
+  #accueil .title{font-size:16px !important;}
+  #accueil .artist{font-size:10px !important;margin-top:3px !important;}
+  #accueil .time{font-size:9px !important;margin-top:6px !important;}
+}
+
+
+.vmradio-embedded-player.vmradio-shell-hidden{display:none !important;visibility:hidden !important;pointer-events:none !important;}
+
+
+/* V23 — À LA UNE : layout isolé pour éviter les règles héritées qui déforment les cartes. */
+.news-section{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;margin:14px 0 0!important;padding:0!important;}
+.news-section-title{display:block!important;width:100%!important;text-align:center!important;margin:0 0 12px!important;box-sizing:border-box!important;}
+.news-section-title h2{display:block!important;margin:0!important;padding:0!important;line-height:1.2!important;}
+.news-grid{display:grid!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;gap:12px!important;align-items:stretch!important;}
+.news-card{box-sizing:border-box!important;width:100%!important;min-width:0!important;overflow:hidden!important;position:relative!important;}
+.news-card .news-now{box-sizing:border-box!important;width:100%!important;min-width:0!important;display:grid!important;align-items:center!important;}
+.news-card .news-cover{box-sizing:border-box!important;object-fit:cover!important;display:block!important;max-width:100%!important;}
+.news-card .news-now-info{box-sizing:border-box!important;min-width:0!important;overflow:hidden!important;}
+.news-card .news-value,.news-card .news-artist,.news-card .news-time{min-width:0!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+@media(max-width:900px){
+ .news-grid{grid-template-columns:minmax(0,1fr)!important;}
+ .news-card{min-height:0!important;padding:13px!important;}
+ .news-now{grid-template-columns:64px minmax(0,1fr)!important;gap:12px!important;}
+ .news-cover{width:64px!important;height:64px!important;flex:0 0 64px!important;}
+ .news-value{font-size:13px!important;}
+ .news-artist{font-size:10px!important;}
+ .news-time{font-size:9px!important;}
+}
+@media(min-width:901px){
+ .news-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+ .news-card{min-height:155px!important;padding:15px!important;display:flex!important;flex-direction:column!important;}
+ .news-now{grid-template-columns:58px minmax(0,1fr)!important;gap:10px!important;}
+ .news-cover{width:58px!important;height:58px!important;flex:0 0 58px!important;}
+}
+
+
+/* VM RADIO — player flottant indépendant : reste hors du contenu des pages */
+#vmradio-player-host{
+  position:fixed!important;left:50%!important;bottom:14px!important;transform:translateX(-50%)!important;
+  width:min(980px,calc(100vw - 24px))!important;height:520px!important;
+  z-index:2147483000!important;display:none;pointer-events:none;
+}
+#vmradio-player-host.is-open{display:block!important;pointer-events:auto}
+#vmradio-player-host iframe{
+  display:block!important;width:100%!important;height:100%!important;border:0!important;
+  background:transparent!important;border-radius:26px!important;
+  box-shadow:0 18px 60px rgba(0,0,0,.45)!important;
+}
+#vmradio-player-host .vmradio-player-dismiss{display:none}
+@media(max-width:780px){
+  #vmradio-player-host{width:calc(100vw - 10px)!important;height:min(700px,calc(100vh - 20px))!important;bottom:5px!important}
+  #vmradio-player-host iframe{border-radius:20px!important}
+}
+
+
+/* V29 — PLAYER aligné exactement comme les autres boutons de navigation */
+.nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:stretch!important;}
+.nav a,.nav .nav-player-btn{
+  box-sizing:border-box!important;min-width:0!important;width:100%!important;height:100%!important;
+  margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  text-decoration:none!important;text-align:center!important;
+  padding:12px 6px!important;border:0!important;border-bottom:2px solid transparent!important;
+  border-radius:8px!important;background:transparent!important;color:#eee!important;
+  font-family:inherit!important;font-size:inherit!important;font-weight:700!important;line-height:1.1!important;
+  box-shadow:none!important;cursor:pointer!important;appearance:none!important;
+}
+.nav a:hover,.nav .nav-player-btn:hover{background:rgba(141,44,255,.10)!important;color:#fff!important}
+.nav .nav-player-btn:active{transform:none!important}
+.nav .nav-player-btn:focus-visible{outline:2px solid #a94dff!important;outline-offset:-2px!important}
+.nav .nav-player-btn.is-open{color:var(--p,#b85cff)!important;border-bottom-color:var(--p,#b85cff)!important}
+@media(max-width:700px){
+  .nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:3px!important}
+  .nav a,.nav .nav-player-btn{font-size:9px!important;padding:8px 2px!important}
+}
+
+
+/* V35 — PLAYER : même apparence, mêmes dimensions et même alignement que les autres liens de navigation */
+.nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:stretch!important;}
+.nav a,.nav .nav-player-btn{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  height:100%!important;
+  margin:0!important;
+  padding:12px 6px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-decoration:none!important;
+  text-align:center!important;
+  border:0!important;
+  border-bottom:2px solid transparent!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#eee!important;
+  font-family:inherit!important;
+  font-size:inherit!important;
+  font-weight:700!important;
+  line-height:1.1!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+}
+.nav a:hover,.nav .nav-player-btn:hover{background:transparent!important;color:#fff!important}
+.nav .nav-player-btn:active{transform:none!important}
+.nav .nav-player-btn:focus{outline:none!important}
+.nav .nav-player-btn:focus-visible{outline:2px solid #a94dff!important;outline-offset:-2px!important}
+.nav .nav-player-btn.is-open{color:var(--p,#b85cff)!important;border-bottom-color:var(--p,#b85cff)!important}
+@media(max-width:700px){
+  .nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:3px!important}
+  .nav a,.nav .nav-player-btn{font-size:9px!important;padding:8px 2px!important}
+}
+
+
+@media (max-width:700px){
+
+*{box-sizing:border-box}html,body{margin:0;background:#05050a;color:#fff;font-family:Arial,sans-serif}
+:root{--p:#b85cff;--line:#2a2038;--card:#0c0b13;--muted:#aaa5b4}
+body{min-height:100vh}.page{width:100%;max-width:480px;margin:auto;padding:10px}
+.ticker{position:relative;height:44px;overflow:hidden;border:1px solid #65249a;border-radius:10px;background:#0b0711;display:flex;align-items:center;margin-bottom:10px;box-shadow:0 0 14px #6c22a644}
+.ticker-label{position:relative;z-index:3;flex:0 0 118px;height:100%;display:flex;align-items:center;font-weight:800;font-size:13px;padding:0 12px;color:#fff;white-space:nowrap;border-right:1px solid #5c267d;background:#0b0711}
+.ticker-track{position:absolute;z-index:1;left:118px;right:0;top:0;height:100%;display:flex;align-items:center;white-space:nowrap;padding-left:100%;animation:scroll 18s linear infinite;color:#e4dbea;font-size:12px}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.brand{text-align:center;padding:8px 0 12px}.brand img{width:205px;height:70px;object-fit:contain;border-radius:8px;background:#05050a;display:block;margin:auto}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid #5e2690;border-radius:14px;padding:4px;background:#080711;margin-bottom:10px}
+.nav a{text-decoration:none;color:#eee;text-align:center;padding:9px 2px;font-size:10px}.nav a.active{color:var(--p);font-weight:bold;border-bottom:2px solid var(--p)}
+.program-title{text-align:center;color:#fff;font-size:20px;font-weight:800;margin:13px 0}.program-title span{color:var(--p)}
+.card{background:linear-gradient(145deg,#11101a,#08080e);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
+.card h2{font-size:15px;margin:0 0 11px;color:#d076ff}.live{background:#b72839;border-radius:5px;padding:3px 6px;font-size:9px;margin-left:5px}
+.now{display:grid;grid-template-columns:105px 1fr;gap:11px;align-items:center}.cover{width:105px;height:105px;border-radius:10px;object-fit:cover;border:1px solid #6d2a95}
+.title{font-size:18px;font-weight:700}.artist{font-size:11px;color:var(--p);margin-top:4px}.wave{color:var(--p);font-size:14px;margin:9px 0}.time{font-size:10px;color:#c2bdca}
+.next{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:center}.next .cover{width:88px;height:88px}.next .title{font-size:16px}
+.track-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #211b2d}.track-row:last-child{border-bottom:0}.track-row img{width:38px;height:38px;border-radius:6px;object-fit:cover}.track-info{flex:1;min-width:0}.track-info b{display:block;font-size:12px}.track-info span{display:block;color:var(--p);font-size:10px;margin-top:2px}.track-time{font-size:9px;color:#aaa5b4}.heart{background:none;border:0;color:#777;font-size:21px}.heart.active{color:var(--p)}
+.hint{margin-top:8px;border:1px solid #5d278a;border-radius:8px;padding:8px;color:#ce8dff;text-align:center;font-size:10px}
+.promo{background:linear-gradient(135deg,#140a20,#07070d);border:1px solid #67249a;border-radius:14px;padding:14px;margin-top:12px}.promo h2{margin:0;color:var(--p);font-size:19px}.promo p{font-size:11px;color:#bbb5c5;line-height:1.4}.btn{display:inline-block;background:#8e35e5;border-radius:7px;padding:8px 11px;font-size:10px;font-weight:bold}.release{border-top:1px solid #32213e;margin-top:12px;padding-top:10px}.release strong{font-size:12px}.release-date{color:var(--p);font-size:15px;font-weight:bold;margin:5px 0}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.mini{background:#0b0a12;border:1px solid var(--line);border-radius:10px;padding:11px}.mini b{font-size:11px}.mini p{font-size:9px;color:#aaa5b4;line-height:1.35;margin:5px 0 8px}.mini span{color:#d28cff;font-size:9px}
+.syncbar{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:10px;color:#bbb5c5;font-size:10px}.dot{width:8px;height:8px;background:#31d17b;border-radius:50%;display:inline-block;margin-right:5px}
+
+
+
+
+}
+
+
+.footer-status{grid-column:1/-1;border-top:1px solid #211b2d;margin-top:4px;padding-top:9px;text-align:center;color:#aaa5b4;font-size:10px}
+.footer-status .dot{display:inline-block;width:7px;height:7px;background:#31d17b;border-radius:50%;margin-right:5px;box-shadow:0 0 7px #31d17b}
+@media(max-width:700px){.footer-status{font-size:9px;padding-top:8px}}
+
+
+}
+
+
+body{background:
+ radial-gradient(circle at 50% 0%,rgba(126,42,210,.18),transparent 34%),
+ linear-gradient(180deg,#07050d 0%,#080510 55%,#05040a 100%) !important}
+.page{padding:8px 10px 18px !important}
+.ticker{border-color:#642799 !important;background:#0a0711 !important}
+.brand{padding:9px 0 10px !important}
+.brand img{width:215px !important;height:74px !important;object-fit:contain !important}
+.nav{grid-template-columns:repeat(4,1fr) !important;border-color:#63279b !important}
+.nav a{font-size:10px !important;padding:9px 2px !important}
+.program-title{font-size:18px !important;margin:12px 0 !important}
+.card{background:linear-gradient(145deg,rgba(17,12,27,.92),rgba(7,7,12,.96)) !important;border-color:#39254d !important}
+.promo{background:linear-gradient(135deg,#16081f,#09070d) !important}
+.mini-grid{grid-template-columns:1fr 1fr !important}
+
+/* Footer compact */
+.footer-site{
+  width:100%;
+  margin:10px 0 0;
+  padding:11px 14px 9px;
+  border:1px solid #2b2037;
+  border-radius:11px;
+  background:#09070e;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  grid-template-areas:
+    "logo logo logo"
+    "tiktok tiktok tiktok"
+    "credit credit credit"
+    "links links links"
+    "sync sync sync";
+  gap:7px 12px;
+  align-items:center;
+}
+.footer-logo img{
+  width:125px;
+  height:42px;
+  object-fit:contain;
+  display:block;
+}
+.footer-center{
+  text-align:center;
+  color:#aaa5b4;
+  font-size:9px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+.footer-center strong{
+  color:#cf8cff;
+  font-size:9px;
+  font-weight:700;
+}
+.footer-tiktok{
+  grid-area:tiktok;
+  display:flex;
+  justify-content:center;
+}
+.footer-tiktok a{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border:1px solid #33253f;
+  border-radius:7px;
+  color:#eee;
+  text-decoration:none;
+  font-size:8px;
+}
+.tiktok-icon{font-size:14px}
+.footer-links{
+  grid-area:links;
+  padding-top:6px;
+  border-top:1px solid #1e1727;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.footer-links a{
+  color:#cfc8d8;
+  text-decoration:none;
+  font-size:8px;
+}
+.footer-sync{
+  grid-area:sync;
+  padding-top:5px;
+  border-top:1px solid #1e1727;
+  text-align:center;
+  color:#938c9d;
+  font-size:8px;
+}
+.footer-sync .dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  margin-right:4px;
+  border-radius:50%;
+  background:#31d17b;
+  box-shadow:0 0 5px #31d17b;
+}
+.footer-progress{
+  height:2px;
+  margin:0 auto 5px;
+  max-width:300px;
+  overflow:hidden;
+  border-radius:99px;
+  background:#21182b;
+}
+.footer-progress span{
+  display:block;
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,#7c28c8,#c75cff);
+}
+@media(max-width:700px){
+  .footer-site{
+    margin-top:8px;
+    padding:9px 8px 8px;
+    grid-template-columns:1fr;
+    grid-template-areas:"logo" "credit" "tiktok" "links" "sync";
+    gap:5px;
+  }
+  .footer-logo img{
+    width:120px;
+    height:40px;
+    margin:auto;
+  }
+  .footer-center{font-size:8px}
+  .footer-center strong{font-size:8.5px}
+  .footer-tiktok{justify-content:center}
+  .footer-tiktok a{font-size:8px;padding:4px 7px}
+  .footer-links{gap:8px;padding-top:5px}
+  .footer-links a{font-size:7.5px}
+  .footer-sync{font-size:7.5px;padding-top:4px}
+  .footer-progress{max-width:220px;margin-bottom:4px}
+}
+
+.footer-logo{grid-area:logo;width:100%;display:flex;justify-content:center;align-items:center;text-align:center}
+/* NEWS SECTION — layout stable et responsive */
+.news-section{margin-top:10px;width:100%;min-width:0}
+.news-section-title{text-align:center;margin:0 0 9px}
+.news-section-title h2{margin:0;color:#fff;font-size:17px;line-height:1.2}
+.news-section-title span{color:#b85cff}
+.news-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;width:100%;min-width:0}
+.news-card{min-width:0;width:100%;background:linear-gradient(145deg,rgba(17,12,27,.94),rgba(7,7,12,.97));border:1px solid #39254d;border-radius:11px;padding:11px;overflow:hidden}
+.news-icon{font-size:19px;line-height:1;color:#c36bff}
+.news-card h3{margin:6px 0 4px;font-size:11px;line-height:1.25}
+.news-now{display:grid;grid-template-columns:50px minmax(0,1fr);align-items:center;gap:10px;margin-top:7px;min-width:0}
+.news-cover{width:50px;height:50px;border-radius:9px;object-fit:cover;border:1px solid #4b2863;display:block;flex:0 0 50px;background:#0b0711}
+.news-now-info{min-width:0;width:100%;overflow:hidden}
+.news-value{margin:0!important;color:#d18cff;font-size:10px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.news-artist{font-size:8px;color:#b85cff;margin-top:3px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.news-time{font-size:7.5px;color:#8f8998;margin-top:5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+
+.before-footer-space{height:18px;width:100%;display:block}
+
+
+}
+
+
+@media (min-width:701px){
+  .nav{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr)) !important;}
+}
+@media (max-width:700px){
+  .nav{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:2px !important;}
+}
+
+
+/* Espace commun entre la navigation et le titre de page */
+header + main,
+nav + main,
+.site-header + main,
+.navigation + main {
+  padding-top: 28px !important;
+}
+
+/* Fallback : le premier grand titre après la navigation */
+nav ~ main h1:first-child,
+header ~ main h1:first-child {
+  margin-top: 0 !important;
+}
+@media (max-width:700px){
+  header + main,
+  nav + main,
+  .site-header + main,
+  .navigation + main {
+    padding-top: 22px !important;
+  }
+}
+
+
+/* ESPACE VISIBLE ENTRE LA BARRE DE NAVIGATION ET LE TITRE */
+.vm-page-title-space {
+  height: 38px !important;
+  width: 100% !important;
+  display: block !important;
+  flex: 0 0 38px !important;
+}
+@media (max-width:700px) {
+  .vm-page-title-space {
+    height: 28px !important;
+    flex-basis: 28px !important;
+  }
+}
+
+
+/* Dédicaces : espace juste au-dessus de VOS DÉDICACES */
+.dedicaces-title-space {
+  display:block !important;
+  width:100% !important;
+  height:38px !important;
+  min-height:38px !important;
+}
+@media (max-width:700px){
+  .dedicaces-title-space {
+    height:28px !important;
+    min-height:28px !important;
+  }
+}
+
+
+/* VM RADIO — UN SEUL ESPACE ENTRE NAVIGATION ET TITRE */
+.page > .nav{
+  margin-bottom:0 !important;
+}
+.vm-title-gap{
+  display:block !important;
+  width:100% !important;
+  height:38px !important;
+  min-height:38px !important;
+  margin:0 !important;
+  padding:0 !important;
+  flex:none !important;
+}
+.program-title,
+.dedications-title,
+.info-title,
+.tiktok-page-title{
+  margin-top:0 !important;
+}
+@media (max-width:700px){
+  .vm-title-gap{
+    height:28px !important;
+    min-height:28px !important;
+  }
+}
+
+
+/* VM RADIO — espacement uniforme entre les modules */
+.grid-top,
+.grid-bottom,
+.info-grid,
+.dedication-layout,
+.news-grid,
+.mini-grid,
+.tiktok-videos{
+  gap:14px !important;
+}
+.grid-bottom{
+  margin-top:14px !important;
+}
+.promo,
+.tiktok-content{
+  margin-top:14px !important;
+}
+
+
+/* VM RADIO — structure uniforme des modules :
+   TITRE → SOUS-TITRE → ESPACE → CONTENU */
+.module-subtitle{
+  display:block !important;
+  margin:0 0 14px !important;
+  padding:0 !important;
+  color:#aaa5b4 !important;
+  font-size:12px !important;
+  line-height:1.45 !important;
+}
+@media (max-width:700px){
+  .module-subtitle{
+    margin-bottom:10px !important;
+    font-size:10px !important;
+    line-height:1.4 !important;
+  }
+}
+
+
+/* VM RADIO — ESPACE UNIQUEMENT POUR LE TEXTE EN HAUT DES PAGES
+   Pas d'espacement ajouté dans les cartes. */
+
+.vm-main-page-title{
+  margin-top:38px !important;
+  margin-bottom:8px !important;
+}
+
+.vm-main-page-subtitle{
+  margin-top:0 !important;
+  margin-bottom:24px !important;
+}
+
+@media (max-width:700px){
+  .vm-main-page-title{
+    margin-top:28px !important;
+    margin-bottom:7px !important;
+  }
+  .vm-main-page-subtitle{
+    margin-top:0 !important;
+    margin-bottom:18px !important;
+  }
+}
+
+
+/* VM RADIO — RYTHME VERTICAL COMMUN À TOUTES LES PAGES */
+
+/* navigation -> espace -> titre principal */
+.page > .nav{
+  margin-bottom:38px !important;
+}
+
+/* titre principal -> sous-titre */
+.vm-main-page-title{
+  margin-top:0 !important;
+  margin-bottom:8px !important;
+}
+.vm-main-page-subtitle{
+  margin-top:0 !important;
+  margin-bottom:28px !important;
+}
+
+/* espace uniforme ENTRE les groupes/cartes/modules */
+.grid-top,
+.grid-bottom,
+.info-grid,
+.dedication-layout,
+.news-grid,
+.mini-grid,
+.tiktok-videos{
+  gap:20px !important;
+}
+
+.grid-bottom,
+.promo,
+.tiktok-content{
+  margin-top:20px !important;
+}
+
+/* Ne pas rajouter d'espace artificiel dans les cartes elles-mêmes */
+.card .module-subtitle{
+  margin-top:8px !important;
+}
+
+/* Mobile : même logique, dimensions adaptées */
+@media (max-width:700px){
+  .page > .nav{
+    margin-bottom:28px !important;
+  }
+  .vm-main-page-title{
+    margin-top:0 !important;
+    margin-bottom:7px !important;
+  }
+  .vm-main-page-subtitle{
+    margin-top:0 !important;
+    margin-bottom:20px !important;
+  }
+  .grid-top,
+  .grid-bottom,
+  .info-grid,
+  .dedication-layout,
+  .news-grid,
+  .mini-grid,
+  .tiktok-videos{
+    gap:14px !important;
+  }
+  .grid-bottom,
+  .promo,
+  .tiktok-content{
+    margin-top:14px !important;
+  }
+}
+
+
+/* VM RADIO — structure verticale commune à tous les niveaux */
+
+/* 1) Navigation -> espace -> titre de page */
+.page > .nav{
+  margin-bottom: 34px !important;
+}
+
+/* 2) Titre de page -> sous-titre -> espace -> premier module */
+.page > h1,
+.page > .dedications-title h1,
+.page > .info-title h1,
+.page > .tiktok-page-title h1{
+  margin-bottom: 7px !important;
+}
+.page > .dedications-title,
+.page > .info-title,
+.page > .tiktok-page-title{
+  margin-top: 0 !important;
+}
+.page > .dedications-title p,
+.page > .info-title p,
+.page > .tiktok-page-title p{
+  margin-top: 0 !important;
+  margin-bottom: 24px !important;
+}
+
+/* 3) Module -> espace -> titre -> sous-titre -> espace -> contenu */
+.card,
+.ded-card,
+.info-card,
+.news-card,
+.mini,
+.tiktok-video,
+.tiktok-highlight{
+  box-sizing: border-box !important;
+}
+
+/* Standardisation des titres de modules/carte */
+.card h2,
+.ded-card h2,
+.info-card h2,
+.news-card h3,
+.mini b,
+.tiktok-highlight h3,
+.tiktok-content-title h2{
+  margin-bottom: 7px !important;
+}
+
+/* Les textes existants sous les titres sont les sous-titres.
+   On ne crée pas de texte ici. */
+.card h2 + p,
+.ded-card h2 + p,
+.info-card h2 + p,
+.news-card h3 + p,
+.tiktok-highlight h3 + p,
+.tiktok-content-title h2 + p,
+.module-subtitle{
+  margin-top: 0 !important;
+  margin-bottom: 16px !important;
+}
+
+/* Quand le contenu suivant est directement une div/section, on crée
+   uniquement l'espace visuel demandé. */
+.card h2 + .now,
+.card h2 + .next,
+.card h2 + .track-row,
+.card h2 + .track-list,
+.ded-card h2 + form,
+.ded-card h2 + .form-grid,
+.info-card h2 + .info-stat,
+.news-card h3 + .news-now,
+.tiktok-highlight h3 + p{
+  margin-top: 16px !important;
+}
+
+/* Espacement constant entre cartes/modules */
+.grid-top,
+.grid-bottom,
+.info-grid,
+.dedication-layout,
+.news-grid,
+.mini-grid,
+.tiktok-videos,
+.tiktok-highlights{
+  gap: 18px !important;
+}
+.grid-bottom,
+.promo,
+.tiktok-content{
+  margin-top: 18px !important;
+}
+
+/* Mobile */
+@media (max-width:700px){
+  .page > .nav{
+    margin-bottom: 26px !important;
+  }
+  .page > .dedications-title p,
+  .page > .info-title p,
+  .page > .tiktok-page-title p{
+    margin-bottom: 18px !important;
+  }
+  .card h2,
+  .ded-card h2,
+  .info-card h2,
+  .news-card h3,
+  .mini b,
+  .tiktok-highlight h3,
+  .tiktok-content-title h2{
+    margin-bottom: 6px !important;
+  }
+  .card h2 + p,
+  .ded-card h2 + p,
+  .info-card h2 + p,
+  .news-card h3 + p,
+  .tiktok-highlight h3 + p,
+  .tiktok-content-title h2 + p,
+  .module-subtitle{
+    margin-bottom: 12px !important;
+  }
+  .grid-top,
+  .grid-bottom,
+  .info-grid,
+  .dedication-layout,
+  .news-grid,
+  .mini-grid,
+  .tiktok-videos,
+  .tiktok-highlights{
+    gap: 14px !important;
+  }
+  .grid-bottom,
+  .promo,
+  .tiktok-content{
+    margin-top: 14px !important;
+  }
+}
+
+
+/* VM RADIO — espaces finaux */
+.homepage-program-subtitle{
+  margin:8px 0 0 !important;
+  color:#aaa5b4 !important;
+  font-size:13px !important;
+  line-height:1.45 !important;
+  text-align:center !important;
+}
+.homepage-program-space{
+  display:block !important;
+  width:100% !important;
+  height:22px !important;
+  min-height:22px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.vm-bottom-space{
+  display:block !important;
+  width:100% !important;
+  height:34px !important;
+  min-height:34px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+@media (max-width:700px){
+  .homepage-program-subtitle{
+    font-size:11px !important;
+    margin-top:7px !important;
+  }
+  .homepage-program-space{
+    height:16px !important;
+    min-height:16px !important;
+  }
+  .vm-bottom-space{
+    height:24px !important;
+    min-height:24px !important;
+  }
+}
+
+
+.dedication-form{margin-top:12px!important}
+.dedication-feedback{min-height:22px;margin-top:14px;padding:10px 14px;border:1px solid transparent;border-radius:10px;text-align:center;font-size:14px;box-sizing:border-box}
+.dedication-feedback:empty{display:none}
+.dedication-feedback.error{border-color:#8a3030!important;color:#ff9b9b!important}
+.dedication-feedback.success{border-color:#5d278a!important;color:#ce8dff!important}
+.dedication-feedback.loading{border-color:#5d278a!important;color:#aaa5b4!important}
+
+
+.dedication-feedback{white-space:pre-wrap;word-break:break-word}
+.dedication-feedback small{display:block;margin-top:6px;opacity:.9}
+
+
+.ticker-track{display:flex;gap:12px;align-items:center;overflow:hidden;white-space:nowrap}
+.ticker-dedication{display:inline-block}
+.ticker-separator{opacity:.6}
+.recent-list{display:flex;flex-direction:column;gap:12px}
+.recent-item{padding:14px 16px;border:1px solid rgba(173,72,255,.25);border-radius:12px;background:rgba(10,7,18,.45)}
+.recent-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:6px}
+.recent-time{opacity:.65;font-size:.85em}
+.recent-msg{line-height:1.45;word-break:break-word}
+
+
+/* VM RADIO — BANNIÈRE DÉDICACES COMMUNE AUX 4 PAGES */
+.vm-common-dedication-banner{
+  width:100% !important;
+  height:54px !important;
+  min-height:54px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:stretch !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+  border:0 !important;
+}
+.vm-common-dedication-title{
+  width:100% !important;
+  height:20px !important;
+  min-height:20px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  box-sizing:border-box !important;
+}
+.vm-common-dedication-window{
+  width:100% !important;
+  height:28px !important;
+  min-height:28px !important;
+  overflow:hidden !important;
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  box-sizing:border-box !important;
+}
+.vm-common-dedication-track{
+  display:flex !important;
+  width:max-content !important;
+  min-width:100% !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+  will-change:transform !important;
+}
+.vm-common-dedication-message{
+  display:inline-block !important;
+  flex:0 0 auto !important;
+  padding:0 40px !important;
+  white-space:nowrap !important;
+  width:max-content !important;
+  max-width:none !important;
+  font-size:12px !important;
+  line-height:1 !important;
+}
+.vm-common-dedication-track.is-scrolling{
+  animation:vmCommonDedicationScroll 15s linear infinite !important;
+}
+@keyframes vmCommonDedicationScroll{
+  0%{transform:translateX(100vw)}
+  100%{transform:translateX(-100%)}
+}
+@media(max-width:700px){
+  .vm-common-dedication-banner{
+    height:50px !important;
+    min-height:50px !important;
+  }
+  .vm-common-dedication-title{
+    height:18px !important;
+    min-height:18px !important;
+    font-size:10px !important;
+  }
+  .vm-common-dedication-window{
+    height:26px !important;
+    min-height:26px !important;
+  }
+  .vm-common-dedication-message{
+    padding:0 28px !important;
+    font-size:11px !important;
+  }
+}
+
+
+/* VM RADIO — VITESSE MOBILE FORCÉE DE LA BANNIÈRE */
+@media screen and (max-width:700px){
+  .vm-common-dedication-track.is-scrolling{
+    animation-name:vmCommonDedicationScroll !important;
+    animation-duration:5s !important;
+    animation-timing-function:linear !important;
+    animation-iteration-count:infinite !important;
+  }
+}
+
+
+@media screen and (max-width:700px){
+  .vm-common-dedication-track.is-scrolling{
+    animation-duration:10s !important;
+  }
+}
+@media screen and (min-width:701px){
+  .vm-common-dedication-track.is-scrolling{
+    animation-duration:15s !important;
+  }
+}
+
+
+/* VM RADIO - Bouton player fixe navigation */
+#vmradio-fixed-player-nav-btn {
+  position: fixed;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 99999;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(20, 12, 35, .92);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+#vmradio-fixed-player-nav-btn:hover { transform: translateY(-50%) scale(1.05); }
+#vmradio-fixed-player-nav-btn.vm-player-open { display:none!important; }
+#vmradio-fixed-player-nav-btn.vm-player-closed { display:flex!important; }
+#vmradio-fixed-player-nav-btn svg { width: 21px; height: 21px; fill: currentColor; }
+@media (max-width: 700px) {
+  #vmradio-fixed-player-nav-btn { right: 12px; width: 44px; height: 44px; }
+}
+
+
+/* VM RADIO — bouton unique : réduire / restaurer */
+#vmRadioSitePlayer.vm-player-reduced{
+  transform:translateX(-50%) translateY(calc(100% - 42px))!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+}
+#vmRadioSitePlayer.vm-player-reduced iframe{
+  pointer-events:none!important;
+}
+#vmradio-fixed-player-nav-btn{
+  cursor:pointer!important;
+}
+
+
+@media(max-width:760px){
+  .grid-top,.grid-bottom,.mini-grid,.info-grid,.cards-grid,.stats-grid,
+  .programme-grid,.top-grid,.content-grid{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+  }
+  .grid-top>*,.grid-bottom>*,.mini-grid>*,.info-grid>*,.cards-grid>*,
+  .stats-grid>*,.programme-grid>*,.top-grid>*,.content-grid>*{
+    width:100%!important;
+    max-width:none!important;
+  }
+}
+
+
+/* Taille des pochettes des pages uniquement — le player n'est pas touché */
+@media (min-width:701px){
+  #accueil .now .cover,
+  .now .cover{
+    width:105px!important;
+    height:105px!important;
+  }
+  #accueil .next .cover,
+  .next .cover{
+    width:88px!important;
+    height:88px!important;
+  }
+  .track-row img{
+    width:38px!important;
+    height:38px!important;
+  }
+}
+@media (max-width:700px){
+  #accueil .now .cover{
+    width:80px!important;
+    height:80px!important;
+  }
+  #accueil .next .cover{
+    width:70px!important;
+    height:70px!important;
+  }
+  .track-row img{
+    width:38px!important;
+    height:38px!important;
+  }
+}
+
+
+#vmRadioSitePlayer{
+  position:fixed!important;
+  left:50%!important;
+  bottom:10px!important;
+  transform:translateX(-50%)!important;
+  width:920px!important;
+  height:430px!important;
+  z-index:99990!important;
+  display:block!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+#vmRadioSitePlayer iframe{
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  pointer-events:auto!important;
+}
+@media(max-width:760px){
+  #vmRadioSitePlayer{
+    width:calc(100vw - 16px)!important;
+    max-width:360px!important;
+    height:calc(100vh - 70px)!important;
+    max-height:780px!important;
+    bottom:4px!important;
+  }
+}
+
+
+/* Même taille de pochettes sur TOUTES les pages */
+.cover,
+.now .cover{
+  width:105px!important;
+  height:105px!important;
+  object-fit:cover!important;
+  aspect-ratio:1/1!important;
+}
+.next .cover{
+  width:88px!important;
+  height:88px!important;
+  object-fit:cover!important;
+  aspect-ratio:1/1!important;
+}
+.track-row img{
+  width:38px!important;
+  height:38px!important;
+  object-fit:cover!important;
+}
+@media(max-width:760px){
+  .cover,
+  .now .cover{
+    width:80px!important;
+    height:80px!important;
+  }
+  .next .cover{
+    width:70px!important;
+    height:70px!important;
+  }
+  .track-row img{
+    width:38px!important;
+    height:38px!important;
+  }
+}
+
+
+.dedications-title{text-align:center;margin:15px 0 16px}
+.dedications-title h1{margin:0;color:#fff;font-size:28px}
+.dedications-title p{margin:7px 0 0;color:#aaa5b4;font-size:12px}
+.dedication-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.ded-card{background:linear-gradient(145deg,rgba(17,12,27,.94),rgba(7,7,12,.97));border:1px solid #39254d;border-radius:15px;padding:18px}
+.ded-card h2{margin:0 0 12px;color:#d076ff;font-size:18px}
+.ded-status{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid #3f284f;border-radius:10px;background:#0a0810;font-size:11px;color:#bdb6c7}
+.ded-status .online{color:#7ce9a8}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field:nth-child(3){grid-column:1/-1}
+.field label{display:block;color:#cfc7d7;font-size:11px;margin-bottom:5px}
+.field input,.field textarea{width:100%;border:1px solid #382743;border-radius:10px;background:#08070d;color:#fff;padding:10px 11px;font:inherit;font-size:12px;outline:none}
+.field input:focus,.field textarea:focus{border-color:#9b45dd;box-shadow:0 0 0 2px rgba(155,69,221,.12)}
+.field textarea{min-height:150px;resize:vertical}
+.form-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px}
+.char-count{color:#857d91;font-size:10px}
+.send-btn{border:0;border-radius:9px;background:linear-gradient(135deg,#8e35e5,#b85cff);color:#fff;padding:10px 16px;font-weight:700;font-size:11px;cursor:pointer}
+.recent-list{display:flex;flex-direction:column;gap:8px}
+.recent-item{border:1px solid #2a2038;border-radius:10px;padding:10px;background:#09080f}
+.recent-head{display:flex;justify-content:space-between;gap:10px}
+.recent-head b{font-size:11px}.recent-time{font-size:9px;color:#8f8998}
+.recent-msg{font-size:11px;color:#c8c1ce;line-height:1.4;margin-top:5px}
+.ded-note{margin-top:10px;padding:9px;border:1px solid #5d278a;border-radius:9px;color:#ce8dff;text-align:center;font-size:10px}
+.empty{color:#8e8797;text-align:center;padding:10px;font-size:10px}
+@media(max-width:700px){.dedication-layout{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field:nth-child(3){grid-column:auto}}
+
+/* modules du site -> application mobile */
+.page,.page-content,.content,.dedication-layout,.info-grid,.news-grid,.tiktok-page,.tiktok-hero,.tiktok-content{width:100%!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important}
+.dedication-layout,.info-grid,.news-grid,.tiktok-highlights,.tiktok-videos{display:flex!important;flex-direction:column!important;gap:10px!important}
+.ded-card,.news-card,.info-card,.tiktok-highlight,.tiktok-video{width:100%!important;max-width:none!important}
+.ded-card,.news-card,.info-card,.tiktok-highlight,.tiktok-video{border-radius:15px!important}
+.tiktok-hero{padding:14px!important;border-radius:16px!important}
+.tiktok-page-title,.info-title,.dedications-title{margin-top:4px!important}
+input,textarea,button{max-width:100%}
+img,video,iframe{max-width:100%;height:auto}
+
+.app-footer{
+  margin:12px 0 0 !important;
+  padding:12px 8px 6px !important;
+}
+.app-footer-brand{
+  color:#d076ff;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.app-footer-powered{margin-top:3px}
+.app-footer-powered strong{color:#c9c2d0;font-weight:800}
+.app-footer-links{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  margin-top:7px;
+}
+.app-footer-links a{
+  color:#b85cff;
+  text-decoration:none;
+}
+.app-footer-copy{margin-top:6px;color:#686273}
+
+.app-footer::after{content:none!important;display:none!important}
+
+/* Configuration footer de l'application — compacte */
+.app-footer{
+  margin:12px 0 0 !important;
+  padding:12px 8px 6px !important;
+  border-top:1px solid #2a2038 !important;
+  text-align:center !important;
+  color:#8f8899 !important;
+  font-size:8px !important;
+  line-height:1.5 !important;
+}
+.app-footer-brand{
+  color:#d076ff !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  letter-spacing:1px !important;
+}
+.app-footer-powered{
+  margin-top:3px !important;
+  font-size:8px !important;
+  color:#8f8899 !important;
+}
+.app-footer-powered strong{
+  color:#c9c2d0 !important;
+  font-weight:800 !important;
+}
+.app-footer-links{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:7px !important;
+  margin-top:7px !important;
+  font-size:8px !important;
+}
+.app-footer-links a{
+  color:#b85cff !important;
+  text-decoration:none !important;
+  font-size:8px !important;
+}
+.app-footer-copy{
+  margin-top:6px !important;
+  margin-bottom:0 !important;
+  color:#686273 !important;
+  font-size:8px !important;
+}
+
+
+/* Position uniquement : design original de la barre conservé */
+.nav{
+  position:fixed !important;
+  z-index:20 !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  width:min(100%,520px) !important;
+}
+
+/* Bannière Dédicaces : cadre immobile, seul le message défile */
+.dedication-banner{
+  width:100%;
+  height:42px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  border:1px solid rgba(168,69,255,.34);
+  border-radius:14px;
+  background:linear-gradient(90deg,rgba(35,17,51,.95),rgba(20,10,30,.98));
+  box-shadow:0 6px 18px rgba(70,24,106,.18),inset 0 1px rgba(255,255,255,.05);
+  position:relative;
+  margin:0 0 10px;
+}
+.dedication-label{
+  flex:0 0 92px;
+  height:100%;
+  display:flex;
+  align-items:center;
+  padding-left:10px;
+  color:#d076ff;
+  font-size:9px;
+  font-weight:900;
+  border-right:1px solid rgba(168,69,255,.34);
+  background:#140b1d;
+  z-index:3;
+}
+.dedication-window{
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  height:100%;
+  display:flex;
+  align-items:center;
+}
+.dedication-message{
+  flex:0 0 auto;
+  width:max-content;
+  white-space:nowrap;
+  animation:dedicationMessageScroll 18s linear infinite;
+}
+.dedication-message span{
+  display:inline-block;
+  padding-left:100%;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+}
+@keyframes dedicationMessageScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+
+/* Éléments d'interface détachés du contenu : ils restent visibles pendant le défilement */
+.dedication-banner{
+  position:fixed !important;
+  top:0 !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  z-index:1000 !important;
+  width:min(100%,520px) !important;
+  margin:0 !important;
+  border-radius:0 0 12px 12px !important;
+}
+
+/* Le contenu défile indépendamment sous la bannière et au-dessus de la navigation */
+.app-shell{
+  padding-top:52px !important;
+  padding-bottom:92px !important;
+}
+
+/* Navigation détachée du contenu : elle reste collée en bas de l'écran */
+.bottom-nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+
+
+/* UI fixe : la bannière et la navigation restent au-dessus du contenu pendant tout le défilement */
+.dedication-banner{
+  position:fixed !important;
+  top:0 !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  z-index:1000 !important;
+  width:min(100%,520px) !important;
+  margin:0 !important;
+}
+
+/* Décalage du contenu pour qu'il ne passe pas sous la bannière */
+.app{
+  padding-top:52px !important;
+  padding-bottom:92px !important;
+}
+
+/* Navigation de l'accueil */
+.nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+
+/* Navigation des pages dédiées */
+.bottom-nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+
+</style>
+<style id="vm-global-dedication-style">
+.vm-global-dedication-banner{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  z-index:10000!important;
+  width:min(100%,520px)!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+.vm-global-dedication-banner .dedication-window{
+  min-width:0!important;
+  overflow:hidden!important;
+  flex:1 1 auto!important;
+}
+.vm-global-dedication-message{
+  display:flex!important;
+  align-items:center!important;
+  width:max-content!important;
+  min-width:100%!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  will-change:transform!important;
+}
+.vm-global-dedication-message span{
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  padding-right:70px!important;
+  white-space:nowrap!important;
+}
+.vm-global-dedication-message.is-live{
+  animation:vmGlobalDedicationScroll 26s linear infinite!important;
+}
+@keyframes vmGlobalDedicationScroll{
+  from{transform:translateX(100%)}
+  to{transform:translateX(-100%)}
+}
+@media(max-width:700px){
+  .vm-global-dedication-message.is-live{animation-duration:18s!important}
+}
+</style>
+
+
+<style id="vm-home-navigation-exact">
+.nav{
+  position:fixed!important;
+  z-index:1001!important;
+  left:50%!important;
+  bottom:0!important;
+  top:auto!important;
+  transform:translateX(-50%)!important;
+  width:min(100%,520px)!important;
+  height:74px!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+  border-top:1px solid var(--line)!important;
+  background:rgba(13,8,18,.94)!important;
+  backdrop-filter:blur(15px)!important;
+}
+.nav a{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:4px!important;
+  color:#8e8599!important;
+  text-decoration:none!important;
+  font-size:9px!important;
+  font-weight:700!important;
+}
+.nav i{
+  display:grid!important;
+  place-items:center!important;
+  width:34px!important;
+  height:29px!important;
+  border-radius:12px!important;
+  font-size:18px!important;
+  font-style:normal!important;
+}
+.nav a.active{color:#d68cff!important}
+.nav a.active i{background:#2b153d!important;color:#df9aff!important}
+</style>
+
+
+<style id="vm-navigation-exact-home-final">
+html body nav.nav{
+  position:fixed!important;
+  z-index:1001!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:0!important;
+  transform:translateX(-50%)!important;
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  height:74px!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:0!important;
+  margin:0!important;
+  padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+  box-sizing:border-box!important;
+  border:0!important;
+  border-top:1px solid #2a2038!important;
+  border-radius:0!important;
+  background:rgba(13,8,18,.94)!important;
+  backdrop-filter:blur(15px)!important;
+  -webkit-backdrop-filter:blur(15px)!important;
+}
+html body nav.nav a{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:4px!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#8e8599!important;
+  text-decoration:none!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  line-height:normal!important;
+}
+html body nav.nav a i{
+  display:grid!important;
+  place-items:center!important;
+  width:34px!important;
+  height:29px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  color:inherit!important;
+  font-size:18px!important;
+  line-height:1!important;
+  font-style:normal!important;
+}
+html body nav.nav a.active{
+  color:#d68cff!important;
+  border:0!important;
+  border-bottom:0!important;
+  background:transparent!important;
+  font-weight:700!important;
+}
+html body nav.nav a.active i{
+  background:#2b153d!important;
+  color:#df9aff!important;
+}
+@media(max-width:520px){
+  html body nav.nav{
+    width:100%!important;
+    height:74px!important;
+  }
+}
+</style>
+
+
+<style id="vm-latest-dedications-style">
+#publishedDedicationsList{display:flex;flex-direction:column;gap:10px}
+.recent-dedication{
+  padding:12px 14px;
+  border:1px solid rgba(184,92,255,.18);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+}
+.recent-dedication-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.recent-dedication-head strong{font-size:14px;color:#fff}
+.recent-dedication-head span{font-size:11px;color:#a99caf}
+.recent-dedication-to{font-size:11px;color:#c987ff;margin-top:4px}
+.recent-dedication-message{font-size:13px;line-height:1.35;margin-top:5px;color:#eee}
+.recent-dedication-song{font-size:11px;color:#aaa0b0;margin-top:6px}
+#dedicationSubmit:disabled{opacity:.65;cursor:wait}
+</style>
+
+
+<style id="vm-dedicaces-nav-width">
+#vmSharedDedicationBar{
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  border-radius:0 0 14px 14px!important;
+}
+</style>
+<style id="vm-dedicaces-unified-style">
+#vmSharedDedicationBar{
+ position:fixed!important;top:0!important;left:50%!important;right:auto!important;
+ transform:translateX(-50%)!important;width:min(100%,520px)!important;max-width:520px!important;
+ height:36px!important;z-index:99998!important;display:flex!important;align-items:center!important;
+ overflow:hidden!important;box-sizing:border-box!important;margin:0!important;
+ border-radius:0 0 14px 14px!important;background:#170d20!important;
+ border-bottom:1px solid rgba(190,105,255,.28)!important;
+}
+#vmSharedDedicationBar .vmDedLabel{
+ flex:0 0 auto;height:100%;display:flex;align-items:center;padding:0 14px;
+ background:#2b153d;color:#fff;font-size:11px;font-weight:800;letter-spacing:.8px;
+ box-sizing:border-box;z-index:2;
+}
+#vmSharedDedicationBar .vmDedWindow{position:relative;flex:1;min-width:0;height:100%;overflow:hidden}
+#vmSharedDedicationBar .vmDedTrack{
+ position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;
+ width:max-content;white-space:nowrap;will-change:transform;
+}
+#vmSharedDedicationBar .vmDedText{
+ display:block;flex:none;color:#fff;font-size:12px;line-height:36px;
+ white-space:nowrap;padding:0 28px 0 0;margin:0;
+}
+to{transform:translateX(calc(-1 * var(--vm-ded-distance, 0px)))}
+}
+body{padding-top:36px!important}
+@media(max-width:520px){
+ #vmSharedDedicationBar{height:38px!important}
+ body{padding-top:38px!important}
+ #vmSharedDedicationBar .vmDedLabel{padding:0 10px;font-size:10px}
+ #vmSharedDedicationBar .vmDedText{font-size:11px;line-height:38px}
+}
+</style>
+
+<style id="vm-dedication-spacing-final">
+/* Space between each individual dedication, without changing the banner frame. */
+#vmSharedDedicationBar .vmDedItem{
+  display:inline-block!important;
+  white-space:nowrap!important;
+  margin-right:55px!important;
+}
+#vmSharedDedicationBar .vmDedItem:last-child{
+  margin-right:55px!important;
+}
+</style>
+<link rel="icon" type="image/png" href="./favicon-64.png?v=6"><link rel="apple-touch-icon" href="./apple-touch-icon.png?v=6"><script src="vm-radio-flux-central.js"></script>
+</head><body>
+
+
+<main class="app-shell">
+<div class="brand"><img src="./vm-radio-logo-site.jpeg" alt="VM RADIO"></div>
+<div class="page-title"><h1>VOS DÉDICACES</h1><p>Envoyez votre message à l’antenne</p></div><section class="dedication-layout">
+<article class="ded-card">
+<h2>ENVOYER UNE DÉDICACE</h2><p class="module-subtitle">Envoyez votre message directement à l’antenne.</p>
+<div class="ded-status"><span><span class="online">● EN LIGNE</span> · VM RADIO</span><span>Diffusion 24h/24 · 7j/7</span></div>
+<form class="dedication-form" id="dedicationForm" novalidate="">
+<div class="form-grid">
+<div class="field">
+<label for="dedName">Votre prénom / pseudo</label>
+<input autocomplete="nickname" id="dedName" maxlength="40" name="name" placeholder="Ex. Valentin" required="" type="text"/>
+</div>
+<div class="field">
+<label for="dedTo">Pour qui ? <span>(facultatif)</span></label>
+<input autocomplete="off" id="dedTo" maxlength="50" name="to" placeholder="Ex. Laura" type="text"/>
+</div>
+<div class="field field-message">
+<label for="dedMessage">Votre message</label>
+<textarea id="dedMessage" maxlength="240" name="message" placeholder="Écrivez votre dédicace..." required=""></textarea>
+</div>
+</div>
+<div class="form-foot">
+<span class="char-count"><span id="charCount">0</span>/240</span>
+<button class="send-btn" id="dedicationSubmit" type="submit">♡ ENVOYER LA DÉDICACE</button>
+</div>
+<div aria-live="polite" class="dedication-feedback" id="dedicationFeedback" role="status"></div>
+</form>
+</article>
+<article class="ded-card published-dedications-card" id="publishedDedications">
+<h2>DERNIÈRES DÉDICACES</h2><p class="module-subtitle">Retrouvez les dernières dédicaces diffusées.</p>
+<div class="ded-status"><span>💜 DERNIÈRES DÉDICACES</span><span>VM RADIO</span></div>
+<div class="recent-list" id="publishedDedicationsList"><div class="empty">Aucune dédicace pour le moment.</div></div>
+</article>
+</section><section class="news-section" id="infos">
+<div class="news-section-title">
+<h2>À <span>LA UNE</span></h2><p class="module-subtitle">Retrouvez les informations musicales du moment.</p>
+</div>
+<div class="news-grid">
+<article class="news-card live-news-card">
+<div class="news-icon">🔴</div>
+<h3>TITRE EN DIRECT</h3><p class="module-subtitle">Le titre actuellement diffusé.</p>
+<div class="news-now">
+<img alt="" class="news-cover" data-news-current-cover=""/>
+<div class="news-now-info">
+<div class="news-value" data-news-current="">--</div>
+<div class="news-artist" data-news-current-artist="">--</div>
+<div class="news-time">Diffusé à <span data-news-current-time="">--:--</span></div>
+</div>
+</div>
+</article>
+<article class="news-card">
+<div class="news-icon">▶</div>
+<h3>À SUIVRE</h3><p class="module-subtitle">Le prochain titre à l’antenne.</p>
+<div class="news-now">
+<img alt="" class="news-cover" data-news-next-cover=""/>
+<div class="news-now-info">
+<div class="news-value" data-news-next="">--</div>
+<div class="news-artist" data-news-next-artist="">--</div>
+<div class="news-time">Diffusion à <span data-news-next-time="">--:--</span></div>
+</div>
+</div>
+</article>
+<article class="news-card">
+<div class="news-icon">★</div>
+<h3>DERNIER TITRE DIFFUSÉ</h3><p class="module-subtitle">Le titre diffusé juste avant.</p>
+<div class="news-now">
+<img alt="" class="news-cover" data-news-last-cover=""/>
+<div class="news-now-info">
+<div class="news-value" data-news-last="">--</div>
+<div class="news-artist" data-news-last-artist="">--</div>
+<div class="news-time">Diffusé à <span data-news-last-time="">--:--</span></div>
+</div>
+</div>
+</article>
+</div>
+</section>
+
+<footer class="app-footer">
+  <div class="app-footer-brand">VM RADIO</div>
+  <div class="app-footer-powered">Appli propulsée par <strong>Music IA By Valentin & ChatGpt</strong></div>
+  <div class="app-footer-links">
+    <a href="./conditions.html">Confidentialité</a>
+    <span>•</span>
+    <a href="./conditions.html">Informations légales</a>
+  </div>
+  <div class="app-footer-copy">© 2026 VM Radio — Tous droits réservés</div>
+</footer>
+
+</main>
+<nav class="nav">
+    <a href="./index.html"><i>⌂</i>Accueil</a>
+    <a href="./dedicaces.html" id="dedicationsNav"><i>♡</i>Dédicaces</a>
+    <a href="./infos.html"><i>◉</i>Infos</a>
+    <a href="./tiktok.html"><i>♪</i>TikTok</a>
+  </nav>
+
+
+
+<script id="vm-dedicaces-news-sync">
+(function(){
+"use strict";
+const API={
+ current:"https://api.radioking.io/widget/radio/vm-radio2/track/current",
+ next:"https://api.radioking.io/widget/radio/vm-radio2/track/next?limit=1",
+ history:"https://api.radioking.io/widget/radio/vm-radio2/track/ckoi?limit=5"
+};
+const FALLBACK="https://image.radioking.io/radios/917591/cover/custom/73962df6-7c51-4f8a-a9d0-801882271ca1.png";
+const ARTIST="Music IA By Valentin";
+
+function first(...v){
+  return v.find(x=>x!==undefined&&x!==null&&String(x).trim()!=="")||"";
+}
+function normal(raw){
+  let x=Array.isArray(raw)?raw[0]:raw;
+  if(!x)return null;
+  if(x.track)x=x.track;
+  if(x.data&&x.data.track)x=x.data.track;
+  const title=first(x.title,x.name,x.song,x.track_title);
+  if(!title)return null;
+  return {
+    id:String(first(x.id,x.track_id,title)),
+    title:String(title).trim(),
+    artist:String(first(x.artist,x.author,x.track_artist)||ARTIST).trim(),
+    cover:String(first(x.cover,x.cover_url,x.artwork,x.artwork_url,x.image,x.picture)||FALLBACK),
+    time:first(x.started_at,x.start_at,x.played_at,x.scheduled_at,x.time),
+    type:String(x.type||"music").toLowerCase()
+  };
+}
+async function get(url){
+  const r=await fetch(url+(url.includes("?")?"&":"?")+"_="+Date.now(),{
+    cache:"no-store",
+    credentials:"omit"
+  });
+  if(!r.ok)throw Error("RadioKing "+r.status);
+  return r.json();
+}
+function clock(v){
+  if(!v)return"--:--";
+  const d=new Date(v);
+  return Number.isNaN(d.getTime())?"--:--":
+    d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+}
+function text(sel,v){
+  document.querySelectorAll(sel).forEach(e=>e.textContent=String(v??""));
+}
+function image(sel,v){
+  document.querySelectorAll(sel).forEach(e=>{
+    if(e.tagName!=="IMG")return;
+    e.src=v||FALLBACK;
+    e.onerror=()=>{e.onerror=null;e.src=FALLBACK};
+  });
+}
+
+async function updateUne(){
+  try{
+    const [a,b,c]=await Promise.all([
+      get(API.current),
+      get(API.next),
+      get(API.history)
+    ]);
+
+    const cur=normal(a);
+    const next=normal(b);
+    const rawHist=Array.isArray(c)?c:[c];
+    const history=rawHist.map(normal).filter(Boolean).filter(x=>x.type==="music");
+
+    if(!cur)return;
+
+    /* TITRE EN DIRECT — exactement les mêmes données que l'accueil */
+    text("[data-news-current]",cur.title);
+    text("[data-news-current-artist]",cur.artist);
+    text("[data-news-current-time]",clock(cur.time));
+    image("[data-news-current-cover]",cur.cover);
+
+    /* À SUIVRE — exactement le prochain titre RadioKing */
+    if(next){
+      text("[data-news-next]",next.title);
+      text("[data-news-next-artist]",next.artist);
+      text("[data-news-next-time]",clock(next.time));
+      image("[data-news-next-cover]",next.cover);
+    }
+
+    /* DERNIER TITRE DIFFUSÉ — premier titre musical de l'historique
+       qui n'est pas le titre actuellement en direct. */
+    const last=history.find(x=>x.id!==cur.id);
+    if(last){
+      text("[data-news-last]",last.title);
+      text("[data-news-last-artist]",last.artist);
+      text("[data-news-last-time]",clock(last.time));
+      image("[data-news-last-cover]",last.cover);
+    }
+  }catch(err){
+    console.warn("VM RADIO — synchronisation À LA UNE:",err);
+  }
+}
+
+updateUne();
+setInterval(updateUne,10000);
+})();
+</script>
+
+<script id="vm-title-first-uppercase">
+(function(){
+  function up(v){v=String(v==null?"":v).trim();return v?v.charAt(0).toLocaleUpperCase("fr-FR")+v.slice(1):"";}
+  function fix(){
+    document.querySelectorAll('[data-current-title],#currentTitle,.current-title,[data-next-title],#nextTitle,.next-title,.previous-title').forEach(function(el){
+      if(el.textContent.trim()) el.textContent=up(el.textContent);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+  setInterval(fix,1000);
+})();
+</script>
+<script id="vm-top-titles-uppercase">
+(function(){
+  function up(v){v=String(v==null?"":v).trim();return v?v.charAt(0).toLocaleUpperCase("fr-FR")+v.slice(1):"";}
+  function fix(){
+    document.querySelectorAll('.top-title,.top-titre,.top-titres .title,.top-titres .track-title,[data-top-title]').forEach(function(el){
+      if(el.textContent.trim()) el.textContent=up(el.textContent);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+  setInterval(fix,1000);
+})();
+</script>
+<script id="vm-direct-title-uppercase">
+(function(){
+  function up(v){v=String(v==null?"":v).trim();return v?v.charAt(0).toLocaleUpperCase("fr-FR")+v.slice(1):"";}
+  function fix(){
+    document.querySelectorAll('[data-current-title],#currentTitle,.current-title,.live-title,.programme-current-title,.player-title').forEach(function(el){
+      if(el.textContent.trim()) el.textContent=up(el.textContent);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+  setInterval(fix,1000);
+})();
+</script>
+<script id="vm-dedications-single-system-js">
+(function(){
+"use strict";
+let raf=0,last=0,x=0,running=false,speed=42,lastText="";
+
+function getParts(){
+  const bar=document.getElementById("vmSharedDedicationBar");
+  if(!bar)return null;
+  const win=bar.querySelector(".vmDedWindow");
+  const track=bar.querySelector(".vmDedTrack");
+  if(!win||!track)return null;
+  return {win,track};
+}
+
+function ensureCopies(){
+  const p=getParts();
+  if(!p)return false;
+  const nodes=p.track.querySelectorAll(".vmDedText");
+  if(nodes.length<2)return false;
+
+  // The existing Firebase system fills both copies. Do not change their data.
+  // Just make sure the track is under this one JS controller.
+  p.track.style.animation="none";
+  p.track.classList.remove("running");
+  return true;
+}
+
+function loop(now){
+  const p=getParts();
+  if(!p){
+    running=false; raf=0;
+    setTimeout(start,150);
+    return;
+  }
+
+  const dt=Math.min(0.05,(now-last)/1000);
+  last=now;
+  x-=speed*dt;
+
+  const first=p.track.firstElementChild;
+  const second=p.track.children[1];
+
+  if(first && second){
+    const width=first.getBoundingClientRect().width + 58;
+    if(width>58 && -x>=width){
+      x+=width;
+      p.track.appendChild(first);
+    }
+  }
+
+  p.track.style.transform="translate3d("+x+"px,0,0)";
+  raf=requestAnimationFrame(loop);
+}
+
+function start(){
+  if(!ensureCopies())return setTimeout(start,100);
+  if(!running){
+    running=true;
+    last=performance.now();
+    raf=requestAnimationFrame(loop);
+  }
+}
+
+function boot(){
+  start();
+  setTimeout(start,300);
+  setTimeout(start,1000);
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",boot,{once:true});
+}else{
+  boot();
+}
+
+window.addEventListener("resize",function(){
+  ensureCopies();
+});
+})();
+</script>
+<script id="vm-dedicaces-live-update">
+(function(){
+"use strict";
+const REFRESH_MS=5000;
+let busy=false;
+
+async function refreshLatest(){
+  if(busy)return;
+  busy=true;
+  try{
+    // Reuse the page's existing refresh function if available.
+    if(typeof refresh==="function"){
+      await refresh();
+    }else if(typeof loadDedications==="function"){
+      await loadDedications();
+    }else if(typeof load==="function"){
+      await load();
+    }
+  }catch(e){
+    console.warn("Mise à jour des dernières dédicaces:",e);
+  }finally{
+    busy=false;
+  }
+}
+
+function start(){
+  // First refresh shortly after opening the page, then every 5 seconds.
+  setTimeout(refreshLatest,500);
+  setInterval(refreshLatest,REFRESH_MS);
+}
+
+if(document.readyState==="loading")
+  document.addEventListener("DOMContentLoaded",start,{once:true});
+else start();
+})();
+</script>
+
+<script src="dedications-feed.js?v=5" defer></script>
+</body></html>

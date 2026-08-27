@@ -1,0 +1,2374 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090610">
+<title>VM Radio</title>
+<style>
+    :root{--bg:#0b0711;--panel:#0d0a13;--panel2:#1e1727;--violet:#b85cff;--pink:#ce8dff;--muted:#aaa5b4;--line:#2a2038}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;min-height:100%;overflow-x:hidden;overflow-y:auto;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100dvh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    button,a{-webkit-tap-highlight-color:transparent}
+    .app{width:min(100%,520px);min-height:100dvh;margin:auto;padding:10px 14px 92px;overflow:visible;background:radial-gradient(circle at 52% 6%,#32164d 0,transparent 27%),linear-gradient(160deg,#0b0711 0%,#090610 75%)}
+    .top{display:flex;align-items:center;justify-content:center;margin:2px 0 10px}
+    .brand i{display:block;width:11px;height:11px;border-radius:50%;background:#4ff197;box-shadow:0 0 13px #4ff197}
+    .brand span{color:var(--violet)}
+    .icon-btn{height:43px;min-width:43px;border:1px solid var(--line);border-radius:14px;background:#1b1227;color:#fff;font-size:19px;cursor:pointer}
+
+    /* Player intégré, en conservant l'identité du modèle original */
+
+    .dedication-banner{
+      width:100%;
+      height:42px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      border:1px solid rgba(168,69,255,.34);
+      border-radius:14px;
+      background:linear-gradient(90deg,rgba(35,17,51,.95),rgba(20,10,30,.98));
+      box-shadow:0 6px 18px rgba(70,24,106,.18),inset 0 1px rgba(255,255,255,.05);
+      position:relative;
+    }
+    .dedication-banner:before,
+    .dedication-banner:after{
+      content:"";
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:34px;
+      z-index:2;
+      pointer-events:none;
+    }
+    .dedication-banner:before{left:0;background:linear-gradient(90deg,#140b1d,transparent)}
+    .dedication-banner:after{right:0;background:linear-gradient(270deg,#140b1d,transparent)}
+    .dedication-track{
+      display:flex;
+      align-items:center;
+      gap:58px;
+      width:max-content;
+      white-space:nowrap;
+      padding-left:100%;
+      animation:dedicationScroll 22s linear infinite;
+      color:#fff;
+      font-size:12px;
+      font-weight:700;
+    }
+    .dedication-track span{display:inline-block}
+    @keyframes dedicationScroll{
+      from{transform:translateX(0)}
+      to{transform:translateX(-50%)}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .dedication-track{animation:none;transform:none;padding-left:14px}
+    }
+.player-shell{position:relative;padding:19px 16px 17px;border:1px solid rgba(255,255,255,.1);border-radius:31px;background:linear-gradient(155deg,rgba(45,25,64,.82),rgba(18,13,27,.88));box-shadow:0 22px 55px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.06)}
+    .player-shell:before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(228,121,255,.5),transparent 38%,rgba(104,36,185,.3));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+    .eyebrow{color:#dca8ff;text-transform:uppercase;letter-spacing:2.2px;font-size:10px;font-weight:800;text-align:center;margin-bottom:13px}
+    .cover-wrap{
+      position:relative;
+      width:min(34vw,145px);
+      aspect-ratio:1;
+      margin:0 auto 8px;
+      border-radius:29px;
+      padding:0;
+      background:transparent;
+      box-shadow:none;
+    }
+    .cover-wrap:after{
+      display:none;
+    }
+    .cover{width:100%;height:100%;object-fit:cover;border-radius:25px;background:#05050a}
+    .live{position:absolute;left:18px;top:18px;display:flex;gap:6px;align-items:center;background:rgba(13,7,20,.83);padding:7px 10px;border:1px solid rgba(255,255,255,.08);border-radius:20px;font-size:10px;font-weight:bold;letter-spacing:1px;backdrop-filter:blur(8px)}
+    .live b{width:7px;height:7px;border-radius:50%;background:#ff4d6d;box-shadow:0 0 9px #ff4d6d;animation:pulse 1.4s ease-in-out infinite}
+    h1{margin:0;text-align:center;font-size:21px;line-height:1.04;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .artist{text-align:center;color:#d58dff;margin:3px 0 6px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .progress{height:4px;border-radius:4px;background:#31213e;overflow:hidden;margin:0 3px 9px}
+    .progress b{display:block;width:38%;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--violet),var(--pink));transition:width .8s ease}
+    .time{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin:0 3px 5px}
+    .controls{display:flex;align-items:center;justify-content:center;gap:28px}
+    .round{display:grid;place-items:center;border:1px solid transparent;border-radius:50%;background:transparent;color:#fff;width:50px;height:50px;font-size:25px;cursor:pointer;transition:.2s}
+    .round:hover{background:rgba(255,255,255,.06);border-color:var(--line)}
+    .play{width:70px;height:70px;background:linear-gradient(135deg,#c05cff,#7433dd);box-shadow:0 10px 25px #7e39cc77;font-size:28px}
+    .play:hover{background:linear-gradient(135deg,#ce74ff,#8244e8);border-color:transparent;transform:scale(1.03)}
+    .heart.active{color:#e77aff}
+    .now-next{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+    .next{min-width:0;background:#0d0a13;border:1px solid var(--line);border-radius:13px;padding:6px;display:flex;gap:11px;align-items:center}
+    .next img{width:34px;height:34px;border-radius:12px;object-fit:cover;background:#08060c}
+    .next div{min-width:0;display:flex;flex-direction:column;gap:4px}
+    .next small{color:#a99db4;font-size:10px;text-transform:uppercase;letter-spacing:1.2px}
+    .next b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+    .install{width:58px;border:1px solid var(--line);border-radius:18px;background:#1d1328;color:#fff;font-size:21px;cursor:pointer}
+
+
+
+
+    .dedications-page{display:none;margin-top:4px}
+    .dedications-page.show{display:block}
+    .dedications-head{margin:4px 0 12px}
+    .dedications-head h1{margin:0;font-size:22px}
+    .dedications-head p{margin:5px 0 0;color:#aaa2b5;font-size:11px}
+    body.dedications-open .home-content{display:none}
+    body.dedications-open .dedications-page{display:block}
+    .dedication-form{
+      margin-top:12px;
+      padding:13px;
+      border:1px solid rgba(169,77,255,.25);
+      border-radius:19px;
+      background:linear-gradient(155deg,rgba(43,23,61,.72),rgba(18,13,27,.84));
+    }
+    .dedication-form-head h2{
+      margin:0;
+      font-size:15px;
+      font-weight:800;
+    }
+    .dedication-form-head p{
+      margin:4px 0 10px;
+      color:#aaa2b5;
+      font-size:10px;
+    }
+    #dedicationForm{
+      display:grid;
+      gap:8px;
+    }
+    #dedicationForm input,
+    #dedicationForm textarea{
+      width:100%;
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:12px;
+      outline:none;
+      background:rgba(5,4,9,.55);
+      color:#fff;
+      padding:10px 11px;
+      font:inherit;
+      font-size:11px;
+      resize:none;
+    }
+    #dedicationForm input::placeholder,
+    #dedicationForm textarea::placeholder{color:#777080}
+    #dedicationForm input:focus,
+    #dedicationForm textarea:focus{
+      border-color:rgba(169,77,255,.55);
+    }
+    #dedicationForm button{
+      border:0;
+      border-radius:12px;
+      padding:11px;
+      background:linear-gradient(135deg,#c05cff,#7433dd);
+      color:#fff;
+      font-size:11px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .dedication-status{
+      min-height:14px;
+      margin-top:6px;
+      text-align:center;
+      color:#d68cff;
+      font-size:10px;
+    }
+    .music-program{
+      margin-top:9px;
+      padding:10px 11px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.035);
+    }
+    .program-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:8px;
+    }
+    .program-head h2{
+      margin:0;
+      font-size:15px;
+      font-weight:800;
+    }
+    .program-tabs{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+      margin-bottom:8px;
+      padding:4px;
+      border-radius:12px;
+      background:rgba(255,255,255,.035);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .program-tab{
+      border:0;
+      border-radius:9px;
+      background:transparent;
+      color:#8f8798;
+      padding:8px 4px;
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:.5px;
+      cursor:pointer;
+    }
+    .program-tab.active{
+      background:#2b153d;
+      color:#df9aff;
+    }
+    .program-panels{
+      min-height:70px;
+    }
+    .program-panel{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:13px;
+      background:rgba(255,255,255,.025);
+    }
+    .program-panel.active-panel{
+      display:flex;
+      border-color:rgba(169,77,255,.35);
+      background:rgba(169,77,255,.08);
+    }
+
+    .program-cover{
+      width:46px;
+      height:46px;
+      flex:0 0 46px;
+      object-fit:cover;
+      border-radius:10px;
+      background:#100b16;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .program-main{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .program-main small{
+      color:#a99db4;
+      font-size:8px;
+      font-weight:800;
+      letter-spacing:1px;
+    }
+    .program-main strong{
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .program-main span{
+      color:#aaa2b5;
+      font-size:9px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .program-panel i{
+      color:#d68cff;
+      font-style:normal;
+      font-size:16px;
+      flex:0 0 auto;
+    }
+.section{margin-top:27px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .section-head h2{font-size:16px;margin:0}
+    .section-head a{font-size:12px;color:#c87aff;text-decoration:none}
+    .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .tile{display:flex;align-items:center;gap:12px;padding:15px 13px;border:1px solid var(--line);border-radius:18px;background:#0d0a13;color:#fff;text-decoration:none}
+    .tile em{display:grid;place-items:center;flex:0 0 39px;height:39px;border-radius:13px;background:#28143a;color:#d790ff;font-size:21px;font-style:normal}
+    .tile span{min-width:0;display:flex;flex-direction:column;gap:4px}
+    .tile b{font-size:13px}
+    .tile small{color:var(--muted);font-size:10px;line-height:1.25}
+
+    .nav{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);display:grid;grid-template-columns:repeat(4,1fr);padding:9px 8px calc(9px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(13,8,18,.94);backdrop-filter:blur(15px)}
+    .nav a{display:flex;flex-direction:column;align-items:center;gap:4px;color:#8e8599;text-decoration:none;font-size:9px;font-weight:700}
+    .nav i{display:grid;place-items:center;width:34px;height:29px;border-radius:12px;font-size:18px;font-style:normal}
+    .nav a.active{color:#d68cff}
+    .nav a.active i{background:#2b153d;color:#df9aff}
+    .notice{position:fixed;z-index:50;left:50%;bottom:94px;transform:translate(-50%,18px);width:min(calc(100% - 36px),420px);padding:13px 16px;opacity:0;text-align:center;border-radius:16px;background:#32164d;color:#fff;font-size:12px;transition:.25s;pointer-events:none}
+    .notice.show{transform:translate(-50%,0);opacity:1}
+    @keyframes pulse{50%{opacity:.4;transform:scale(.8)}}
+    @media(max-width:380px){.app{padding-left:14px;padding-right:14px}.player-shell{padding-left:13px;padding-right:13px}.cover-wrap{width:min(42vw,165px)}.controls{gap:21px}.tiles{grid-template-columns:1fr}.tile small{font-size:11px}}
+    @media(min-width:521px){body{background:#050308}.app{box-shadow:0 0 70px #000}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+  
+html,body{width:100%;min-width:0;min-height:100%;overflow-x:hidden}
+body{margin:0;-webkit-text-size-adjust:100%}
+.app{width:100%;max-width:520px;min-height:100dvh;margin:0 auto;
+padding:calc(10px + env(safe-area-inset-top)) 12px calc(92px + env(safe-area-inset-bottom))}
+.site-player{width:100%;margin:0}
+.program{width:100%;margin-top:11px}
+.nav{width:100%;max-width:520px;height:74px;bottom:0;padding:6px 7px calc(6px + env(safe-area-inset-bottom))}
+img,video,iframe,canvas{max-width:100%}
+@media(max-width:380px){.app{padding-left:10px;padding-right:10px}}
+
+.app-footer{
+  margin:12px 0 0 !important;
+  padding:12px 8px 6px !important;
+}
+.app-footer-brand{
+  color:#d076ff;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.app-footer-powered{margin-top:3px}
+.app-footer-powered strong{color:#c9c2d0;font-weight:800}
+.app-footer-links{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  margin-top:7px;
+}
+.app-footer-links a{
+  color:#b85cff;
+  text-decoration:none;
+}
+.app-footer-copy{margin-top:6px;color:#686273}
+
+
+.site-home-cards-added{
+  width:100%;
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.site-home-card-wrap{
+  width:100%;
+  min-width:0;
+}
+.site-home-card-wrap > .card,
+.site-home-card-wrap > .promo{
+  width:100%;
+  max-width:100%;
+  margin-left:0;
+  margin-right:0;
+}
+.site-home-card-wrap img{
+  max-width:100%;
+}
+
+
+.home-original-modules{
+  width:100%;
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.home-original-module{
+  width:100%;
+  min-width:0;
+}
+.home-original-module > .card,
+.home-original-module > .promo{
+  width:100%;
+  max-width:100%;
+  margin-left:0;
+  margin-right:0;
+}
+.home-original-module img{
+  max-width:100%;
+  height:auto;
+}
+
+/* Footer compact : il s'arrête visuellement juste avant la navigation */
+.app-footer{
+  margin:16px 0 0 !important;
+  padding:14px 8px 8px !important;
+}
+.app-footer-copy{margin-bottom:0 !important}
+.app-footer::after{content:none!important;display:none!important}
+
+/* Configuration footer de l'application — compacte */
+.app-footer{
+  margin:12px 0 0 !important;
+  padding:12px 8px 6px !important;
+  border-top:1px solid #2a2038 !important;
+  text-align:center !important;
+  color:#8f8899 !important;
+  font-size:8px !important;
+  line-height:1.5 !important;
+}
+.app-footer-brand{
+  color:#d076ff !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  letter-spacing:1px !important;
+}
+.app-footer-powered{
+  margin-top:3px !important;
+  font-size:8px !important;
+  color:#8f8899 !important;
+}
+.app-footer-powered strong{
+  color:#c9c2d0 !important;
+  font-weight:800 !important;
+}
+.app-footer-links{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:7px !important;
+  margin-top:7px !important;
+  font-size:8px !important;
+}
+.app-footer-links a{
+  color:#b85cff !important;
+  text-decoration:none !important;
+  font-size:8px !important;
+}
+.app-footer-copy{
+  margin-top:6px !important;
+  margin-bottom:0 !important;
+  color:#686273 !important;
+  font-size:8px !important;
+}
+
+
+/* Position uniquement : design original de la barre conservé */
+.nav{
+  position:fixed !important;
+  z-index:20 !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  width:min(100%,520px) !important;
+}
+
+/* Bannière Dédicaces : cadre immobile, seul le message défile */
+.dedication-banner{
+  width:100%;
+  height:42px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  border:1px solid rgba(168,69,255,.34);
+  border-radius:14px;
+  background:linear-gradient(90deg,rgba(35,17,51,.95),rgba(20,10,30,.98));
+  box-shadow:0 6px 18px rgba(70,24,106,.18),inset 0 1px rgba(255,255,255,.05);
+  position:relative;
+  margin:0 0 10px;
+}
+.dedication-label{
+  flex:0 0 92px;
+  height:100%;
+  display:flex;
+  align-items:center;
+  padding-left:10px;
+  color:#d076ff;
+  font-size:9px;
+  font-weight:900;
+  border-right:1px solid rgba(168,69,255,.34);
+  background:#140b1d;
+  z-index:3;
+}
+.dedication-window{
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  height:100%;
+  display:flex;
+  align-items:center;
+}
+.dedication-message{
+  flex:0 0 auto;
+  width:max-content;
+  white-space:nowrap;
+  animation:dedicationMessageScroll 18s linear infinite;
+}
+.dedication-message span{
+  display:inline-block;
+  padding-left:100%;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+}
+@keyframes dedicationMessageScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+
+/* Accueil : bannière et navigation indépendantes du défilement de la page */
+.home-fixed-dedication{
+  position:fixed !important;
+  top:0 !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  z-index:1000 !important;
+  width:min(100%,520px) !important;
+  margin:0 !important;
+  border-radius:0 0 12px 12px !important;
+}
+.home-fixed-nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+.app{
+  padding-top:52px !important;
+  padding-bottom:92px !important;
+}
+
+
+
+/* Navigation originale : position fixe, design inchangé */
+.nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+
+/* UI fixe : la bannière et la navigation restent au-dessus du contenu pendant tout le défilement */
+.dedication-banner{
+  position:fixed !important;
+  top:0 !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  z-index:1000 !important;
+  width:min(100%,520px) !important;
+  margin:0 !important;
+}
+
+/* Décalage du contenu pour qu'il ne passe pas sous la bannière */
+.app{
+  padding-top:52px !important;
+  padding-bottom:92px !important;
+}
+
+/* Navigation de l'accueil */
+.nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+
+/* Navigation des pages dédiées */
+.bottom-nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  top:auto !important;
+  transform:translateX(-50%) !important;
+  z-index:1001 !important;
+  width:min(100%,520px) !important;
+}
+
+
+/* === ACCUEIL : CARTES COMPLÈTES DU SITE, ADAPTÉES À L'APPLI === */
+.home-original-modules{
+  width:100%!important;
+  margin-top:14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:16px!important;
+}
+.home-original-module{width:100%!important;min-width:0!important}
+.home-original-module>.card,
+.home-original-module>.promo{
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:24px 22px!important;
+  border:1px solid rgba(153,67,234,.42)!important;
+  border-radius:24px!important;
+  background:linear-gradient(145deg,rgba(17,13,25,.98),rgba(8,7,13,.98))!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+  overflow:hidden!important;
+}
+.home-original-module .card h2{
+  margin:0!important;
+  color:#fff!important;
+  font-size:25px!important;
+  line-height:1.12!important;
+  font-weight:900!important;
+}
+.home-original-module .module-subtitle{
+  margin:14px 0 24px!important;
+  color:#aaa2b5!important;
+  font-size:16px!important;
+  line-height:1.35!important;
+}
+.home-original-module .live-disabled{
+  display:inline-flex!important;
+  align-items:center!important;
+  margin-left:7px!important;
+  padding:8px 12px!important;
+  border-radius:9px!important;
+  background:#c7354d!important;
+  color:#fff!important;
+  font-size:10px!important;
+  vertical-align:middle!important;
+}
+.home-original-module .now,
+.home-original-module .next{
+  display:flex!important;
+  align-items:center!important;
+  gap:25px!important;
+  min-width:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+}
+.home-original-module .now .cover,
+.home-original-module .next .cover{
+  width:170px!important;
+  height:170px!important;
+  min-width:170px!important;
+  border-radius:22px!important;
+  object-fit:cover!important;
+  border:2px solid #8e35df!important;
+  background:#100a18!important;
+}
+.home-original-module .now>div,
+.home-original-module .next>div{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.home-original-module .title{
+  color:#fff!important;
+  font-size:27px!important;
+  font-weight:900!important;
+  line-height:1.1!important;
+  word-break:break-word!important;
+}
+.home-original-module .artist{
+  color:#b85cff!important;
+  font-size:19px!important;
+  margin-top:8px!important;
+  white-space:normal!important;
+}
+.home-original-module .wave{
+  color:#fff!important;
+  font-size:23px!important;
+  letter-spacing:2px!important;
+  margin-top:15px!important;
+  line-height:1!important;
+}
+.home-original-module .time{
+  color:#c1bac9!important;
+  font-size:15px!important;
+  margin-top:11px!important;
+}
+.home-original-module [data-favorites],
+.home-original-module [data-previous]{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+}
+.vm-home-list-card{
+  display:flex!important;
+  align-items:center!important;
+  gap:18px!important;
+  min-width:0!important;
+  padding:8px 0!important;
+}
+.vm-home-list-card img{
+  width:118px!important;
+  height:118px!important;
+  min-width:118px!important;
+  border-radius:18px!important;
+  object-fit:cover!important;
+  background:#100a18!important;
+}
+.vm-home-list-info{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:6px!important;
+}
+.vm-home-list-info strong{
+  color:#fff!important;
+  font-size:22px!important;
+  line-height:1.12!important;
+  word-break:break-word!important;
+}
+.vm-home-list-info span{
+  color:#bdb5c6!important;
+  font-size:17px!important;
+}
+.vm-home-list-info small{
+  color:#fff!important;
+  font-size:15px!important;
+  font-style:italic!important;
+}
+.home-original-module>.promo{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:22px!important;
+}
+@media(max-width:520px){
+  .home-original-module>.card,.home-original-module>.promo{padding:21px 18px!important;border-radius:23px!important}
+  .home-original-module .card h2{font-size:23px!important}
+  .home-original-module .module-subtitle{font-size:15px!important;margin-bottom:21px!important}
+  .home-original-module .now,.home-original-module .next{gap:18px!important}
+  .home-original-module .now .cover,.home-original-module .next .cover{
+    width:38vw!important;height:38vw!important;min-width:38vw!important;border-radius:19px!important
+  }
+  .home-original-module .title{font-size:21px!important}
+  .home-original-module .artist{font-size:16px!important}
+  .home-original-module .wave{font-size:17px!important}
+  .home-original-module .time{font-size:13px!important}
+  .vm-home-list-card{gap:15px!important}
+  .vm-home-list-card img{width:100px!important;height:100px!important;min-width:100px!important}
+  .vm-home-list-info strong{font-size:20px!important}
+  .vm-home-list-info span{font-size:15px!important}
+  .vm-home-list-info small{font-size:14px!important}
+}
+
+
+/* EN DIRECT : aucune barre blanche sous l'artiste */
+.home-original-module .wave,
+.home-original-module .waveform{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  max-height:0 !important;
+  overflow:hidden !important;
+}
+</style>
+
+<style id="vm-radio-previous-covers-size">
+/* Titres précédents : pochettes compactes et parfaitement alignées */
+.home-original-module [data-previous] .vm-programme-previous-item{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:8px 0!important;
+}
+.home-original-module [data-previous] .vm-programme-previous-item > img{
+  width:82px!important;
+  height:82px!important;
+  min-width:82px!important;
+  max-width:82px!important;
+  min-height:82px!important;
+  max-height:82px!important;
+  flex:0 0 82px!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:14px!important;
+  border:1px solid rgba(181,92,255,.45)!important;
+  background:#100a18!important;
+}
+.home-original-module [data-previous] .previous-info{
+  min-width:0!important;
+  flex:1 1 auto!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:4px!important;
+}
+.home-original-module [data-previous] .previous-title{
+  display:block!important;
+  font-size:19px!important;
+  line-height:1.15!important;
+  color:#fff!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.home-original-module [data-previous] .previous-artist{
+  display:block!important;
+  font-size:15px!important;
+  line-height:1.2!important;
+  color:#b85cff!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.home-original-module [data-previous] .previous-time{
+  display:block!important;
+  font-size:13px!important;
+  line-height:1.2!important;
+  color:#c1bac9!important;
+  font-style:normal!important;
+}
+@media(max-width:520px){
+  .home-original-module [data-previous] .vm-programme-previous-item{
+    gap:12px!important;
+    padding:7px 0!important;
+  }
+  .home-original-module [data-previous] .vm-programme-previous-item > img{
+    width:72px!important;
+    height:72px!important;
+    min-width:72px!important;
+    max-width:72px!important;
+    min-height:72px!important;
+    max-height:72px!important;
+    flex-basis:72px!important;
+    border-radius:12px!important;
+  }
+  .home-original-module [data-previous] .previous-title{font-size:17px!important}
+  .home-original-module [data-previous] .previous-artist{font-size:14px!important}
+  .home-original-module [data-previous] .previous-time{font-size:12px!important}
+}
+</style>
+
+
+<style id="vm-radio-dedicaces-live-banner">
+.dedication-banner{position:relative!important;overflow:hidden!important}
+.dedication-window{overflow:hidden!important}
+.dedication-message{
+  display:flex!important;
+  align-items:center!important;
+  gap:58px!important;
+  width:max-content!important;
+  white-space:nowrap!important;
+  will-change:transform!important;
+}
+.dedication-message span{
+  display:inline-block!important;
+  flex:0 0 auto!important;
+}
+.dedication-message.dedication-live{
+  animation:vmRadioDedicationScroll 28s linear infinite!important;
+}
+@keyframes vmRadioDedicationScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(calc(-50% - 29px))}
+}
+</style>
+
+
+<style id="vm-global-dedication-style">
+.vm-global-dedication-banner{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  z-index:10000!important;
+  width:min(100%,520px)!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+.vm-global-dedication-banner .dedication-window{
+  min-width:0!important;
+  overflow:hidden!important;
+  flex:1 1 auto!important;
+}
+.vm-global-dedication-message{
+  display:flex!important;
+  align-items:center!important;
+  width:max-content!important;
+  min-width:100%!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  will-change:transform!important;
+}
+.vm-global-dedication-message span{
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  padding-right:70px!important;
+  white-space:nowrap!important;
+}
+.vm-global-dedication-message.is-live{
+  animation:vmGlobalDedicationScroll 26s linear infinite!important;
+}
+@keyframes vmGlobalDedicationScroll{
+  from{transform:translateX(100%)}
+  to{transform:translateX(-100%)}
+}
+@media(max-width:700px){
+  .vm-global-dedication-message.is-live{animation-duration:18s!important}
+}
+</style>
+
+
+<style id="vm-home-logo-exact-other-pages">
+.brand{text-align:center!important;padding:7px 0 8px!important;display:block!important;width:100%!important;margin:0!important}
+.brand img{width:190px!important;height:62px!important;object-fit:contain!important;display:block!important;margin:auto!important}
+</style>
+
+
+<style id="vm-home-background-exact-match">
+html,body{
+  background:#05050a!important;
+  color:#fff!important;
+}
+body{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(126,42,210,.20),transparent 34%),
+    linear-gradient(180deg,#07050d 0%,#090610 52%,#05040a 100%)!important;
+}
+.app{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.home-content{
+  background:transparent!important;
+}
+</style>
+
+
+<style id="vm-home-background-lock">
+html,body{
+  margin:0!important;
+  min-height:100%!important;
+  background:#05040a!important;
+  color:#fff!important;
+}
+body{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(126,42,210,.20),transparent 34%),
+    linear-gradient(180deg,#07050d 0%,#090610 52%,#05040a 100%)!important;
+}
+.app,.home-content{
+  background:transparent!important;
+}
+</style>
+
+
+<style id="vm-home-background-exact-pages-final">
+html,body{
+  background:#05050a!important;
+  color:#fff!important;
+}
+body{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(126,42,210,.18),transparent 34%),
+    linear-gradient(180deg,#07050d 0%,#080510 55%,#05040a 100%)!important;
+}
+.app,.home-content{
+  background:transparent!important;
+}
+</style>
+
+
+<style id="vm-home-solid-background">
+html,body{
+  background:#05050a!important;
+  background-image:none!important;
+  color:#fff!important;
+}
+body{
+  background:#05050a!important;
+  background-image:none!important;
+}
+.app,.home-content{
+  background:#05050a!important;
+  background-image:none!important;
+}
+</style>
+
+
+<style id="vm-home-player-background-solid">
+.player-shell{
+  background:#05050a!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.player-shell:before{
+  background:none!important;
+  display:none!important;
+}
+.cover-wrap{
+  background:#05050a!important;
+  box-shadow:none!important;
+}
+</style>
+
+
+<style id="vm-radio-spa-player-style">
+.vm-persistent-player{
+  width:100%;
+}
+.vm-page-content{
+  width:100%;
+  min-width:0;
+}
+.vm-router-loading{
+  opacity:.72;
+  transition:opacity .15s ease;
+}
+body.vm-route-changing .vm-page-content{opacity:.72}
+</style>
+
+
+
+<style id="vm-radio-player-home-only">
+.vm-persistent-player{
+  position:relative!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+}
+.vm-page-content{
+  width:100%;
+  min-width:0;
+}
+body.vm-on-home .vm-persistent-player{
+  display:block!important;
+}
+body.vm-on-subpage .vm-persistent-player{
+  display:none!important;
+}
+/* Preserve the player exactly where it belongs in the homepage flow. */
+</style>
+
+
+<style id="vm-home-programme-compact">
+/* Accueil — modules du programme musical plus compacts */
+#programme-direct,
+#programme-next,
+#programme-direct + .home-original-module,
+#programme-next + .home-original-module{
+  min-height:0!important;
+}
+
+.home-original-modules > .home-original-module{
+  margin:0!important;
+}
+
+.home-original-modules > .home-original-module > .card{
+  padding:16px 18px!important;
+  border-radius:20px!important;
+}
+
+#programme-direct .now,
+#programme-next .next{
+  margin-top:10px!important;
+  gap:14px!important;
+}
+
+#programme-direct .now .cover,
+#programme-next .next .cover,
+#programme-direct [data-current-cover],
+#programme-next [data-next-cover]{
+  width:112px!important;
+  height:112px!important;
+  min-width:112px!important;
+  max-width:112px!important;
+  min-height:112px!important;
+  max-height:112px!important;
+  flex:0 0 112px!important;
+  border-radius:18px!important;
+}
+
+#programme-direct .title,
+#programme-next .title{
+  font-size:20px!important;
+  line-height:1.15!important;
+}
+
+#programme-direct .artist,
+#programme-next .artist{
+  font-size:15px!important;
+  line-height:1.2!important;
+}
+
+#programme-direct .time,
+#programme-next .time{
+  font-size:13px!important;
+  margin-top:8px!important;
+}
+
+.home-original-modules > .home-original-module:nth-child(4) > .card{
+  padding:16px 18px!important;
+  border-radius:20px!important;
+}
+
+.home-original-modules [data-previous]{
+  margin-top:10px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+}
+
+.home-original-modules [data-previous] .vm-programme-previous-item{
+  gap:10px!important;
+  padding:6px 0!important;
+}
+
+.home-original-modules [data-previous] .vm-programme-previous-item > img{
+  width:72px!important;
+  height:72px!important;
+  min-width:72px!important;
+  max-width:72px!important;
+  min-height:72px!important;
+  max-height:72px!important;
+  flex-basis:72px!important;
+  border-radius:12px!important;
+}
+
+@media(max-width:520px){
+  .home-original-modules > .home-original-module > .card{
+    padding:14px 15px!important;
+    border-radius:18px!important;
+  }
+  #programme-direct .now,
+  #programme-next .next{
+    gap:11px!important;
+  }
+  #programme-direct .now .cover,
+  #programme-next .next .cover,
+  #programme-direct [data-current-cover],
+  #programme-next [data-next-cover]{
+    width:88px!important;
+    height:88px!important;
+    min-width:88px!important;
+    max-width:88px!important;
+    min-height:88px!important;
+    max-height:88px!important;
+    flex-basis:88px!important;
+    border-radius:14px!important;
+  }
+  #programme-direct .title,
+  #programme-next .title{
+    font-size:17px!important;
+  }
+  #programme-direct .artist,
+  #programme-next .artist{
+    font-size:14px!important;
+  }
+}
+</style>
+
+
+<style id="vm-home-cards-compact">
+/* Toutes les cartes de l'accueil suivent maintenant la même échelle compacte
+   que les modules EN DIRECT / À SUIVRE. */
+.home-original-modules{
+  gap:12px!important;
+}
+.home-original-module{
+  width:100%!important;
+}
+.home-original-module > .card{
+  padding:16px 18px!important;
+  border-radius:20px!important;
+  box-sizing:border-box!important;
+}
+.home-original-module > .card h2{
+  font-size:20px!important;
+  line-height:1.15!important;
+  margin-bottom:7px!important;
+}
+.home-original-module > .card .module-subtitle{
+  font-size:13px!important;
+  line-height:1.35!important;
+  margin:0 0 9px!important;
+}
+
+/* Top titres : cartes et contenu plus compacts */
+#top-titres [data-favorites]{
+  gap:8px!important;
+}
+#top-titres .vm-home-list-card{
+  min-height:0!important;
+  padding:7px 0!important;
+}
+#top-titres .vm-home-list-card img{
+  width:68px!important;
+  height:68px!important;
+  min-width:68px!important;
+  border-radius:12px!important;
+}
+#top-titres .vm-home-list-info strong{
+  font-size:17px!important;
+}
+#top-titres .vm-home-list-info span{
+  font-size:13px!important;
+}
+#top-titres .vm-home-list-info small{
+  font-size:11px!important;
+}
+
+/* Titres précédents : encore plus resserrés pour garder une page fluide. */
+.home-original-modules [data-previous]{
+  gap:6px!important;
+}
+.home-original-modules [data-previous] .vm-programme-previous-item{
+  padding:5px 0!important;
+}
+.home-original-modules [data-previous] .vm-programme-previous-item > img{
+  width:68px!important;
+  height:68px!important;
+  min-width:68px!important;
+  max-width:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  flex-basis:68px!important;
+}
+
+/* Les cartes restent presque pleines largeur mais sans l'effet "pâte". */
+@media(max-width:520px){
+  .home-original-modules{
+    gap:10px!important;
+  }
+  .home-original-module > .card{
+    padding:13px 15px!important;
+    border-radius:18px!important;
+  }
+  .home-original-module > .card h2{
+    font-size:18px!important;
+  }
+  .home-original-module > .card .module-subtitle{
+    font-size:12px!important;
+  }
+  #top-titres .vm-home-list-card img,
+  .home-original-modules [data-previous] .vm-programme-previous-item > img{
+    width:60px!important;
+    height:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    min-height:60px!important;
+    max-height:60px!important;
+    flex-basis:60px!important;
+  }
+}
+</style>
+
+
+<style id="vm-radio-play-pause-style">
+/* Icônes de lecture/pause dessinées en CSS : identiques sur mobile et PC,
+   sans emoji système ni carré bleu. */
+#play{
+  position:relative!important;
+  font-size:0!important;
+  line-height:0!important;
+  font-family:Arial,sans-serif!important;
+  font-variant-emoji:text!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+}
+#play::before{
+  content:""!important;
+  display:block!important;
+  width:0!important;
+  height:0!important;
+  margin-left:5px!important;
+  border-top:13px solid transparent!important;
+  border-bottom:13px solid transparent!important;
+  border-left:19px solid #fff!important;
+  border-right:0!important;
+}
+#play.is-playing::before{
+  width:7px!important;
+  height:24px!important;
+  margin:0!important;
+  border:0!important;
+  background:#fff!important;
+  box-shadow:11px 0 0 #fff!important;
+}
+#play.is-playing{
+  font-size:0!important;
+  letter-spacing:0!important;
+}
+@media(max-width:520px){
+  #play::before{
+    border-top-width:12px!important;
+    border-bottom-width:12px!important;
+    border-left-width:18px!important;
+    margin-left:4px!important;
+  }
+  #play.is-playing::before{
+    width:6px!important;
+    height:23px!important;
+    box-shadow:10px 0 0 #fff!important;
+  }
+}
+</style>
+
+
+<style id="vm-player-play-pause-final">
+/* Icônes Play/Pause dessinées en CSS : aucun emoji, centrage identique iPhone/PC. */
+#play.play{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  line-height:0!important;
+  text-indent:0!important;
+  overflow:hidden!important;
+  font-size:0!important;
+  vertical-align:middle!important;
+}
+#play.play::before,
+#play.play::after{
+  content:""!important;
+  position:absolute!important;
+  display:block!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+/* ▶ Play */
+#play.play:not(.is-playing)::before{
+  left:50%!important;
+  top:50%!important;
+  width:0!important;
+  height:0!important;
+  border-top:12px solid transparent!important;
+  border-bottom:12px solid transparent!important;
+  border-left:18px solid #fff!important;
+  transform:translate(-42%,-50%)!important;
+}
+
+/* ❚❚ Pause */
+#play.play.is-playing::before,
+#play.play.is-playing::after{
+  top:50%!important;
+  width:7px!important;
+  height:28px!important;
+  background:#fff!important;
+  border:0!important;
+  transform:translateY(-50%)!important;
+}
+#play.play.is-playing::before{left:calc(50% - 9px)!important}
+#play.play.is-playing::after{left:calc(50% + 2px)!important}
+
+/* Aucun caractère fourni par le bouton ne doit apparaître. */
+#play.play{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+</style>
+
+
+<style id="vm-navigation-exact-home-final">
+html body nav.nav{
+  position:fixed!important;
+  z-index:1001!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:0!important;
+  transform:translateX(-50%)!important;
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  height:74px!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:0!important;
+  margin:0!important;
+  padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+  box-sizing:border-box!important;
+  border:0!important;
+  border-top:1px solid #2a2038!important;
+  border-radius:0!important;
+  background:rgba(13,8,18,.94)!important;
+  backdrop-filter:blur(15px)!important;
+  -webkit-backdrop-filter:blur(15px)!important;
+}
+html body nav.nav a{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:4px!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#8e8599!important;
+  text-decoration:none!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  line-height:normal!important;
+}
+html body nav.nav a i{
+  display:grid!important;
+  place-items:center!important;
+  width:34px!important;
+  height:29px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  color:inherit!important;
+  font-size:18px!important;
+  line-height:1!important;
+  font-style:normal!important;
+}
+html body nav.nav a.active{
+  color:#d68cff!important;
+  border:0!important;
+  border-bottom:0!important;
+  background:transparent!important;
+  font-weight:700!important;
+}
+html body nav.nav a.active i{
+  background:#2b153d!important;
+  color:#df9aff!important;
+}
+@media(max-width:520px){
+  html body nav.nav{
+    width:100%!important;
+    height:74px!important;
+  }
+}
+</style>
+
+
+<style id="vm-welcome-splash">
+html body #vmWelcomeSplash{
+  position:fixed!important;
+  top:0!important;
+  bottom:0!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  width:min(100%, 520px)!important;
+  height:100dvh!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  z-index:2147483647!important;
+  background:#030207!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  box-sizing:border-box!important;
+}
+html body #vmWelcomeSplash.vmWelcomeHide{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transition:opacity .6s ease,visibility .6s ease!important;
+}
+#vmWelcomeSplash .vmWelcomeCard{
+  width:100%!important;
+  height:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  box-sizing:border-box!important;
+  padding:20px!important;
+}
+#vmWelcomeSplash .vmWelcomeLogo{
+  display:block!important;
+  width:min(90%,650px)!important;
+  max-width:90%!important;
+  max-height:55vh!important;
+  height:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0 0 28px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+}
+#vmWelcomeSplash .vmWelcomeTitle{
+  color:#fff!important;
+  font-size:clamp(22px,5vw,34px)!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+  text-align:center!important;
+  margin:0!important;
+  padding:0!important;
+}
+</style>
+<style id="vm-dedicaces-nav-width">
+#vmSharedDedicationBar{
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  border-radius:0 0 14px 14px!important;
+}
+</style>
+<style id="vm-dedicaces-unified-style">
+#vmSharedDedicationBar{
+ position:fixed!important;top:0!important;left:50%!important;right:auto!important;
+ transform:translateX(-50%)!important;width:min(100%,520px)!important;max-width:520px!important;
+ height:36px!important;z-index:99998!important;display:flex!important;align-items:center!important;
+ overflow:hidden!important;box-sizing:border-box!important;margin:0!important;
+ border-radius:0 0 14px 14px!important;background:#170d20!important;
+ border-bottom:1px solid rgba(190,105,255,.28)!important;
+}
+#vmSharedDedicationBar .vmDedLabel{
+ flex:0 0 auto;height:100%;display:flex;align-items:center;padding:0 14px;
+ background:#2b153d;color:#fff;font-size:11px;font-weight:800;letter-spacing:.8px;
+ box-sizing:border-box;z-index:2;
+}
+#vmSharedDedicationBar .vmDedWindow{position:relative;flex:1;min-width:0;height:100%;overflow:hidden}
+#vmSharedDedicationBar .vmDedTrack{
+ position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;
+ width:max-content;white-space:nowrap;will-change:transform;
+}
+#vmSharedDedicationBar .vmDedText{
+ display:block;flex:none;color:#fff;font-size:12px;line-height:36px;
+ white-space:nowrap;padding:0 28px 0 0;margin:0;
+}
+to{transform:translateX(calc(-1 * var(--vm-ded-distance, 0px)))}
+}
+body{padding-top:36px!important}
+@media(max-width:520px){
+ #vmSharedDedicationBar{height:38px!important}
+ body{padding-top:38px!important}
+ #vmSharedDedicationBar .vmDedLabel{padding:0 10px;font-size:10px}
+ #vmSharedDedicationBar .vmDedText{font-size:11px;line-height:38px}
+}
+</style>
+<style id="vm-popup-logo-above-title">
+#vmWelcomeSplash .vmWelcomeCard{
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+#vmWelcomeSplash .vmWelcomeLogo{
+  transform:none!important;
+  margin:0 0 28px!important;
+}
+#vmWelcomeSplash .vmWelcomeTitle{
+  margin:0!important;
+}
+</style>
+<script id="vm-player-title-helper">
+function titleFirstUpper(v){
+  const s=String(v==null?"":v).trim();
+  return s?s.charAt(0).toLocaleUpperCase("fr-FR")+s.slice(1):"";
+}
+</script>
+
+<style id="vm-dedication-spacing-final">
+/* Space between each individual dedication, without changing the banner frame. */
+#vmSharedDedicationBar .vmDedItem{
+  display:inline-block!important;
+  white-space:nowrap!important;
+  margin-right:55px!important;
+}
+#vmSharedDedicationBar .vmDedItem:last-child{
+  margin-right:55px!important;
+}
+</style>
+<link rel="icon" type="image/png" href="./favicon-64.png?v=6"><link rel="apple-touch-icon" href="./apple-touch-icon.png?v=6"><script src="vm-radio-flux-central.js?v=20260827-requester6"></script>
+</head>
+<body>
+<div id="vmWelcomeSplash" aria-label="Bienvenue sur l’appli">
+  <div class="vmWelcomeCard">
+    <img class="vmWelcomeLogo" src="./VM-RADIO-POPUP-LOGO.jpeg" alt="VM RADIO">
+    <div class="vmWelcomeTitle">Bienvenue sur l’appli</div>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+  
+
+
+
+<main class="app">
+<div id="vmPersistentPlayer" class="vm-persistent-player">
+<div class="brand"><img src="./vm-radio-logo-site.jpeg" alt="VM RADIO"></div>
+<section class="player-shell" aria-label="Lecteur VM Radio">
+      <div class="eyebrow">En direct maintenant</div>
+      <div class="cover-wrap">
+        <img class="cover" id="cover" src="https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg" alt="Pochette du titre en cours">
+      </div>
+      <h1 id="title">VM Radio</h1>
+      <p class="artist" id="artist">Music IA By Valentin</p>
+      <div class="progress"><b id="progressBar"></b></div>
+      <div class="time"><span id="started">En direct</span><span>● LIVE</span></div>
+      <div class="controls">
+        <button class="round heart" id="heart" aria-label="J'aime">♡</button>
+        <button class="round play" id="play" aria-label="Écouter"></button>
+        <button class="round" id="mute" aria-label="Couper le son">♬</button>
+      </div>
+    </section>
+</div>
+<div id="vmPageContent" class="vm-page-content">
+
+    <div class="home-content">
+    
+
+    
+<section class="home-original-modules" aria-label="Modules de l’accueil">
+<div class="home-original-module"><article class="card" id="programme-direct"><h2>EN DIRECT </h2><p class="module-subtitle">Écoutez VM RADIO en direct.</p><div class="now"><img class="cover" data-current-cover=""/><div><div class="title" data-current-title=""></div><div class="artist" data-current-artist=""></div><small data-current-requester="" style="display:none;margin-top:4px;color:#c084fc;font-size:12px;font-weight:800;line-height:1.35"></small><div class="time">Diffusé à <span data-current-time=""></span></div></div></div></article></div>
+<div class="home-original-module"><article class="card" id="programme-next"><h2>À SUIVRE</h2><p class="module-subtitle">Découvrez le prochain titre diffusé.</p><div class="next"><img class="cover" data-next-cover=""/><div><div class="title" data-next-title=""></div><div class="artist" data-next-artist=""></div><small data-next-requester="" style="display:none;margin-top:4px;color:#c084fc;font-size:12px;font-weight:800;line-height:1.35"></small><div class="time" style="margin-top:16px">Heure de diffusion : <span data-next-time=""></span></div></div></div></article></div>
+<div class="home-original-module"><article class="card" id="top-titres"><h2>TOP TITRES 💜</h2><p class="module-subtitle">Retrouvez vos titres préférés.</p><div data-favorites=""></div></article></div>
+<div class="home-original-module"><article class="card"><h2>◷ TITRES PRÉCÉDENTS</h2><p class="module-subtitle">Retrouvez les derniers titres diffusés.</p><div data-previous=""></div></article></div>
+
+</section>
+
+</div>
+</section>
+
+<section class="section">
+      <div class="section-head"><h2>VM Radio dans ta poche</h2><a href="https://vmradio.fr/" target="_blank" rel="noopener noreferrer">Site complet</a></div>
+      <div class="tiles">
+        <a class="tile" href="./dedicaces.html"><em>♡</em><span><b>Dédicaces</b><small>Envoie ton message</small></span></a>
+        <a class="tile" href="./infos.html"><em>◉</em><span><b>Infos</b><small>Découvre VM Radio</small></span></a>
+      </div>
+    </section>
+  
+<footer class="app-footer">
+  <div class="app-footer-brand">VM RADIO</div>
+  <div class="app-footer-powered">Appli propulsée par <strong>Music IA By Valentin & ChatGpt</strong></div>
+  <div class="app-footer-links">
+    <a href="./conditions.html">Confidentialité</a>
+    <span>•</span>
+    <a href="./conditions.html">Informations légales</a>
+  </div>
+  <div class="app-footer-copy">© 2026 VM Radio — Tous droits réservés</div>
+</footer>
+
+</div>
+</main>
+
+    </div>
+
+    <section class="dedications-page" id="dedicationsPage" aria-label="Dédicaces">
+      <div class="dedications-head">
+        <h1>💌 Dédicaces</h1>
+        <p>Envoie ton message directement à VM Radio.</p>
+      </div>
+      <section class="dedication-form" aria-label="Envoyer une dédicace">
+      <div class="dedication-form-head">
+        <div>
+          <h2>💌 Envoyer une dédicace</h2>
+          <p>Écris ton message directement depuis l’accueil.</p>
+        </div>
+      </div>
+
+      <form id="dedicationForm">
+        <input id="dedicationName" type="text" maxlength="40" placeholder="Ton prénom" autocomplete="name" required>
+        <input id="dedicationFor" type="text" maxlength="40" placeholder="Pour : prénom ou nom" autocomplete="off" required>
+        <textarea id="dedicationMessage" maxlength="180" rows="3" placeholder="Écris ta dédicace..." required></textarea>
+        <button type="submit">Envoyer la dédicace</button>
+      </form>
+      <div class="dedication-status" id="dedicationStatus" aria-live="polite"></div>
+    </section>
+    </section>
+
+  <div class="notice" id="notice"></div>
+  <audio id="audio" preload="none" playsinline></audio>
+
+  <script>
+  (function(){
+    const radio={
+      stream:"https://radio.vmradio.fr/radio.mp3",
+      current:"https://api.radioking.io/widget/radio/vm-radio2/track/current",
+      next:"https://api.radioking.io/widget/radio/vm-radio2/track/next?limit=1",
+      fallback:"https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg"
+    };
+    const $=id=>document.getElementById(id),audio=$("audio"),play=$("play"),heart=$("heart"),mute=$("mute"),notice=$("notice");
+    let deferredPrompt=null;
+    let previousTrack={title:"Titre précédent",artist:"Artiste"};
+    audio.src="https://radio.vmradio.fr/radio.mp3";
+    audio.volume=.85;
+
+    function message(text){notice.textContent=text;notice.classList.add("show");setTimeout(()=>notice.classList.remove("show"),3200)}
+    function setPlay(){const on=!audio.paused&&!audio.ended;play.classList.toggle("is-playing",on);play.textContent="";play.setAttribute("aria-label",on?"Pause":"Écouter")}
+    play.addEventListener("click",async()=>{try{audio.paused?await audio.play():audio.pause()}catch(e){message("Le direct ne peut démarrer qu'après un appui. Réessaie.")}});
+    audio.addEventListener("play",setPlay);
+    audio.addEventListener("pause",setPlay);
+    setPlay();
+    mute.addEventListener("click",()=>{audio.muted=!audio.muted;mute.textContent=audio.muted?"×":"♬";mute.setAttribute("aria-label",audio.muted?"Rétablir le son":"Couper le son")});
+
+    function track(raw){let x=Array.isArray(raw)?raw[0]:raw;if(x&&x.track)x=x.track;if(x&&x.data&&x.data.track)x=x.data.track;if(!x)return null;return{title:x.title||x.name||x.song||"VM Radio",artist:x.artist||x.author||"Music IA By Valentin",cover:x.cover||x.cover_url||x.artwork||x.image||radio.fallback,time:x.started_at||x.start_at||x.played_at||null}}
+    function img(el,url){el.src=url||radio.fallback;el.onerror=()=>{el.onerror=null;el.src=radio.fallback}}
+    async function refresh(){try{const[a,b]=await Promise.all([fetch(radio.current,{cache:"no-store"}),fetch(radio.next,{cache:"no-store"})]);const now=track(await a.json()),next=track(await b.json());if(now){previousTrack={title:$("title").textContent||"Titre précédent",artist:$("artist").textContent||"Artiste"};$("programPrevious").textContent=titleFirstUpper(previousTrack.title);$("programPreviousArtist").textContent=previousTrack.artist;if($("cover").src)$("programPreviousCover").src=$("cover").src;$("title").textContent=titleFirstUpper(now.title);$("artist").textContent=now.artist;$("programCurrent").textContent=titleFirstUpper(now.title);$("programCurrentArtist").textContent=now.artist;img($("programCurrentCover"),now.cover);img($("cover"),now.cover);if(now.time){const t=new Date(now.time);$("started").textContent=Number.isNaN(t.getTime())?"En direct":"Depuis "+t.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}}if(next){$("nextTitle").textContent=next.title;$("programNext").textContent=titleFirstUpper(next.title);img($("nextCover"),next.cover)}}catch(e){console.warn("VM Radio",e)}}
+    if(!window.__VMRADIO_CENTRAL_V10__){refresh();setInterval(refresh,10000);}
+
+    document.querySelectorAll(".program-tab").forEach(tab=>{
+      tab.addEventListener("click",()=>{
+        document.querySelectorAll(".program-tab").forEach(x=>x.classList.remove("active"));
+        document.querySelectorAll(".program-panel").forEach(x=>x.classList.remove("active-panel"));
+        tab.classList.add("active");
+        const target=tab.dataset.tab;
+        const panel=target==="next" ? $("panelNext") : target==="previous" ? $("panelPrevious") : $("panelLive");
+        panel.classList.add("active-panel");
+      });
+    });
+
+    function install(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>deferredPrompt=null)}else message(/iPhone|iPad|iPod/.test(navigator.userAgent)?"Safari : Partager puis 'Sur l'écran d'accueil'.":"Dans le menu du navigateur, choisis 'Installer l'application'.")}
+    window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e});
+    $("install").addEventListener("click",install);
+  })();
+  </script>
+<nav class="nav">
+    <a href="./index.html"><i>⌂</i>Accueil</a>
+    <a href="./dedicaces.html" id="dedicationsNav"><i>♡</i>Dédicaces</a>
+    <a href="./infos.html"><i>◉</i>Infos</a>
+    <a href="./tiktok.html"><i>♪</i>TikTok</a>
+  </nav>
+
+<script id="vm-radio-media-session">
+(function(){
+  if(!("mediaSession" in navigator)) return;
+  const audio=document.getElementById("audio");
+  if(!audio) return;
+  const $=id=>document.getElementById(id);
+  function update(){
+    const title=($("title")?.textContent||"VM RADIO").trim();
+    const artist=($("artist")?.textContent||"Music IA By Valentin").trim();
+    const cover=$("cover")?.src||"";
+    try{
+      navigator.mediaSession.metadata=new MediaMetadata({
+        title, artist, album:"VM RADIO • EN DIRECT",
+        artwork: cover ? [
+          {src:cover,sizes:"512x512",type:"image/jpeg"},
+          {src:cover,sizes:"256x256",type:"image/jpeg"}
+        ] : []
+      });
+      navigator.mediaSession.playbackState=audio.paused?"paused":"playing";
+    }catch(e){}
+  }
+  navigator.mediaSession.setActionHandler("play",()=>audio.play().catch(()=>{}));
+  navigator.mediaSession.setActionHandler("pause",()=>audio.pause());
+  try{navigator.mediaSession.setActionHandler("stop",()=>audio.pause())}catch(e){}
+  audio.addEventListener("play",update);
+  audio.addEventListener("pause",update);
+  audio.addEventListener("loadedmetadata",update);
+  new MutationObserver(update).observe($("title")||document.body,{childList:true,subtree:true,characterData:true});
+  update();
+})();
+</script>
+
+
+
+
+<script id="vm-radio-home-data-final">
+(function(){
+"use strict";
+const API={
+ current:"https://api.radioking.io/widget/radio/vm-radio2/track/current",
+ next:"https://api.radioking.io/widget/radio/vm-radio2/track/next?limit=1",
+ history:"https://api.radioking.io/widget/radio/vm-radio2/track/ckoi?limit=3"
+};
+const FALLBACK="https://image.radioking.io/radios/917591/cover/custom/73962df6-7c51-4f8a-a9d0-801882271ca1.png";
+const DEFAULT_ARTIST="Music IA By Valentin";
+
+function first(...v){return v.find(x=>x!==undefined&&x!==null&&String(x).trim()!=="")||""}
+function normal(raw){
+ let x=Array.isArray(raw)?raw[0]:raw;
+ if(!x)return null;
+ if(x.track)x=x.track;
+ if(x.data&&x.data.track)x=x.data.track;
+ const title=first(x.title,x.name,x.song,x.track_title);
+ if(!title)return null;
+ return {
+   id:String(first(x.id,x.track_id,title)),
+   title:String(title).trim(),
+   artist:String(first(x.artist,x.author,x.track_artist)||DEFAULT_ARTIST).trim(),
+   cover:String(first(x.cover,x.cover_url,x.artwork,x.artwork_url,x.image,x.picture)||FALLBACK),
+   time:first(x.started_at,x.start_at,x.played_at,x.scheduled_at,x.time),
+   type:String(x.type||"music").toLowerCase()
+ };
+}
+async function get(url){
+ const r=await fetch(url+(url.includes("?")?"&":"?")+"_="+Date.now(),{cache:"no-store",credentials:"omit"});
+ if(!r.ok)throw Error("RadioKing "+r.status);
+ return r.json();
+}
+function clock(v){
+ if(!v)return"--:--";
+ const d=new Date(v);
+ return Number.isNaN(d.getTime())?"--:--":d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+}
+function text(sel,v){document.querySelectorAll(sel).forEach(e=>e.textContent=String(v??""))}
+function img(sel,v){
+ document.querySelectorAll(sel).forEach(e=>{
+   if(e.tagName!=="IMG")return;
+   e.src=v||FALLBACK;
+   e.onerror=()=>{e.onerror=null;e.src=FALLBACK};
+ });
+}
+function render(c,n,h){
+ if(!c)return;
+ text("#title",c.title); text("#artist",c.artist); text("#started",c.time?"Diffusé à "+clock(c.time):"En direct"); img("#cover",c.cover);
+ text("[data-current-title]",c.title); text("[data-current-artist]",c.artist); text("[data-current-time]",clock(c.time)); img("[data-current-cover]",c.cover);
+ if(n){
+   text("[data-next-title]",n.title); text("[data-next-artist]",n.artist); text("[data-next-time]",clock(n.time)); img("[data-next-cover]",n.cover);
+ }
+ const last=(h||[]).find(x=>x&&x.id!==c.id&&x.type==="music");
+ const box=document.querySelector("[data-previous]");
+ if(box){
+   const tracks=(h||[]).filter(x=>x&&x.id!==c.id&&x.type==="music").slice(0,3);
+   box.innerHTML="";
+   tracks.forEach(x=>{
+     const row=document.createElement("div");
+     row.className="vm-programme-previous-item";
+     row.innerHTML='<img alt=""><div class="previous-info"><strong class="previous-title"></strong><small class="previous-artist"></small><em class="previous-time"></em></div>';
+     const im=row.querySelector("img"); im.src=x.cover||FALLBACK; im.onerror=()=>{im.onerror=null;im.src=FALLBACK};
+     row.querySelector(".previous-title").textContent=x.title;
+     row.querySelector(".previous-artist").textContent=x.artist||DEFAULT_ARTIST;
+     row.querySelector(".previous-time").textContent=x.time?"Diffusé à "+clock(x.time):"";
+     box.appendChild(row);
+   });
+ }
+}
+async function update(){
+ const [a,b,c]=await Promise.allSettled([get(API.current),get(API.next),get(API.history)]);
+ const cur=a.status==="fulfilled"?normal(a.value):null;
+ if(!cur)return;
+ const next=b.status==="fulfilled"?normal(b.value):null;
+ let hist=[];
+ if(c.status==="fulfilled"){
+   const raw=Array.isArray(c.value)?c.value:[c.value];
+   hist=raw.map(normal).filter(Boolean).filter(x=>x.type==="music");
+ }
+ render(cur,next,hist);
+}
+if(!window.__VMRADIO_CENTRAL_V10__){update();setInterval(update,10000);}
+})();
+</script>
+
+
+
+
+<script id="vm-radio-stream-source-guard">
+(function(){
+  function init(){
+    const a=document.getElementById("audio");
+    if(!a)return;
+    const stream="https://radio.vmradio.fr/radio.mp3";
+    if(!a.src || a.src.indexOf("radioking.io")===-1) a.src=stream;
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
+  else init();
+})();
+</script>
+
+
+<script type="module" id="vm-radio-top-titres-firebase">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, onSnapshot, query, orderBy, limit, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBng0eLDl7Pv05Wrx3U07rV3pxLMRGIpfk",authDomain:"vmradio-d07e1.firebaseapp.com",projectId:"vmradio-d07e1",storageBucket:"vmradio-d07e1.firebasestorage.app",messagingSenderId:"178955924208",appId:"1:178955924208:web:ba7ae54d489951d56ec835"};
+const app=initializeApp(firebaseConfig,"vmRadioTopTitresRules"); const auth=getAuth(app),db=getFirestore(app); const fallback="https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg"; let user=null,items=[];
+const id=t=>String(t||"titre").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,100)||"titre";
+const current=()=>({title:(document.getElementById("title")?.textContent||"").trim(),artist:(document.getElementById("artist")?.textContent||"Music IA By Valentin").trim(),cover:document.getElementById("cover")?.src||fallback});
+function render(){const box=document.querySelector("[data-favorites]");if(!box)return;box.innerHTML="";if(!items.length){box.innerHTML='<div class="vm-home-list-card"><div class="vm-home-list-info"><strong>Aucun titre aimé</strong><span>Appuyez sur ❤️ dans le player pour ajouter un titre.</span></div></div>';return;}items.forEach(t=>{const r=document.createElement("div");r.className="vm-home-list-card";r.innerHTML='<img alt=""><div class="vm-home-list-info"><strong></strong><span></span><small></small></div>';const im=r.querySelector("img");im.src=t.cover||fallback;im.onerror=()=>{im.onerror=null;im.src=fallback};r.querySelector("strong").textContent=t.title||"Titre";r.querySelector("span").textContent=t.artist||"Music IA By Valentin";r.querySelector("small").textContent=`♥ ${Number(t.votes||0)}`;box.appendChild(r);});syncHeart();}
+async function syncHeart(){const h=document.getElementById("heart");if(!h)return;const t=current();if(!user||!t.title||t.title==="VM Radio"){h.classList.remove("active");h.textContent="♡";h.disabled=true;return;}const ref=doc(db,"votes",user.uid,"tracks",id(t.title));let voted=false;try{voted=(await getDoc(ref)).exists();}catch(e){console.warn("Lecture du vote Firebase:",e);}h.classList.toggle("active",voted);h.textContent=voted?"♥":"♡";h.setAttribute("aria-pressed",voted?"true":"false");h.disabled=voted;}
+async function like(){if(!user)return;const t=current();if(!t.title||t.title==="VM Radio")return;const tid=id(t.title);if(items.some(x=>x.id===tid&&x.voterIds?.includes(user.uid)))return;const top=doc(db,"topTitres",tid),vote=doc(db,"votes",user.uid,"tracks",tid),existing=items.find(x=>x.id===tid),b=writeBatch(db);if(existing)b.update(top,{title:existing.title,artist:existing.artist||t.artist,cover:existing.cover||t.cover,votes:Number(existing.votes||0)+1,updatedAt:serverTimestamp()});else b.set(top,{title:t.title,artist:t.artist,cover:t.cover||fallback,votes:1,updatedAt:serverTimestamp()});b.set(vote,{trackId:tid,title:t.title,artist:t.artist,cover:t.cover||fallback,createdAt:serverTimestamp()});try{await b.commit();}catch(e){console.error("VM RADIO J'aime Firebase:",e);}}
+function boot(){const h=document.getElementById("heart");if(h&&!h.dataset.rulesFirebase){h.dataset.rulesFirebase="1";h.addEventListener("click",like);}const title=document.getElementById("title");if(title&&!title.dataset.topObserver){title.dataset.topObserver="1";new MutationObserver(syncHeart).observe(title,{childList:true,characterData:true,subtree:true});}}
+onAuthStateChanged(auth,u=>{user=u;syncHeart();});signInAnonymously(auth).catch(e=>console.error("Firebase Auth anonyme:",e));const q=query(collection(db,"topTitres"),orderBy("votes","desc"),limit(10));onSnapshot(q,s=>{items=s.docs.map(d=>({id:d.id,...d.data()}));render();},e=>console.error("TOP TITRES Firebase:",e));if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+</script>
+
+
+<script id="vm-radio-spa-router">
+(function(){
+"use strict";
+
+/*
+  Navigation interne SPA :
+  - le player visuel reste sur l'accueil ;
+  - l'élément <audio> reste hors de vmPageContent ;
+  - aucune navigation interne ne recharge index.html ;
+  - donc le flux ne peut pas être coupé par un changement de page.
+*/
+const shell=document.getElementById("vmPageContent");
+
+function routeName(url){
+  const u=new URL(url,location.href);
+  let n=u.pathname.split("/").pop()||"index.html";
+  return n.toLowerCase()==="index.html" ? "index.html" : n;
+}
+
+function sameAppLink(a){
+  if(!a || a.hasAttribute("download") || a.target==="_blank") return false;
+  const raw=a.getAttribute("href");
+  if(!raw || raw.startsWith("#") || raw.startsWith("mailto:") ||
+     raw.startsWith("tel:") || raw.startsWith("javascript:")) return false;
+  try{
+    const u=new URL(raw,location.href);
+    return u.origin===location.origin && /\.html$/i.test(u.pathname);
+  }catch(e){return false}
+}
+
+function setActive(name){
+  document.querySelectorAll('nav a[href], .bottom-nav a[href]').forEach(a=>{
+    try{a.classList.toggle("active",routeName(a.href)===name)}catch(e){}
+  });
+  document.body.classList.toggle("vm-on-home",name==="index.html");
+  document.body.classList.toggle("vm-on-subpage",name!=="index.html");
+}
+
+function clearRouteStyles(){
+  document.querySelectorAll("style[data-vm-route-style],link[data-vm-route-style]")
+    .forEach(e=>e.remove());
+}
+
+function loadRouteStyles(doc,name){
+  clearRouteStyles();
+  doc.head.querySelectorAll("style").forEach((s,i)=>{
+    const c=s.cloneNode(true);
+    c.dataset.vmRouteStyle=name+"-"+i;
+    document.head.appendChild(c);
+  });
+  doc.head.querySelectorAll('link[rel="stylesheet"]').forEach((s,i)=>{
+    const c=s.cloneNode(true);
+    c.dataset.vmRouteStyle=name+"-link-"+i;
+    document.head.appendChild(c);
+  });
+}
+
+async function runTargetScripts(doc,name){
+  const scripts=Array.from(doc.body.querySelectorAll("script"));
+  for(const old of scripts){
+    const id=old.id;
+    if(id && document.getElementById(id)) continue;
+
+    const s=document.createElement("script");
+    if(id)s.id=id;
+    for(const attr of old.attributes){
+      if(attr.name!=="id")s.setAttribute(attr.name,attr.value);
+    }
+    s.textContent=old.textContent;
+    document.body.appendChild(s);
+
+    if(s.type==="module"){
+      await new Promise(resolve=>setTimeout(resolve,60));
+    }
+  }
+}
+
+async function navigate(url,push=true){
+  const name=routeName(url);
+
+  /* IMPORTANT :
+     jamais de location.href pour une page interne.
+     Une redirection classique détruirait le document et couperait <audio>.
+  */
+  if(name==="index.html"){
+    clearRouteStyles();
+    if(window.__VM_HOME_CONTENT__) shell.innerHTML=window.__VM_HOME_CONTENT__;
+    document.title="VM Radio";
+  }else{
+    document.body.classList.add("vm-route-changing");
+    try{
+      const res=await fetch(url,{cache:"no-store",credentials:"same-origin"});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+
+      const doc=new DOMParser().parseFromString(await res.text(),"text/html");
+      const target=doc.querySelector("main");
+      if(!target) throw new Error("Contenu de page introuvable");
+
+      loadRouteStyles(doc,name);
+
+      let content=target.innerHTML;
+      content=content.replace(/<div class="brand">.*?<\/div>/gis,"");
+      shell.innerHTML=content;
+      document.title=doc.title||"VM Radio";
+
+      await runTargetScripts(doc,name);
+    }catch(err){
+      console.error("VM RADIO navigation interne :",err);
+      /* On NE recharge PAS la page.
+         Le player/audio restent donc intacts. */
+      const notice=document.getElementById("notice");
+      if(notice){
+        notice.textContent="Impossible de charger cette page. Le direct continue.";
+        notice.classList.add("show");
+        setTimeout(()=>notice.classList.remove("show"),3000);
+      }
+      return;
+    }finally{
+      document.body.classList.remove("vm-route-changing");
+    }
+  }
+
+  setActive(name);
+  if(push) history.pushState({vmRoute:name},"",url);
+
+  // Prévient les modules persistants qu'une nouvelle page vient d'être injectée.
+  // Le formulaire Dédicaces est ainsi rebranché avant toute tentative d'envoi.
+  window.dispatchEvent(new CustomEvent("vmradio:pagechange",{
+    detail:{route:name,url:new URL(url,location.href).href}
+  }));
+
+  window.scrollTo({top:0,behavior:"auto"});
+}
+
+function init(){
+  if(!shell)return;
+
+  window.__VM_HOME_CONTENT__=shell.innerHTML;
+
+  document.addEventListener("click",e=>{
+    const a=e.target.closest("a[href]");
+    if(!sameAppLink(a))return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(a.href,true);
+  },true);
+
+  window.addEventListener("popstate",()=>{
+    navigate(location.href,false);
+  });
+
+  setActive(routeName(location.href));
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",init,{once:true});
+}else{
+  init();
+}
+})();
+</script>
+
+
+
+
+
+<script id="vm-welcome-splash-script">
+(function(){
+  function showOncePerPageLoad(){
+    var s=document.getElementById("vmWelcomeSplash");
+    if(!s)return;
+
+    // This flag lives only in this browser document.
+    // A normal refresh/new arrival creates a new document => popup shows again.
+    // Internal navigation in the app keeps the same document => popup never returns.
+    if(window.__VM_WELCOME_ALREADY_SHOWN){
+      if(s.parentNode)s.parentNode.removeChild(s);
+      return;
+    }
+    window.__VM_WELCOME_ALREADY_SHOWN=true;
+
+    setTimeout(function(){
+      s.classList.add("vmWelcomeHide");
+      setTimeout(function(){
+        if(s&&s.parentNode)s.parentNode.removeChild(s);
+      },650);
+    },3000);
+  }
+
+  if(document.readyState==="loading")
+    document.addEventListener("DOMContentLoaded",showOncePerPageLoad,{once:true});
+  else
+    showOncePerPageLoad();
+})();
+</script>
+
+<script id="vm-title-first-uppercase">
+(function(){
+  function up(v){v=String(v==null?"":v).trim();return v?v.charAt(0).toLocaleUpperCase("fr-FR")+v.slice(1):"";}
+  function fix(){
+    document.querySelectorAll('[data-current-title],#currentTitle,.current-title,[data-next-title],#nextTitle,.next-title,.previous-title').forEach(function(el){
+      if(el.textContent.trim()) el.textContent=up(el.textContent);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+  setInterval(fix,1000);
+})();
+</script>
+<script id="vm-top-titles-uppercase">
+(function(){
+  function up(v){v=String(v==null?"":v).trim();return v?v.charAt(0).toLocaleUpperCase("fr-FR")+v.slice(1):"";}
+  function fix(){
+    document.querySelectorAll('.top-title,.top-titre,.top-titres .title,.top-titres .track-title,[data-top-title]').forEach(function(el){
+      if(el.textContent.trim()) el.textContent=up(el.textContent);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+  setInterval(fix,1000);
+})();
+</script>
+<script id="vm-direct-title-uppercase">
+(function(){
+  function up(v){v=String(v==null?"":v).trim();return v?v.charAt(0).toLocaleUpperCase("fr-FR")+v.slice(1):"";}
+  function fix(){
+    document.querySelectorAll('[data-current-title],#currentTitle,#title,#programCurrent,#programPrevious,#programNext,.current-title,.live-title,.programme-current-title,.player-title').forEach(function(el){
+      if(el.textContent.trim()) el.textContent=up(el.textContent);
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+  setInterval(fix,1000);
+})();
+</script>
+<script id="vm-dedications-single-system-js">
+(function(){
+"use strict";
+let raf=0,last=0,x=0,running=false,speed=42,lastText="";
+
+function getParts(){
+  const bar=document.getElementById("vmSharedDedicationBar");
+  if(!bar)return null;
+  const win=bar.querySelector(".vmDedWindow");
+  const track=bar.querySelector(".vmDedTrack");
+  if(!win||!track)return null;
+  return {win,track};
+}
+
+function ensureCopies(){
+  const p=getParts();
+  if(!p)return false;
+  const nodes=p.track.querySelectorAll(".vmDedText");
+  if(nodes.length<2)return false;
+
+  // The existing Firebase system fills both copies. Do not change their data.
+  // Just make sure the track is under this one JS controller.
+  p.track.style.animation="none";
+  p.track.classList.remove("running");
+  return true;
+}
+
+function loop(now){
+  const p=getParts();
+  if(!p){
+    running=false; raf=0;
+    setTimeout(start,150);
+    return;
+  }
+
+  const dt=Math.min(0.05,(now-last)/1000);
+  last=now;
+  x-=speed*dt;
+
+  const first=p.track.firstElementChild;
+  const second=p.track.children[1];
+
+  if(first && second){
+    const width=first.getBoundingClientRect().width + 58;
+    if(width>58 && -x>=width){
+      x+=width;
+      p.track.appendChild(first);
+    }
+  }
+
+  p.track.style.transform="translate3d("+x+"px,0,0)";
+  raf=requestAnimationFrame(loop);
+}
+
+function start(){
+  if(!ensureCopies())return setTimeout(start,100);
+  if(!running){
+    running=true;
+    last=performance.now();
+    raf=requestAnimationFrame(loop);
+  }
+}
+
+function boot(){
+  start();
+  setTimeout(start,300);
+  setTimeout(start,1000);
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",boot,{once:true});
+}else{
+  boot();
+}
+
+window.addEventListener("resize",function(){
+  ensureCopies();
+});
+})();
+</script>
+<script id="vm-popup-return-home-top">
+(function(){
+  function resetHomeScroll(){
+    if(location.pathname.endsWith("/") || location.pathname.endsWith("/index.html") || location.pathname==="/"){
+      window.scrollTo({top:0,left:0,behavior:"auto"});
+      document.documentElement.scrollTop=0;
+      document.body.scrollTop=0;
+    }
+  }
+
+  function bind(){
+    const popup=document.getElementById("vmWelcomeSplash");
+    if(!popup || popup.dataset.vmTopBound)return;
+    popup.dataset.vmTopBound="1";
+
+    const closeButtons=popup.querySelectorAll(
+      "[data-close], .vmWelcomeClose, #vmWelcomeClose, button"
+    );
+
+    closeButtons.forEach(btn=>{
+      btn.addEventListener("click",function(){
+        setTimeout(resetHomeScroll,30);
+        setTimeout(resetHomeScroll,150);
+      });
+    });
+
+    // Also catches popup closing through existing JS/state changes.
+    const observer=new MutationObserver(function(){
+      const hidden =
+        popup.hidden ||
+        popup.style.display==="none" ||
+        popup.classList.contains("hidden") ||
+        getComputedStyle(popup).display==="none";
+      if(hidden) resetHomeScroll();
+    });
+    observer.observe(popup,{attributes:true,attributeFilter:["style","class","hidden"]});
+  }
+
+  if(document.readyState==="loading")
+    document.addEventListener("DOMContentLoaded",bind,{once:true});
+  else
+    bind();
+})();
+</script>
+<script id="vm-radio-background-media-session">
+(function(){
+"use strict";
+const audio=document.getElementById("audio");
+if(!audio || !("mediaSession" in navigator)) return;
+
+function syncNowPlaying(){
+  const title=(document.getElementById("title")?.textContent||"VM RADIO").trim();
+  const artist=(document.getElementById("artist")?.textContent||"Music IA By Valentin").trim();
+  const cover=document.getElementById("cover")?.src||"";
+  try{
+    navigator.mediaSession.metadata=new MediaMetadata({
+      title:title || "VM RADIO",
+      artist:artist || "VM RADIO",
+      album:"VM RADIO • EN DIRECT",
+      artwork:cover ? [
+        {src:cover,sizes:"512x512",type:"image/jpeg"},
+        {src:cover,sizes:"256x256",type:"image/jpeg"}
+      ] : []
+    });
+    navigator.mediaSession.playbackState=audio.paused?"paused":"playing";
+  }catch(e){}
+}
+
+async function resumeRadioFromMediaControl(){
+  try{
+    await audio.play();
+  }catch(firstError){
+    try{
+      const currentSrc = audio.currentSrc || audio.src || "https://radio.vmradio.fr/radio.mp3";
+      audio.src = currentSrc;
+      audio.load();
+      await audio.play();
+    }catch(secondError){
+      console.warn("VM RADIO — reprise depuis le contrôle multimédia impossible", secondError);
+      return;
+    }
+  }
+  try{navigator.mediaSession.playbackState="playing";}catch(e){}
+  syncNowPlaying();
+}
+
+function pauseRadioFromMediaControl(){
+  audio.pause();
+  try{navigator.mediaSession.playbackState="paused";}catch(e){}
+  syncNowPlaying();
+}
+
+try{navigator.mediaSession.setActionHandler("play",resumeRadioFromMediaControl);}catch(e){}
+try{navigator.mediaSession.setActionHandler("pause",pauseRadioFromMediaControl);}catch(e){}
+try{navigator.mediaSession.setActionHandler("stop",pauseRadioFromMediaControl);}catch(e){}
+
+audio.addEventListener("play",syncNowPlaying);
+audio.addEventListener("pause",syncNowPlaying);
+audio.addEventListener("loadedmetadata",syncNowPlaying);
+audio.addEventListener("emptied",syncNowPlaying);
+
+const titleEl=document.getElementById("title");
+const artistEl=document.getElementById("artist");
+const coverEl=document.getElementById("cover");
+if(titleEl)new MutationObserver(syncNowPlaying).observe(titleEl,{childList:true,subtree:true,characterData:true});
+if(artistEl)new MutationObserver(syncNowPlaying).observe(artistEl,{childList:true,subtree:true,characterData:true});
+if(coverEl)new MutationObserver(syncNowPlaying).observe(coverEl,{attributes:true,attributeFilter:["src"]});
+
+syncNowPlaying();
+})();
+</script>
+
+<script id="vm-update-popup-fix">
+(function(){
+  "use strict";
+
+  const VERSION_URL = "version.json";
+  const VERSION_KEY = "vmradio-installed-version";
+
+  function popup(version){
+    if(document.getElementById("vm-update-popup")) return;
+
+    const s=document.createElement("style");
+    s.textContent=
+      "#vm-update-popup{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(8px)}"+
+      "#vm-update-popup .vm-update-box{width:min(100%,390px);padding:22px;border:1px solid rgba(184,92,255,.5);border-radius:22px;background:#120c1a;color:#fff;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}"+
+      "#vm-update-popup h2{margin:0 0 8px;font-size:20px}"+
+      "#vm-update-popup p{margin:0 0 17px;color:#bcb3c7;font-size:13px;line-height:1.45}"+
+      "#vm-update-popup button{border:0;border-radius:13px;padding:12px 20px;background:linear-gradient(135deg,#c05cff,#7433dd);color:#fff;font-weight:800;font-size:13px}";
+    document.head.appendChild(s);
+
+    const p=document.createElement("div");
+    p.id="vm-update-popup";
+    p.innerHTML='<div class="vm-update-box"><h2>Nouvelle mise à jour disponible</h2><p>Une nouvelle version de VM RADIO est disponible.</p><button>Mettre à jour</button></div>';
+    document.body.appendChild(p);
+
+    p.querySelector("button").onclick=function(){
+      try{localStorage.setItem(VERSION_KEY,version);}catch(e){}
+      const url=new URL(location.href);
+      url.searchParams.set("update",Date.now());
+      location.replace(url.toString());
+    };
+  }
+
+  async function check(){
+    try{
+      const r=await fetch(VERSION_URL+"?cacheBust="+Date.now(),{
+        cache:"no-store",
+        headers:{"Cache-Control":"no-cache"}
+      });
+      if(!r.ok)return;
+
+      const d=await r.json();
+      const v=String(d.version||"").trim();
+      if(!v)return;
+
+      let installed=null;
+      try{installed=localStorage.getItem(VERSION_KEY);}catch(e){}
+
+      // Première installation : mémorise la version sans afficher de faux popup.
+      if(!installed){
+        try{localStorage.setItem(VERSION_KEY,v);}catch(e){}
+        return;
+      }
+
+      if(installed!==v) popup(v);
+    }catch(e){
+      console.warn("VM RADIO — vérification mise à jour:",e);
+    }
+  }
+
+  check();
+  document.addEventListener("visibilitychange",function(){
+    if(document.visibilityState==="visible") check();
+  });
+  window.addEventListener("pageshow",check);
+})();
+</script>
+
+<script src="dedications-feed.js?v=6"></script>
+</body>
+<script src="./pwa-install-tracker.js?v=20260827-2"></script>
+</body>
+</html>
