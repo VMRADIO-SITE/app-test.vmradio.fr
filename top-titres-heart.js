@@ -89,7 +89,7 @@
     try{
       const {r,d}=await fetchJson(API+'/vote',{
         method:'POST',mode:'cors',cache:'no-store',
-        headers:{'Content-Type':'application/json',Accept:'application/json'},
+        headers:{'Content-Type':'text/plain;charset=UTF-8',Accept:'application/json'},
         body:JSON.stringify({title:t.title,artist:t.artist,cover:t.cover,voter_id:voterId()})
       });
       if(!r.ok||d?.ok!==true)throw new Error(d?.details||d?.error||('HTTP '+r.status));
