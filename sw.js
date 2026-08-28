@@ -30,8 +30,8 @@ messaging.onBackgroundMessage(payload => {
   self.registration.showNotification(title, { body, icon, badge: icon, tag, data: { url: link } });
 });
 
-// v45 : Top Titres Firebase retiré du HTML de test, moteur D1 VM RADIO prioritaire.
-const CACHE_NAME = "vm-radio-app-v45";
+// v46 : Top Titres D1 avec handler coeur dédié injecté en dernier.
+const CACHE_NAME = "vm-radio-app-v46";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -47,7 +47,8 @@ const APP_SHELL = [
   "./dedications-feed.js?v=5",
   "./fcm-token-sync.js",
   "./audio-recovery.js",
-  "./pwa-install-tracker.js?v=20260828-topd1"
+  "./pwa-install-tracker.js?v=20260828-topd1",
+  "./top-titres-heart.js?v=20260828-1"
 ];
 
 self.addEventListener("install", event => {
@@ -112,17 +113,18 @@ self.addEventListener("fetch", event => {
             injected = injected.replace(/<\/head>/i, '<style id="vm-radio-no-pinch-zoom">html,body{touch-action:pan-x pan-y;overscroll-behavior-x:none}body{-webkit-text-size-adjust:100%}button,a,input,select,textarea{touch-action:manipulation}</style></head>');
           }
 
-          // Sur app-test, l'ancien moteur Top Titres Firebase ne doit plus manipuler le bouton cœur.
+          // L'ancien Top Titres Firebase ne doit plus manipuler le coeur sur app-test.
           injected = injected.replace(/<script[^>]+id=["']vm-radio-top-titres-firebase["'][^>]*>[\s\S]*?<\/script>/i, '');
 
-          // Replace toute ancienne inclusion du moteur D1 par une seule version fraîche avant </body>.
+          // Une seule version du moteur D1 et une seule version du handler coeur.
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*pwa-install-tracker\.js[^"']*["'][^>]*><\/script>/gi, '');
+          injected = injected.replace(/\s*<script[^>]+src=["'][^"']*top-titres-heart\.js[^"']*["'][^>]*><\/script>/gi, '');
 
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
           if (!injected.includes("./notifications.js")) injected = injected.replace(/<\/body>/i, '<script type="module" src="./notifications.js?v=vm27"></script></body>');
           if (!injected.includes("./fcm-token-sync.js")) injected = injected.replace(/<\/body>/i, '<script type="module" src="./fcm-token-sync.js?v=1"></script></body>');
           if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=3"></script></body>');
-          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script></body>');
+          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script></body>');
 
           const headers = new Headers(response.headers);
           headers.delete("content-length");
