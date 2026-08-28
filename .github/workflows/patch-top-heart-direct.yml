@@ -32,7 +32,7 @@ jobs:
           # Supprime toute ancienne inclusion directe du handler dédié.
           s = re.sub(r'\s*<script[^>]+src=["\'][^"\']*top-titres-heart\.js[^"\']*["\'][^>]*></script>', '', s, flags=re.I)
 
-          tag = '<script src="./top-titres-heart.js?v=20260828-direct2"></script>'
+          tag = '<script src="./top-titres-heart.js?v=20260828-topdisplay1"></script>'
 
           # Charge le handler directement dans le HTML, juste avant la dernière balise </body>.
           pos = s.lower().rfind('</body>')
@@ -53,5 +53,5 @@ jobs:
             exit 0
           fi
           git add index.html
-          git commit -m "fix: load D1 Top Titres heart directly in test HTML"
+          git commit -m "feat: load connected Top Titres display in test app"
           git push
