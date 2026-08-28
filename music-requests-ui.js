@@ -9,6 +9,68 @@ let catalog=[],selected=null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function history(){try{return JSON.parse(localStorage.getItem('vmradio_request_history')||'[]')}catch{return[]}}
 function saveHistory(x){try{localStorage.setItem('vmradio_request_history',JSON.stringify([x,...history()].slice(0,5)))}catch{}}
+
+/* Compteur auditeurs : basé uniquement sur le vrai player audio. */
+(function initListenerPresence(){
+  if(window.__VMRADIO_LISTENER_PRESENCE__)return;
+  window.__VMRADIO_LISTENER_PRESENCE__=true;
+  const ENDPOINT='https://admin.vmradio.fr/api/public/listeners';
+  let clientId='';
+  try{
+    clientId=localStorage.getItem('vmradio_listener_id')||'';
+    if(!/^vm_listener_[A-Za-z0-9_-]{12,96}$/.test(clientId)){
+      const id=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID().replace(/-/g,''):(Math.random().toString(36).slice(2)+Date.now().toString(36));
+      clientId='vm_listener_'+id;
+      localStorage.setItem('vmradio_listener_id',clientId);
+    }
+  }catch(_){clientId='vm_listener_'+Math.random().toString(36).slice(2)+Date.now().toString(36)}
+
+  let timer=null;
+  let boundAudio=null;
+  const source='app';
+
+  async function send(action){
+    try{
+      await fetch(ENDPOINT,{
+        method:'POST',
+        mode:'cors',
+        cache:'no-store',
+        keepalive:true,
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({clientId,source,action})
+      });
+    }catch(_){ }
+  }
+
+  function start(){
+    send('heartbeat');
+    if(!timer)timer=setInterval(()=>send('heartbeat'),15000);
+  }
+  function stop(){
+    if(timer){clearInterval(timer);timer=null;}
+    send('stop');
+  }
+  function bind(){
+    const audio=window.VMRadioPlayer?.audio||document.getElementById('audio')||document.querySelector('audio');
+    if(!audio)return false;
+    if(audio===boundAudio)return true;
+    boundAudio=audio;
+    audio.addEventListener('play',start);
+    audio.addEventListener('playing',start);
+    audio.addEventListener('pause',stop);
+    audio.addEventListener('ended',stop);
+    audio.addEventListener('emptied',stop);
+    if(!audio.paused&&!audio.ended)start();
+    return true;
+  }
+
+  if(!bind()){
+    let tries=0;
+    const wait=setInterval(()=>{if(bind()||++tries>120)clearInterval(wait)},250);
+  }
+  window.addEventListener('pagehide',stop);
+})();
+
 function css(){const s=document.createElement('style');s.textContent=`
 .nav,.bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
 #vmRequestNav{appearance:none!important;border:0!important;background:transparent!important;color:#d9d1df!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;min-width:0!important;width:100%!important;padding:4px 1px!important;margin:0!important;font:700 7px/1 Arial,sans-serif!important;cursor:pointer!important;text-align:center!important;white-space:normal!important;box-shadow:none!important}#vmRequestNav .ico{font-size:13px!important;line-height:1!important;color:#d68cff!important}#vmRequestNav:active{transform:scale(.96)}
