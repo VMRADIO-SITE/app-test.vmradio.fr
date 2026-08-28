@@ -3,7 +3,7 @@
   "name": "VM RADIO",
   "short_name": "VM RADIO",
   "description": "VM RADIO — votre radio, partout avec vous.",
-  "start_url": "./notifications-gate.html?source=pwa",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#050207",
