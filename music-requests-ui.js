@@ -10,7 +10,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function history(){try{return JSON.parse(localStorage.getItem('vmradio_request_history')||'[]')}catch{return[]}}
 function saveHistory(x){try{localStorage.setItem('vmradio_request_history',JSON.stringify([x,...history()].slice(0,5)))}catch{}}
 
-/* Compteur auditeurs : basé uniquement sur le vrai player audio. */
+/* Compteur auditeurs : suit tous les audios possibles du player app. */
 (function initListenerPresence(){
   if(window.__VMRADIO_LISTENER_PRESENCE__)return;
   window.__VMRADIO_LISTENER_PRESENCE__=true;
@@ -25,13 +25,13 @@ function saveHistory(x){try{localStorage.setItem('vmradio_request_history',JSON.
     }
   }catch(_){clientId='vm_listener_'+Math.random().toString(36).slice(2)+Date.now().toString(36)}
 
-  let timer=null;
-  let boundAudio=null;
   const source='app';
+  const bound=new WeakSet();
+  let timer=null;
 
   async function send(action){
     try{
-      await fetch(ENDPOINT,{
+      await window.fetch(ENDPOINT,{
         method:'POST',
         mode:'cors',
         cache:'no-store',
@@ -42,33 +42,57 @@ function saveHistory(x){try{localStorage.setItem('vmradio_request_history',JSON.
     }catch(_){ }
   }
 
+  function candidates(){
+    const list=[];
+    const add=a=>{if(a&&typeof a.addEventListener==='function'&&!list.includes(a))list.push(a)};
+    add(window.VMRadioPlayer?.audio);
+    add(document.getElementById('audio'));
+    add(document.getElementById('radioAudio'));
+    document.querySelectorAll('audio').forEach(add);
+    return list;
+  }
+
+  function anyPlaying(){
+    return candidates().some(a=>!a.paused&&!a.ended);
+  }
+
   function start(){
     send('heartbeat');
-    if(!timer)timer=setInterval(()=>send('heartbeat'),15000);
+    if(!timer)timer=setInterval(()=>{
+      if(anyPlaying())send('heartbeat');
+      else stop();
+    },15000);
   }
+
   function stop(){
+    if(anyPlaying())return;
     if(timer){clearInterval(timer);timer=null;}
     send('stop');
   }
-  function bind(){
-    const audio=window.VMRadioPlayer?.audio||document.getElementById('audio')||document.querySelector('audio');
-    if(!audio)return false;
-    if(audio===boundAudio)return true;
-    boundAudio=audio;
-    audio.addEventListener('play',start);
-    audio.addEventListener('playing',start);
-    audio.addEventListener('pause',stop);
-    audio.addEventListener('ended',stop);
-    audio.addEventListener('emptied',stop);
-    if(!audio.paused&&!audio.ended)start();
-    return true;
+
+  function bindAll(){
+    const audios=candidates();
+    audios.forEach(audio=>{
+      if(bound.has(audio))return;
+      bound.add(audio);
+      audio.addEventListener('play',start);
+      audio.addEventListener('playing',start);
+      audio.addEventListener('pause',()=>setTimeout(stop,50));
+      audio.addEventListener('ended',()=>setTimeout(stop,50));
+      audio.addEventListener('emptied',()=>setTimeout(stop,50));
+    });
+    if(anyPlaying())start();
+    return audios.length>0;
   }
 
-  if(!bind()){
-    let tries=0;
-    const wait=setInterval(()=>{if(bind()||++tries>120)clearInterval(wait)},250);
-  }
-  window.addEventListener('pagehide',stop);
+  bindAll();
+  const watcher=setInterval(bindAll,1000);
+  setTimeout(()=>clearInterval(watcher),60000);
+  window.addEventListener('vmradio:pagechange',()=>setTimeout(bindAll,0));
+  window.addEventListener('pagehide',()=>{
+    if(timer){clearInterval(timer);timer=null;}
+    send('stop');
+  });
 })();
 
 function css(){const s=document.createElement('style');s.textContent=`
