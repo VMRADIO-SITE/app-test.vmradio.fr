@@ -59,14 +59,10 @@
     window.dispatchEvent(new CustomEvent('vmradio:pwa-installed', {
       detail: { installed: true, timestamp: new Date().toISOString() }
     }));
-    console.info('[VM RADIO] App installation relayed successfully');
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', reportInstall, { once: true });
-  } else {
-    reportInstall();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reportInstall, { once: true });
+  else reportInstall();
   window.addEventListener('pageshow', reportInstall);
 })();
 
@@ -82,6 +78,7 @@
   let items = [];
   let votedTrack = '';
   let rendering = false;
+  let syncingHeart = false;
 
   function voterId() {
     let id = localStorage.getItem(VOTER_KEY);
@@ -102,6 +99,18 @@
     };
   }
   function currentId(){const t=current();return slug(`${t.artist}-${t.title}`)||slug(t.title)||'titre';}
+
+  function applyHeartState(voted){
+    const heart=document.getElementById('heart');
+    if(!heart)return;
+    syncingHeart=true;
+    heart.classList.toggle('active',!!voted);
+    heart.textContent=voted?'♥':'♡';
+    heart.setAttribute('aria-pressed',voted?'true':'false');
+    heart.disabled=!!voted;
+    heart.dataset.vmD1Heart='1';
+    queueMicrotask(()=>{syncingHeart=false;});
+  }
 
   function render() {
     const box = document.querySelector('[data-favorites]');
@@ -130,24 +139,21 @@
   }
 
   function saveCache(){try{localStorage.setItem(CACHE_KEY,JSON.stringify(items.slice(0,10)));}catch(_){}}
-  function loadCache(){
-    try {
-      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
-      if (Array.isArray(cached) && cached.length) { items = cached; render(); }
-    } catch(_) {}
-  }
+  function loadCache(){try{const cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');if(Array.isArray(cached)&&cached.length){items=cached;render();}}catch(_){}}
 
   async function refresh() {
     try {
       const r = await fetch(API + '?limit=10&_=' + Date.now(), { cache:'no-store', mode:'cors', headers:{Accept:'application/json'} });
       const d = await r.json();
-      if (!r.ok || d?.ok !== true) throw new Error(d?.error || `API ${r.status}`);
+      if (!r.ok || d?.ok !== true) throw new Error(d?.details || d?.error || `API ${r.status}`);
       items = Array.isArray(d.items) ? d.items : [];
       saveCache();
       render();
       await syncHeart();
     } catch (e) {
       console.warn('[VM RADIO] Top Titres D1 indisponible', e);
+      const t=current();
+      if(t.title && !/^vm radio$/i.test(t.title) && votedTrack!==currentId()) applyHeartState(false);
     }
   }
 
@@ -156,7 +162,9 @@
     if (!heart) return;
     const t = current();
     if (!t.title || /^vm radio$/i.test(t.title)) {
-      heart.textContent = '♡'; heart.classList.remove('active'); heart.disabled = true; return;
+      votedTrack='';
+      applyHeartState(false);
+      return;
     }
     const id = currentId();
     try {
@@ -168,12 +176,10 @@
       const d = await r.json();
       const voted = r.ok && d?.voted === true;
       votedTrack = voted ? id : '';
-      heart.classList.toggle('active', voted);
-      heart.textContent = voted ? '♥' : '♡';
-      heart.setAttribute('aria-pressed', voted ? 'true' : 'false');
-      heart.disabled = voted;
+      applyHeartState(voted);
     } catch(_) {
-      heart.disabled = false;
+      votedTrack='';
+      applyHeartState(false);
     }
   }
 
@@ -190,17 +196,17 @@
         body:JSON.stringify({ title:t.title, artist:t.artist, cover:t.cover, voter_id:voterId() })
       });
       const d = await r.json();
-      if (!r.ok || d?.ok !== true) throw new Error(d?.error || `API ${r.status}`);
+      if (!r.ok || d?.ok !== true) throw new Error(d?.details || d?.error || `API ${r.status}`);
       votedTrack = id;
-      if (heart) { heart.classList.add('active'); heart.textContent='♥'; heart.disabled=true; }
+      applyHeartState(true);
       await refresh();
     } catch(e) {
       console.warn('[VM RADIO] Vote Top Titres D1 refusé',e);
-      if (heart) heart.disabled=false;
+      votedTrack='';
+      applyHeartState(false);
     }
   }
 
-  // Intercepte le coeur avant l'ancien listener Firebase : aucun nouveau vote Firebase depuis app-test.
   document.addEventListener('click', e => {
     const heart = e.target?.closest?.('#heart');
     if (!heart) return;
@@ -210,20 +216,36 @@
     vote();
   }, true);
 
+  function protectHeart(){
+    const heart=document.getElementById('heart');
+    if(!heart||heart.dataset.vmD1Protected==='1')return;
+    heart.dataset.vmD1Protected='1';
+    new MutationObserver(()=>{
+      if(syncingHeart)return;
+      const t=current();
+      if(!t.title||/^vm radio$/i.test(t.title))return;
+      const shouldBeDisabled=votedTrack===currentId();
+      if(heart.disabled!==shouldBeDisabled || heart.textContent!==(shouldBeDisabled?'♥':'♡')) applyHeartState(shouldBeDisabled);
+    }).observe(heart,{attributes:true,attributeFilter:['disabled','class','aria-pressed'],childList:true,characterData:true,subtree:true});
+    const t=current();
+    if(t.title&&!/^vm radio$/i.test(t.title)&&votedTrack!==currentId()) applyHeartState(false);
+  }
+
   function boot() {
     loadCache();
+    protectHeart();
     refresh();
     const title = document.getElementById('title');
-    if (title) new MutationObserver(() => setTimeout(syncHeart, 50)).observe(title,{childList:true,subtree:true,characterData:true});
+    if (title) new MutationObserver(() => {protectHeart();setTimeout(syncHeart,50);}).observe(title,{childList:true,subtree:true,characterData:true});
     const box = document.querySelector('[data-favorites]');
     if (box) new MutationObserver(() => {
       if (rendering) return;
-      // Si l'ancien snapshot Firebase réécrit la carte, notre source D1 reprend immédiatement la main.
-      if (box.dataset.vmD1Rendered !== '1' || !box.querySelector('[data-vm-d1-top]') && items.length) queueMicrotask(render);
+      if (box.dataset.vmD1Rendered !== '1' || (!box.querySelector('[data-vm-d1-top]') && items.length)) queueMicrotask(render);
     }).observe(box,{childList:true,subtree:true});
-    setInterval(refresh, 5000);
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
-    window.addEventListener('focus',refresh);
+    setInterval(refresh,5000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden){protectHeart();refresh();}});
+    window.addEventListener('focus',()=>{protectHeart();refresh();});
+    window.addEventListener('pageshow',()=>{protectHeart();refresh();});
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
