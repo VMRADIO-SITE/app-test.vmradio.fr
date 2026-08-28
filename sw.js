@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v47 : Top Titres D1 + Web Push natif VM RADIO sur app-test.
-const CACHE_NAME = "vm-radio-app-v47";
+// v48 : Top Titres D1 + Web Push natif VM RADIO avec bouton visible sur app-test.
+const CACHE_NAME = "vm-radio-app-v48";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,13 +13,11 @@ const APP_SHELL = [
   "./vmradio-app-icon-192.png",
   "./vmradio-app-icon-512.png",
   "./manifest.webmanifest",
-  "./notifications.js",
   "./dedications-feed.js?v=5",
-  "./fcm-token-sync.js",
   "./audio-recovery.js",
   "./pwa-install-tracker.js?v=20260828-topd1",
   "./top-titres-heart.js?v=20260828-1",
-  "./web-push-client.js",
+  "./web-push-prompt.js?v=1",
   "./web-push-sw-handler.js"
 ];
 
@@ -42,9 +40,7 @@ self.addEventListener("message", event => {
 self.addEventListener("notificationclick", event => {
   event.notification.close();
   const notificationData = event.notification.data || {};
-  const fcmMessage = notificationData.FCM_MSG || notificationData.fcmMessage || {};
-  const fcmOptions = fcmMessage.notification?.click_action ? { link: fcmMessage.notification.click_action } : (fcmMessage.fcmOptions || {});
-  const targetUrl = notificationData.url || notificationData.link || fcmOptions.link || fcmOptions.click_action || "./";
+  const targetUrl = notificationData.url || notificationData.link || "./";
   const absoluteTarget = new URL(targetUrl, self.location.href).href;
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then(windowClients => {
@@ -88,13 +84,14 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/<script[^>]+id=["']vm-radio-top-titres-firebase["'][^>]*>[\s\S]*?<\/script>/i, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*pwa-install-tracker\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*top-titres-heart\.js[^"']*["'][^>]*><\/script>/gi, '');
+          injected = injected.replace(/\s*<script[^>]+src=["'][^"']*notifications\.js[^"']*["'][^>]*><\/script>/gi, '');
+          injected = injected.replace(/\s*<script[^>]+src=["'][^"']*fcm-token-sync\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-client\.js[^"']*["'][^>]*><\/script>/gi, '');
+          injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
-          if (!injected.includes("./notifications.js")) injected = injected.replace(/<\/body>/i, '<script type="module" src="./notifications.js?v=vm27"></script></body>');
-          if (!injected.includes("./fcm-token-sync.js")) injected = injected.replace(/<\/body>/i, '<script type="module" src="./fcm-token-sync.js?v=1"></script></body>');
           if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=3"></script></body>');
-          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./web-push-client.js?v=1"></script></body>');
+          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./web-push-prompt.js?v=1"></script></body>');
 
           const headers = new Headers(response.headers);
           headers.delete("content-length");
