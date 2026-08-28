@@ -1,0 +1,57 @@
+name: Patch Top Titres Heart Direct
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-top-heart-direct.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Supprime physiquement l'ancien moteur Firebase Top Titres.
+          s = re.sub(r'<script[^>]+id=["\']vm-radio-top-titres-firebase["\'][^>]*>[\s\S]*?</script>', '', s, flags=re.I)
+
+          # Supprime toute ancienne inclusion directe du handler dédié.
+          s = re.sub(r'\s*<script[^>]+src=["\'][^"\']*top-titres-heart\.js[^"\']*["\'][^>]*></script>', '', s, flags=re.I)
+
+          tag = '<script src="./top-titres-heart.js?v=20260828-direct2"></script>'
+
+          # Charge le handler directement dans le HTML, juste avant la dernière balise </body>.
+          pos = s.lower().rfind('</body>')
+          if pos == -1:
+              s += '\n' + tag + '\n'
+          else:
+              s = s[:pos] + tag + '\n' + s[pos:]
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit patched HTML
+        run: |
+          git config user.name "VM RADIO"
+          git config user.email "valentinrasle7070.vr@icloud.com"
+          if git diff --quiet -- index.html; then
+            echo "No HTML change needed"
+            exit 0
+          fi
+          git add index.html
+          git commit -m "fix: load D1 Top Titres heart directly in test HTML"
+          git push
