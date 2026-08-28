@@ -1,0 +1,42 @@
+name: Patch Notification Secure Context
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/patch-notification-secure-context.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch notifications.js
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('notifications.js')
+          s=p.read_text()
+          s=s.replace("const ACTIVATED_KEY='vmRadioNotificationsNativeV1',ERROR_KEY='vmRadioNotificationsLastErrorV2',VERSION='48',SITE_VERSION_KEY='vmRadioSiteVersionV1';", "const ACTIVATED_KEY='vmRadioNotificationsNativeV1',ERROR_KEY='vmRadioNotificationsLastErrorV2',VERSION='50',SITE_VERSION_KEY='vmRadioSiteVersionV1';")
+          anchor="function decodeKey(value){"
+          helper="""function notificationEnvironmentIssue(){\n  if(location.protocol!=='https:'&&location.hostname!=='localhost')return 'Connexion non sécurisée : HTTPS requis';\n  if(!window.isSecureContext)return 'Contexte non sécurisé : HTTPS requis';\n  if(typeof window.Notification==='undefined')return 'API Notification absente sur ce navigateur';\n  if(!('serviceWorker' in navigator))return 'Service Worker indisponible sur ce navigateur';\n  if(!('PushManager' in window))return 'Web Push indisponible sur ce navigateur';\n  return '';\n}\n"""
+          if helper not in s:
+              s=s.replace(anchor,helper+anchor)
+          s=s.replace("async function setupNativePush(){if(!(window.Notification)||!('serviceWorker'in navigator)||!('PushManager'in window))throw new Error('Notifications indisponibles');", "async function setupNativePush(){const envIssue=notificationEnvironmentIssue();if(envIssue)throw new Error(envIssue);")
+          s=s.replace("if(!(window.Notification)||!('serviceWorker'in navigator))throw new Error('Notifications non disponibles');", "const envIssue=notificationEnvironmentIssue();if(envIssue)throw new Error(envIssue);")
+          old="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setupPrompt();startSiteVersionWatcher()},{once:true});else{setupPrompt();startSiteVersionWatcher()}"
+          new="if(location.protocol==='http:'&&location.hostname!=='localhost'){location.replace('https://'+location.host+location.pathname+location.search+location.hash)}else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setupPrompt();startSiteVersionWatcher()},{once:true});else{setupPrompt();startSiteVersionWatcher()}"
+          s=s.replace(old,new)
+          p.write_text(s)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "VM RADIO"
+          git config user.email "vmradio@users.noreply.github.com"
+          git add notifications.js
+          git diff --cached --quiet || git commit -m "fix: require HTTPS and diagnose Web Push support"
+          git push
