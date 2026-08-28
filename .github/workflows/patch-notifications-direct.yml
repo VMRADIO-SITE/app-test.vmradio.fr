@@ -1,0 +1,55 @@
+name: Patch Existing Notification Popup Direct
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-notifications-direct.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          # Retire d'anciennes inclusions pour éviter les doublons.
+          s=re.sub(r'\s*<script[^>]+src=["\'][^"\']*notifications\.js[^"\']*["\'][^>]*></script>', '', s, flags=re.I)
+          s=re.sub(r'\s*<script[^>]+src=["\'][^"\']*fcm-token-sync\.js[^"\']*["\'][^>]*></script>', '', s, flags=re.I)
+          s=re.sub(r'\s*<script[^>]+src=["\'][^"\']*web-push-prompt\.js[^"\']*["\'][^>]*></script>', '', s, flags=re.I)
+          s=re.sub(r'\s*<script[^>]+src=["\'][^"\']*web-push-client\.js[^"\']*["\'][^>]*></script>', '', s, flags=re.I)
+
+          tag='<script src="./notifications.js?v=webpush-native-2"></script>'
+          pos=s.lower().rfind('</body>')
+          if pos == -1:
+              s += '\n'+tag+'\n'
+          else:
+              s = s[:pos] + tag + '\n' + s[pos:]
+
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit patched HTML
+        run: |
+          git config user.name "VM RADIO"
+          git config user.email "valentinrasle7070.vr@icloud.com"
+          if git diff --quiet -- index.html; then
+            echo "No HTML change needed"
+            exit 0
+          fi
+          git add index.html
+          git commit -m "fix: load existing Web Push popup directly in test HTML"
+          git push
