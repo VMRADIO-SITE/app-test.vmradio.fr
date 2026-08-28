@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v48 : Top Titres D1 + Web Push natif VM RADIO avec bouton visible sur app-test.
-const CACHE_NAME = "vm-radio-app-v48";
+// v49 : Top Titres D1 + Web Push natif VM RADIO via le popup notifications existant.
+const CACHE_NAME = "vm-radio-app-v49";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,11 +13,11 @@ const APP_SHELL = [
   "./vmradio-app-icon-192.png",
   "./vmradio-app-icon-512.png",
   "./manifest.webmanifest",
+  "./notifications.js?v=native1",
   "./dedications-feed.js?v=5",
   "./audio-recovery.js",
   "./pwa-install-tracker.js?v=20260828-topd1",
   "./top-titres-heart.js?v=20260828-1",
-  "./web-push-prompt.js?v=1",
   "./web-push-sw-handler.js"
 ];
 
@@ -91,7 +91,7 @@ self.addEventListener("fetch", event => {
 
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
           if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=3"></script></body>');
-          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./web-push-prompt.js?v=1"></script></body>');
+          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./notifications.js?v=native1"></script></body>');
 
           const headers = new Headers(response.headers);
           headers.delete("content-length");
