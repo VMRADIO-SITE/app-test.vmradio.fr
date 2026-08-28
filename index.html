@@ -1859,20 +1859,7 @@ if(!window.__VMRADIO_CENTRAL_V10__){update();setInterval(update,10000);}
 </script>
 
 
-<script type="module" id="vm-radio-top-titres-firebase">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, onSnapshot, query, orderBy, limit, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBng0eLDl7Pv05Wrx3U07rV3pxLMRGIpfk",authDomain:"vmradio-d07e1.firebaseapp.com",projectId:"vmradio-d07e1",storageBucket:"vmradio-d07e1.firebasestorage.app",messagingSenderId:"178955924208",appId:"1:178955924208:web:ba7ae54d489951d56ec835"};
-const app=initializeApp(firebaseConfig,"vmRadioTopTitresRules"); const auth=getAuth(app),db=getFirestore(app); const fallback="https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg"; let user=null,items=[];
-const id=t=>String(t||"titre").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,100)||"titre";
-const current=()=>({title:(document.getElementById("title")?.textContent||"").trim(),artist:(document.getElementById("artist")?.textContent||"Music IA By Valentin").trim(),cover:document.getElementById("cover")?.src||fallback});
-function render(){const box=document.querySelector("[data-favorites]");if(!box)return;box.innerHTML="";if(!items.length){box.innerHTML='<div class="vm-home-list-card"><div class="vm-home-list-info"><strong>Aucun titre aimé</strong><span>Appuyez sur ❤️ dans le player pour ajouter un titre.</span></div></div>';return;}items.forEach(t=>{const r=document.createElement("div");r.className="vm-home-list-card";r.innerHTML='<img alt=""><div class="vm-home-list-info"><strong></strong><span></span><small></small></div>';const im=r.querySelector("img");im.src=t.cover||fallback;im.onerror=()=>{im.onerror=null;im.src=fallback};r.querySelector("strong").textContent=t.title||"Titre";r.querySelector("span").textContent=t.artist||"Music IA By Valentin";r.querySelector("small").textContent=`♥ ${Number(t.votes||0)}`;box.appendChild(r);});syncHeart();}
-async function syncHeart(){const h=document.getElementById("heart");if(!h)return;const t=current();if(!user||!t.title||t.title==="VM Radio"){h.classList.remove("active");h.textContent="♡";h.disabled=true;return;}const ref=doc(db,"votes",user.uid,"tracks",id(t.title));let voted=false;try{voted=(await getDoc(ref)).exists();}catch(e){console.warn("Lecture du vote Firebase:",e);}h.classList.toggle("active",voted);h.textContent=voted?"♥":"♡";h.setAttribute("aria-pressed",voted?"true":"false");h.disabled=voted;}
-async function like(){if(!user)return;const t=current();if(!t.title||t.title==="VM Radio")return;const tid=id(t.title);if(items.some(x=>x.id===tid&&x.voterIds?.includes(user.uid)))return;const top=doc(db,"topTitres",tid),vote=doc(db,"votes",user.uid,"tracks",tid),existing=items.find(x=>x.id===tid),b=writeBatch(db);if(existing)b.update(top,{title:existing.title,artist:existing.artist||t.artist,cover:existing.cover||t.cover,votes:Number(existing.votes||0)+1,updatedAt:serverTimestamp()});else b.set(top,{title:t.title,artist:t.artist,cover:t.cover||fallback,votes:1,updatedAt:serverTimestamp()});b.set(vote,{trackId:tid,title:t.title,artist:t.artist,cover:t.cover||fallback,createdAt:serverTimestamp()});try{await b.commit();}catch(e){console.error("VM RADIO J'aime Firebase:",e);}}
-function boot(){const h=document.getElementById("heart");if(h&&!h.dataset.rulesFirebase){h.dataset.rulesFirebase="1";h.addEventListener("click",like);}const title=document.getElementById("title");if(title&&!title.dataset.topObserver){title.dataset.topObserver="1";new MutationObserver(syncHeart).observe(title,{childList:true,characterData:true,subtree:true});}}
-onAuthStateChanged(auth,u=>{user=u;syncHeart();});signInAnonymously(auth).catch(e=>console.error("Firebase Auth anonyme:",e));const q=query(collection(db,"topTitres"),orderBy("votes","desc"),limit(10));onSnapshot(q,s=>{items=s.docs.map(d=>({id:d.id,...d.data()}));render();},e=>console.error("TOP TITRES Firebase:",e));if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-</script>
+
 
 
 <script id="vm-radio-spa-router">
@@ -2370,5 +2357,6 @@ syncNowPlaying();
 <script src="dedications-feed.js?v=6"></script>
 </body>
 <script src="./pwa-install-tracker.js?v=20260827-2"></script>
+<script src="./top-titres-heart.js?v=20260828-direct2"></script>
 </body>
 </html>
