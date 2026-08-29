@@ -158,3 +158,86 @@ const start=()=>{
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
+
+/* VM RADIO — correctif écran verrouillé / Media Session */
+(function(){
+'use strict';
+if(window.__VMRADIO_LOCKSCREEN_FIX_V1__)return;
+window.__VMRADIO_LOCKSCREEN_FIX_V1__=true;
+
+const DEFAULT_ARTIST='Music IA By Valentin';
+let boundAudio=null;
+
+function playerAudio(){return window.VMRadioPlayer?.audio||null}
+function absoluteArtwork(src){
+  if(!src)return[];
+  try{
+    const url=new URL(String(src),location.href).href;
+    return [96,128,192,256,384,512].map(size=>({src:url,sizes:size+'x'+size}));
+  }catch(_){return[{src:String(src)}]}
+}
+function currentMeta(){
+  const title=(document.querySelector('[data-current-title],#currentTitle,#title,.current-title')?.textContent||'VM RADIO').trim();
+  const artist=(document.querySelector('[data-current-artist],#currentArtist,#artist,.current-artist,.artist')?.textContent||DEFAULT_ARTIST).trim();
+  const img=document.querySelector('[data-current-cover],#currentCover,#cover,.current-cover,.cover-wrap img');
+  const cover=img?.dataset?.vmDesiredCover||img?.currentSrc||img?.src||'';
+  return{title,artist,cover};
+}
+function syncState(){
+  if(!('mediaSession'in navigator))return;
+  const audio=playerAudio();
+  if(!audio)return;
+  try{navigator.mediaSession.playbackState=(!audio.paused&&!audio.ended)?'playing':'paused'}catch(_){}
+}
+function syncMetadata(){
+  if(!('mediaSession'in navigator)||typeof MediaMetadata==='undefined')return;
+  const meta=currentMeta();
+  try{
+    navigator.mediaSession.metadata=new MediaMetadata({
+      title:meta.title||'VM RADIO',
+      artist:meta.artist||DEFAULT_ARTIST,
+      album:'VM RADIO',
+      artwork:absoluteArtwork(meta.cover)
+    });
+  }catch(_){}
+}
+function bindAudio(){
+  const audio=playerAudio();
+  if(!audio||audio===boundAudio)return Boolean(audio);
+  boundAudio=audio;
+  ['play','playing','pause','ended','emptied','stalled','waiting'].forEach(type=>audio.addEventListener(type,syncState));
+  syncState();
+  return true;
+}
+function setupHandlers(){
+  if(!('mediaSession'in navigator))return;
+  try{navigator.mediaSession.setActionHandler('play',async()=>{
+    const audio=playerAudio();if(!audio)return;
+    if(!audio.paused&&!audio.ended){syncState();return;}
+    try{await window.VMRadioPlayer.play()}catch(_){}
+    syncState();
+  })}catch(_){}
+  try{navigator.mediaSession.setActionHandler('pause',()=>{
+    const audio=playerAudio();if(audio&&!audio.paused)window.VMRadioPlayer.pause();syncState();
+  })}catch(_){}
+  try{navigator.mediaSession.setActionHandler('stop',()=>{
+    const audio=playerAudio();if(audio&&!audio.paused)window.VMRadioPlayer.pause();syncState();
+  })}catch(_){}
+  for(const action of ['seekbackward','seekforward','previoustrack','nexttrack']){
+    try{navigator.mediaSession.setActionHandler(action,null)}catch(_){}
+  }
+}
+function tick(){
+  bindAudio();
+  setupHandlers();
+  syncMetadata();
+  syncState();
+}
+const start=()=>{
+  tick();
+  setInterval(tick,1200);
+  document.addEventListener('visibilitychange',tick);
+  window.addEventListener('focus',tick);
+};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
