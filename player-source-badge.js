@@ -78,103 +78,36 @@ img.vm-source-halo[data-vm-source-kind="jingle"]{--vm-source-color:#ec4899}
 }
 
 function currentCoverImages(){
-  const selectors=[
-    '.player-shell .cover-wrap img',
-    '.radio-player .cover-wrap img',
-    '#currentCover',
-    '#cover',
-    'img[data-current-cover]',
-    'img.current-cover',
-    '#programme-direct img.cover',
-    '#programme-direct img[data-current-cover]',
-    '.homepage-program-current img',
-    '.home-original-module .now img'
-  ];
+  const selectors=['.player-shell .cover-wrap img','.radio-player .cover-wrap img','#currentCover','#cover','img[data-current-cover]','img.current-cover','#programme-direct img.cover','#programme-direct img[data-current-cover]','.homepage-program-current img','.home-original-module .now img'];
   const out=[];
-  for(const sel of selectors){
-    document.querySelectorAll(sel).forEach(img=>{
-      if(img?.tagName==='IMG'&&!out.includes(img))out.push(img);
-    });
-  }
+  for(const sel of selectors){document.querySelectorAll(sel).forEach(img=>{if(img?.tagName==='IMG'&&!out.includes(img))out.push(img)})}
   return out;
 }
-
-function legendTargets(){
-  const selectors=['.player-shell','.radio-player','#programme-direct'];
-  const out=[];
-  for(const sel of selectors){
-    document.querySelectorAll(sel).forEach(el=>{if(el&&!out.includes(el))out.push(el)});
-  }
-  return out;
-}
-
+function legendTargets(){const selectors=['.player-shell','.radio-player','#programme-direct'],out=[];for(const sel of selectors){document.querySelectorAll(sel).forEach(el=>{if(el&&!out.includes(el))out.push(el)})}return out}
 function cleanupOldBadges(){document.querySelectorAll('.vm-source-badge').forEach(el=>el.remove())}
-
-function ensureLegends(info){
-  for(const target of legendTargets()){
-    let legend=Array.from(target.children).find(el=>el.classList?.contains('vm-source-legend'));
-    if(!legend){
-      legend=document.createElement('div');
-      legend.className='vm-source-legend';
-      legend.setAttribute('aria-label','Signification des couleurs du halo');
-      legend.innerHTML='<span class="vm-source-legend-item" data-kind="rotation">Rotation</span><span class="vm-source-legend-item" data-kind="request">Demande</span><span class="vm-source-legend-item" data-kind="emission">Émission</span><span class="vm-source-legend-item" data-kind="jingle">Jingle</span>';
-      target.appendChild(legend);
-    }
-    legend.dataset.activeKind=info.kind;
-  }
-}
-
-function applyHalo(info){
-  ensureStyle();
-  cleanupOldBadges();
-  for(const img of currentCoverImages()){
-    img.classList.add('vm-source-halo');
-    img.dataset.vmSourceKind=info.kind;
-    img.dataset.vmSourceLabel=info.label;
-    img.title=info.kind==='emission'?'Émission : '+info.label:info.label;
-  }
-  ensureLegends(info);
-}
-
-let currentInfo={kind:'rotation',label:'Rotation'};
-let busy=false;
-async function refresh(){
-  applyHalo(currentInfo);
-  if(busy)return;
-  busy=true;
-  try{
-    const r=await fetch(ENGINE+'?_halo='+Date.now(),{cache:'no-store',credentials:'omit'});
-    if(r.ok){currentInfo=classify(await r.json());applyHalo(currentInfo)}
-  }catch(_){}
-  finally{busy=false}
-}
-
-const start=()=>{
-  ensureStyle();applyHalo(currentInfo);refresh();setInterval(refresh,REFRESH);
-  window.addEventListener('focus',refresh);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
-  window.addEventListener('vmradio:pagechange',()=>setTimeout(refresh,50));
-  new MutationObserver(()=>applyHalo(currentInfo)).observe(document.body,{childList:true,subtree:true});
-};
+function ensureLegends(info){for(const target of legendTargets()){let legend=Array.from(target.children).find(el=>el.classList?.contains('vm-source-legend'));if(!legend){legend=document.createElement('div');legend.className='vm-source-legend';legend.setAttribute('aria-label','Signification des couleurs du halo');legend.innerHTML='<span class="vm-source-legend-item" data-kind="rotation">Rotation</span><span class="vm-source-legend-item" data-kind="request">Demande</span><span class="vm-source-legend-item" data-kind="emission">Émission</span><span class="vm-source-legend-item" data-kind="jingle">Jingle</span>';target.appendChild(legend)}legend.dataset.activeKind=info.kind}}
+function applyHalo(info){ensureStyle();cleanupOldBadges();for(const img of currentCoverImages()){img.classList.add('vm-source-halo');img.dataset.vmSourceKind=info.kind;img.dataset.vmSourceLabel=info.label;img.title=info.kind==='emission'?'Émission : '+info.label:info.label}ensureLegends(info)}
+let currentInfo={kind:'rotation',label:'Rotation'};let busy=false;
+async function refresh(){applyHalo(currentInfo);if(busy)return;busy=true;try{const r=await fetch(ENGINE+'?_halo='+Date.now(),{cache:'no-store',credentials:'omit'});if(r.ok){currentInfo=classify(await r.json());applyHalo(currentInfo)}}catch(_){}finally{busy=false}}
+const start=()=>{ensureStyle();applyHalo(currentInfo);refresh();setInterval(refresh,REFRESH);window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('vmradio:pagechange',()=>setTimeout(refresh,50));new MutationObserver(()=>applyHalo(currentInfo)).observe(document.body,{childList:true,subtree:true})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 
-/* VM RADIO — correctif écran verrouillé / Media Session */
+/* VM RADIO — écran verrouillé : état piloté uniquement par le vrai audio */
 (function(){
 'use strict';
-if(window.__VMRADIO_LOCKSCREEN_FIX_V1__)return;
-window.__VMRADIO_LOCKSCREEN_FIX_V1__=true;
+if(window.__VMRADIO_LOCKSCREEN_FIX_V2__)return;
+window.__VMRADIO_LOCKSCREEN_FIX_V2__=true;
 
 const DEFAULT_ARTIST='Music IA By Valentin';
 let boundAudio=null;
+let lastMetaKey='';
 
 function playerAudio(){return window.VMRadioPlayer?.audio||null}
 function absoluteArtwork(src){
   if(!src)return[];
-  try{
-    const url=new URL(String(src),location.href).href;
-    return [96,128,192,256,384,512].map(size=>({src:url,sizes:size+'x'+size}));
-  }catch(_){return[{src:String(src)}]}
+  try{const url=new URL(String(src),location.href).href;return [96,128,192,256,384,512].map(size=>({src:url,sizes:size+'x'+size}))}
+  catch(_){return[{src:String(src)}]}
 }
 function currentMeta(){
   const title=(document.querySelector('[data-current-title],#currentTitle,#title,.current-title')?.textContent||'VM RADIO').trim();
@@ -183,61 +116,52 @@ function currentMeta(){
   const cover=img?.dataset?.vmDesiredCover||img?.currentSrc||img?.src||'';
   return{title,artist,cover};
 }
-function syncState(){
+function setPlaybackState(state){
   if(!('mediaSession'in navigator))return;
+  try{if(navigator.mediaSession.playbackState!==state)navigator.mediaSession.playbackState=state}catch(_){}
+}
+function syncFromRealAudio(){
   const audio=playerAudio();
   if(!audio)return;
-  try{navigator.mediaSession.playbackState=(!audio.paused&&!audio.ended)?'playing':'paused'}catch(_){}
+  setPlaybackState((!audio.paused&&!audio.ended)?'playing':'paused');
 }
-function syncMetadata(){
+function syncMetadataIfChanged(){
   if(!('mediaSession'in navigator)||typeof MediaMetadata==='undefined')return;
   const meta=currentMeta();
-  try{
-    navigator.mediaSession.metadata=new MediaMetadata({
-      title:meta.title||'VM RADIO',
-      artist:meta.artist||DEFAULT_ARTIST,
-      album:'VM RADIO',
-      artwork:absoluteArtwork(meta.cover)
-    });
-  }catch(_){}
+  const key=[meta.title,meta.artist,meta.cover].join('|');
+  if(key===lastMetaKey)return;
+  lastMetaKey=key;
+  try{navigator.mediaSession.metadata=new MediaMetadata({title:meta.title||'VM RADIO',artist:meta.artist||DEFAULT_ARTIST,album:'VM RADIO',artwork:absoluteArtwork(meta.cover)})}catch(_){}
 }
 function bindAudio(){
   const audio=playerAudio();
   if(!audio||audio===boundAudio)return Boolean(audio);
   boundAudio=audio;
-  ['play','playing','pause','ended','emptied','stalled','waiting'].forEach(type=>audio.addEventListener(type,syncState));
-  syncState();
+  audio.addEventListener('playing',()=>setPlaybackState('playing'));
+  audio.addEventListener('play',()=>setPlaybackState('playing'));
+  audio.addEventListener('pause',()=>setPlaybackState('paused'));
+  audio.addEventListener('ended',()=>setPlaybackState('paused'));
+  syncFromRealAudio();
   return true;
 }
 function setupHandlers(){
   if(!('mediaSession'in navigator))return;
-  try{navigator.mediaSession.setActionHandler('play',async()=>{
-    const audio=playerAudio();if(!audio)return;
-    if(!audio.paused&&!audio.ended){syncState();return;}
-    try{await window.VMRadioPlayer.play()}catch(_){}
-    syncState();
-  })}catch(_){}
-  try{navigator.mediaSession.setActionHandler('pause',()=>{
-    const audio=playerAudio();if(audio&&!audio.paused)window.VMRadioPlayer.pause();syncState();
-  })}catch(_){}
-  try{navigator.mediaSession.setActionHandler('stop',()=>{
-    const audio=playerAudio();if(audio&&!audio.paused)window.VMRadioPlayer.pause();syncState();
-  })}catch(_){}
-  for(const action of ['seekbackward','seekforward','previoustrack','nexttrack']){
-    try{navigator.mediaSession.setActionHandler(action,null)}catch(_){}
-  }
+  try{navigator.mediaSession.setActionHandler('play',async()=>{const audio=playerAudio();if(!audio||!audio.paused)return;try{await window.VMRadioPlayer.play()}catch(_){}})}catch(_){}
+  try{navigator.mediaSession.setActionHandler('pause',()=>{const audio=playerAudio();if(audio&&!audio.paused)window.VMRadioPlayer.pause()})}catch(_){}
+  try{navigator.mediaSession.setActionHandler('stop',()=>{const audio=playerAudio();if(audio&&!audio.paused)window.VMRadioPlayer.pause()})}catch(_){}
+  for(const action of ['seekbackward','seekforward','previoustrack','nexttrack']){try{navigator.mediaSession.setActionHandler(action,null)}catch(_){}}
 }
-function tick(){
+function initialise(){
   bindAudio();
   setupHandlers();
-  syncMetadata();
-  syncState();
+  syncMetadataIfChanged();
+  syncFromRealAudio();
 }
 const start=()=>{
-  tick();
-  setInterval(tick,1200);
-  document.addEventListener('visibilitychange',tick);
-  window.addEventListener('focus',tick);
+  initialise();
+  const wait=setInterval(()=>{if(bindAudio()){setupHandlers();syncFromRealAudio();clearInterval(wait)}},250);
+  setInterval(syncMetadataIfChanged,2500);
+  document.addEventListener('visibilitychange',()=>{syncMetadataIfChanged();syncFromRealAudio()});
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
