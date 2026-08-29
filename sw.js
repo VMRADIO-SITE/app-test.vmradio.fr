@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v49 : Top Titres D1 + Web Push natif VM RADIO via le popup notifications existant.
-const CACHE_NAME = "vm-radio-app-v49";
+// v50 : force le badge source du player + renouvellement du cache PWA.
+const CACHE_NAME = "vm-radio-app-v50";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,6 +18,7 @@ const APP_SHELL = [
   "./audio-recovery.js",
   "./pwa-install-tracker.js?v=20260828-topd1",
   "./top-titres-heart.js?v=20260828-1",
+  "./player-source-badge.js?v=20260829-sourcebadge1",
   "./web-push-sw-handler.js"
 ];
 
@@ -89,8 +90,12 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-client\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
+          // Force également la nouvelle version du player central si l'HTML référence une ancienne query string.
+          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-sourcebadge1');
+
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
           if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=3"></script></body>');
+          if (!injected.includes("player-source-badge.js")) injected = injected.replace(/<\/body>/i, '<script src="./player-source-badge.js?v=20260829-sourcebadge1"></script></body>');
           injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./notifications.js?v=native1"></script></body>');
 
           const headers = new Headers(response.headers);
