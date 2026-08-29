@@ -212,3 +212,12 @@ function init(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+
+(function(){
+  if(document.querySelector('script[data-vm-source-badge]'))return;
+  const s=document.createElement('script');
+  s.src='player-source-badge.js?v=20260829-1';
+  s.async=true;
+  s.dataset.vmSourceBadge='1';
+  document.head.appendChild(s);
+})();
