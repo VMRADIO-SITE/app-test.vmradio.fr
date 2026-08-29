@@ -1568,6 +1568,25 @@ function titleFirstUpper(v){
 }
 </style>
 <link rel="icon" type="image/png" href="./favicon-64.png?v=6"><link rel="apple-touch-icon" href="./apple-touch-icon.png?v=6"><script src="vm-radio-flux-central.js?v=20260829-sourcehalo1"></script>
+
+<style id="vmradio-index-source-halo">
+/* VM RADIO INDEX SOURCE HALO V1 */
+#cover{
+  --vm-source-color:#a855f7;
+  border:2px solid var(--vm-source-color)!important;
+  box-shadow:0 0 0 1px var(--vm-source-color),0 0 14px var(--vm-source-color),0 0 30px color-mix(in srgb,var(--vm-source-color) 55%,transparent)!important;
+  transition:border-color .35s ease,box-shadow .35s ease!important;
+}
+#cover[data-vm-source-kind="rotation"]{--vm-source-color:#a855f7}
+#cover[data-vm-source-kind="request"]{--vm-source-color:#f5a524}
+#cover[data-vm-source-kind="emission"]{--vm-source-color:#39d353}
+#cover[data-vm-source-kind="jingle"]{--vm-source-color:#ec4899}
+.vm-index-source-legend{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:7px 12px;margin:11px 0 10px;padding:7px 9px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(7,4,11,.48);font:700 8.5px/1.2 Arial,sans-serif;color:#aaa2b5}
+.vm-index-source-item{display:inline-flex;align-items:center;gap:5px;opacity:.65}
+.vm-index-source-item:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 7px var(--c)}
+.vm-index-source-item[data-kind="rotation"]{--c:#a855f7}.vm-index-source-item[data-kind="request"]{--c:#f5a524}.vm-index-source-item[data-kind="emission"]{--c:#39d353}.vm-index-source-item[data-kind="jingle"]{--c:#ec4899}
+.vm-index-source-legend[data-active-kind="rotation"] [data-kind="rotation"],.vm-index-source-legend[data-active-kind="request"] [data-kind="request"],.vm-index-source-legend[data-active-kind="emission"] [data-kind="emission"],.vm-index-source-legend[data-active-kind="jingle"] [data-kind="jingle"]{opacity:1;color:#fff;transform:scale(1.05)}
+</style>
 </head>
 <body>
 <div id="vmWelcomeSplash" aria-label="Bienvenue sur l’appli">
@@ -1593,6 +1612,7 @@ function titleFirstUpper(v){
       <div class="cover-wrap">
         <img class="cover" id="cover" src="https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg" alt="Pochette du titre en cours">
       </div>
+<div id="vmIndexSourceLegend" class="vm-index-source-legend" data-active-kind="rotation" aria-label="Signification des couleurs du halo"><span class="vm-index-source-item" data-kind="rotation">Rotation</span><span class="vm-index-source-item" data-kind="request">Demande</span><span class="vm-index-source-item" data-kind="emission">Émission</span><span class="vm-index-source-item" data-kind="jingle">Jingle</span></div>
       <h1 id="title">VM Radio</h1>
       <p class="artist" id="artist">Music IA By Valentin</p>
       <div class="progress"><b id="progressBar"></b></div>
@@ -2355,7 +2375,31 @@ syncNowPlaying();
 </script>
 
 <script src="dedications-feed.js?v=6"></script>
-<script src="./player-source-badge.js?v=20260829-sourcehalo1"></script></body>
+<script src="./player-source-badge.js?v=20260829-sourcehalo1"></script>
+<script id="vmradio-index-source-halo-script">
+(function(){
+  const cover=document.getElementById('cover');
+  const legend=document.getElementById('vmIndexSourceLegend');
+  if(!cover||!legend)return;
+  const norm=v=>{let s=String(v||'').trim();try{s=s.normalize('NFD')}catch{}return s.replace(/[\u0300-\u036f]/g,'').toLowerCase()};
+  function classify(d){
+    const now=d?.now_playing||{},raw=d?.raw?.engine?.current||{};
+    const playlist=String(raw?.scheduleName||raw?.playlist||now?.playlist||d?.playlist||'').trim();
+    const p=norm(playlist),type=norm(raw?.type);
+    if(now?.is_request===true||type==='request')return 'request';
+    if(p.includes('jingle')||type.includes('jingle'))return 'jingle';
+    const general=!p||['rotation','rotation generale','general rotation','default','music','musique','playlist'].includes(p)||p.includes('rotation generale');
+    return general?'rotation':'emission';
+  }
+  function apply(kind){cover.dataset.vmSourceKind=kind;legend.dataset.activeKind=kind}
+  async function refresh(){
+    apply(cover.dataset.vmSourceKind||'rotation');
+    try{const r=await fetch('https://admin.vmradio.fr/api/radio/nowplaying?_indexhalo='+Date.now(),{cache:'no-store',credentials:'omit'});if(r.ok)apply(classify(await r.json()))}catch(_){ }
+  }
+  apply('rotation');refresh();setInterval(refresh,1500);
+})();
+</script>
+</body>
 <script src="./pwa-install-tracker.js?v=20260827-2"></script>
 <script src="./notifications.js?v=webpush-native-2"></script>
 <script src="./top-titres-heart.js?v=20260828-topdisplay1"></script>
