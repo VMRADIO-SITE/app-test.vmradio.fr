@@ -7,7 +7,7 @@
 <style>
 body{margin:0;min-height:100vh;background:#050308;color:#fff;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}.card{width:min(720px,100%);padding:30px;border:2px solid #b85cff;border-radius:24px;background:#0d0714;box-shadow:0 0 30px rgba(151,48,255,.4)}h1{margin-top:0;color:#c05cff}p{color:#d4ceda;line-height:1.5}button{border:0;border-radius:14px;padding:15px 20px;background:linear-gradient(135deg,#c05cff,#6d20ed);color:#fff;font-weight:800;font-size:16px;cursor:pointer}textarea{width:100%;min-height:150px;margin-top:18px;background:#050308;color:#fff;border:1px solid #8b2cff;border-radius:12px;padding:12px;box-sizing:border-box}#status{margin-top:15px;color:#d4ceda}.ok{color:#73f0a5!important}
 </style>
-<script src="vm-radio-flux-central.js"></script>
+<script src="vm-radio-flux-central.js?v=20260829-sourcebadge1"></script>
 </head>
 <body>
 <main class="card">
@@ -44,5 +44,5 @@ button.onclick=async()=>{
   }catch(error){status.textContent="Erreur : "+(error?.message||error);status.className="";button.disabled=false;}
 };
 </script>
-</body>
+<script src="./player-source-badge.js?v=20260829-sourcebadge1"></script></body>
 </html>
