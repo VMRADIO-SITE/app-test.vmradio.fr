@@ -92,3 +92,33 @@ async function refresh(){applyHalo(currentInfo);if(busy)return;busy=true;try{con
 const start=()=>{ensureStyle();applyHalo(currentInfo);refresh();setInterval(refresh,REFRESH);window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('vmradio:pagechange',()=>setTimeout(refresh,50));new MutationObserver(()=>applyHalo(currentInfo)).observe(document.body,{childList:true,subtree:true})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
+
+/* Empêche le player central de renvoyer exactement les mêmes métadonnées au verrouillage chaque seconde. */
+(function(){
+'use strict';
+if(window.__VMRADIO_MEDIASESSION_DEDUPE__)return;
+window.__VMRADIO_MEDIASESSION_DEDUPE__=true;
+if(!('mediaSession' in navigator))return;
+try{
+  const ms=navigator.mediaSession;
+  let proto=ms,desc=null;
+  while(proto&&!desc){proto=Object.getPrototypeOf(proto);if(proto)desc=Object.getOwnPropertyDescriptor(proto,'metadata')||null}
+  if(!desc||typeof desc.set!=='function'||typeof desc.get!=='function')return;
+  let lastKey='';
+  Object.defineProperty(ms,'metadata',{
+    configurable:true,
+    enumerable:true,
+    get(){return desc.get.call(ms)},
+    set(value){
+      let key='';
+      try{
+        const art=Array.isArray(value?.artwork)?value.artwork.map(a=>String(a?.src||'')).join(','):'';
+        key=[value?.title||'',value?.artist||'',value?.album||'',art].join('|');
+      }catch(_){}
+      if(key&&key===lastKey)return;
+      lastKey=key;
+      desc.set.call(ms,value);
+    }
+  });
+}catch(_){}
+})();
