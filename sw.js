@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v56 : un seul controleur Media Session pour le verrouillage iPhone.
-const CACHE_NAME = "vm-radio-app-v56";
+// v57 : controles audio natifs iPhone sur le vrai element audio DOM.
+const CACHE_NAME = "vm-radio-app-v57";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -82,7 +82,7 @@ self.addEventListener("fetch", event => {
             injected = injected.replace(/<\/head>/i, '<style id="vm-radio-no-pinch-zoom">html,body{touch-action:pan-x pan-y;overscroll-behavior-x:none}body{-webkit-text-size-adjust:100%}button,a,input,select,textarea{touch-action:manipulation}</style></head>');
           }
 
-          // Supprime les deux anciens controleurs Media Session inline de index.html.
+          // Aucun ancien controleur Media Session ne doit rester : iOS pilote le vrai <audio> nativement.
           injected = injected.replace(/<script[^>]+id=["']vm-radio-media-session["'][^>]*>[\s\S]*?<\/script>/gi, '');
           injected = injected.replace(/<script[^>]+id=["']vm-radio-background-media-session["'][^>]*>[\s\S]*?<\/script>/gi, '');
           injected = injected.replace(/<script[^>]+id=["']vm-radio-top-titres-firebase["'][^>]*>[\s\S]*?<\/script>/i, '');
@@ -93,7 +93,7 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-client\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
-          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen-single1');
+          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen-native1');
           injected = injected.replace(/audio-recovery\.js(?:\?[^"']*)?/gi, 'audio-recovery.js?v=6');
           injected = injected.replace(/player-source-badge\.js(?:\?[^"']*)?/gi, 'player-source-badge.js?v=20260829-sourcehalo1');
 
