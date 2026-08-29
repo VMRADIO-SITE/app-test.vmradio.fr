@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STREAM_URL = 'https://radio.vmradio.fr/radio.mp3';
+  const STREAM_URL = 'https://radio.vmradio.fr/listen/vm_radio/radio.mp3';
   const AUDIO_SELECTORS = ['#audio', 'audio'];
   const KEY = 'vmradio-audio-wanted';
   const STALL_DELAY = 9000;
@@ -24,7 +24,12 @@
   let lastRecovery = 0;
 
   const getAudio = () => {
-    if (audio && document.contains(audio)) return audio;
+    const central = window.VMRadioPlayer?.audio;
+    if (central && typeof central.play === 'function' && typeof central.pause === 'function') {
+      audio = central;
+      return audio;
+    }
+    if (audio && typeof audio.play === 'function' && typeof audio.pause === 'function') return audio;
     for (const selector of AUDIO_SELECTORS) {
       const el = document.querySelector(selector);
       if (el) return (audio = el);
@@ -130,14 +135,16 @@
     stallTimer = setTimeout(() => {
       const a = getAudio();
       if (!a || !wanted || manualPause) return;
-      if (a.paused || a.readyState < 2) recover(reason);
+      if (!a.paused && a.readyState >= 2) return;
+      if (a.paused) return;
+      recover(reason);
     }, STALL_DELAY);
   };
 
   const bind = () => {
     const a = getAudio();
-    if (!a || a.dataset.vmAudioRecoveryV5) return !!a;
-    a.dataset.vmAudioRecoveryV5 = '1';
+    if (!a || a.__vmAudioRecoveryV6) return !!a;
+    a.__vmAudioRecoveryV6 = true;
 
     if (readWanted() && !a.paused) wanted = true;
 
@@ -162,7 +169,11 @@
       clearTimers();
       if (!internalPause) stopListenerPresence();
       if (internalPause) return;
-      if (wanted && !manualPause) setTimeout(() => recover('pause inattendue'), 1200);
+
+      // Toute pause réelle du lecteur (bouton app, écran verrouillé,
+      // écouteurs/Bluetooth) doit être respectée comme une pause utilisateur.
+      manualPause = true;
+      saveWanted(false);
     });
 
     a.addEventListener('stalled', () => armStallRecovery('stalled'));
@@ -205,23 +216,8 @@
     return true;
   };
 
-  const patchPlayerControls = () => {
-    const a = getAudio();
-    if (!a || a.dataset.vmAudioControlsV5) return;
-    a.dataset.vmAudioControlsV5 = '1';
-    a.addEventListener('pause', () => {
-      if (internalPause) return;
-      if (document.visibilityState === 'visible') {
-        manualPause = true;
-        saveWanted(false);
-      }
-    }, true);
-  };
-
   const init = () => {
-    bind();
-    patchPlayerControls();
-    if (!audio) setTimeout(init, 500);
+    if (!bind()) setTimeout(init, 300);
   };
 
   init();
