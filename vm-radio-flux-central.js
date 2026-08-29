@@ -169,14 +169,13 @@ function nextBroadcastTime(current,next){
   return new Date(start.getTime()+current.duration*1000).toISOString();
 }
 
-/* Media Session : un seul contrôleur, métadonnées seulement si le morceau change. */
+/* Media Session : métadonnées stables, état Play/Pause laissé au navigateur. */
 let mediaMetaKey='';
-let mediaPauseTimer=null;
 function absoluteArtwork(src){
   if(!src)return[];
   try{
     const url=new URL(String(src),location.href).href;
-    return [{src:url,sizes:'512x512'}];
+    return [{src:url}];
   }catch(_){return[{src:String(src)}]}
 }
 function updateMediaMetadata(current){
@@ -193,25 +192,10 @@ function updateMediaMetadata(current){
     });
   }catch(_){}
 }
-function setMediaPlaybackState(state){
-  if(!('mediaSession'in navigator))return;
-  try{if(navigator.mediaSession.playbackState!==state)navigator.mediaSession.playbackState=state}catch(_){}
-}
-function mediaPlaying(){
-  if(mediaPauseTimer){clearTimeout(mediaPauseTimer);mediaPauseTimer=null;}
-  setMediaPlaybackState('playing');
-}
-function mediaPaused(){
-  if(mediaPauseTimer)clearTimeout(mediaPauseTimer);
-  mediaPauseTimer=setTimeout(()=>{
-    mediaPauseTimer=null;
-    if(liveAudio.paused||liveAudio.ended)setMediaPlaybackState('paused');
-  },700);
-}
 function setupMediaSession(){
   if(!('mediaSession'in navigator))return;
   try{navigator.mediaSession.setActionHandler('play',async()=>{
-    if(!liveAudio.paused&&!liveAudio.ended){mediaPlaying();return;}
+    if(!liveAudio.paused&&!liveAudio.ended)return;
     try{
       if(!liveAudio.src)liveAudio.src=STREAM;
       await liveAudio.play();
@@ -261,9 +245,6 @@ function init(){
   liveAudio.addEventListener('play',syncPlayer);
   liveAudio.addEventListener('playing',syncPlayer);
   liveAudio.addEventListener('pause',syncPlayer);
-  liveAudio.addEventListener('playing',mediaPlaying);
-  liveAudio.addEventListener('pause',mediaPaused);
-  liveAudio.addEventListener('ended',mediaPaused);
   liveAudio.addEventListener('playing',listenerStart);
   liveAudio.addEventListener('pause',listenerStop);
   liveAudio.addEventListener('ended',listenerStop);
