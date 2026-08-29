@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v53 : correctif Media Session verrouillage + renouvellement du cache PWA.
-const CACHE_NAME = "vm-radio-app-v53";
+// v54 : pause iPhone respectee + watchdog audio central.
+const CACHE_NAME = "vm-radio-app-v54";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -15,7 +15,7 @@ const APP_SHELL = [
   "./manifest.webmanifest",
   "./notifications.js?v=native1",
   "./dedications-feed.js?v=5",
-  "./audio-recovery.js",
+  "./audio-recovery.js?v=6",
   "./pwa-install-tracker.js?v=20260828-topd1",
   "./top-titres-heart.js?v=20260828-1",
   "./player-source-badge.js?v=20260829-sourcehalo1",
@@ -91,10 +91,11 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
           injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen2');
+          injected = injected.replace(/audio-recovery\.js(?:\?[^"']*)?/gi, 'audio-recovery.js?v=6');
           injected = injected.replace(/player-source-badge\.js(?:\?[^"']*)?/gi, 'player-source-badge.js?v=20260829-sourcehalo1');
 
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
-          if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=3"></script></body>');
+          if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=6"></script></body>');
           if (!injected.includes("player-source-badge.js")) injected = injected.replace(/<\/body>/i, '<script src="./player-source-badge.js?v=20260829-sourcehalo1"></script></body>');
           injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./notifications.js?v=native1"></script></body>');
 
