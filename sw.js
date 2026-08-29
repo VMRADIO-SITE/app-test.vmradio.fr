@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v54 : pause iPhone respectee + watchdog audio central.
-const CACHE_NAME = "vm-radio-app-v54";
+// v55 : vrai element audio DOM pour controles iPhone.
+const CACHE_NAME = "vm-radio-app-v55";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -90,7 +90,7 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-client\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
-          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen2');
+          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen-dom1');
           injected = injected.replace(/audio-recovery\.js(?:\?[^"']*)?/gi, 'audio-recovery.js?v=6');
           injected = injected.replace(/player-source-badge\.js(?:\?[^"']*)?/gi, 'player-source-badge.js?v=20260829-sourcehalo1');
 
