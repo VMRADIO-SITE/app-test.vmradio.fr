@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
-// v52 : halo source + légende + renouvellement du cache PWA.
-const CACHE_NAME = "vm-radio-app-v52";
+// v53 : correctif Media Session verrouillage + renouvellement du cache PWA.
+const CACHE_NAME = "vm-radio-app-v53";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -90,7 +90,7 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-client\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
-          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-sourcehalo1');
+          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen2');
           injected = injected.replace(/player-source-badge\.js(?:\?[^"']*)?/gi, 'player-source-badge.js?v=20260829-sourcehalo1');
 
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
