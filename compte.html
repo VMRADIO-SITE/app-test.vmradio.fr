@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090610">
+<title>Mon compte — VM RADIO</title>
+<style>
+:root{--bg:#05050a;--panel:#0d0a13;--violet:#b85cff;--muted:#aaa5b4;--line:#2a2038;--bad:#ff6b7a;--good:#4ff197}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
+body{background:radial-gradient(circle at 50% 0%,rgba(126,42,210,.2),transparent 34%),linear-gradient(180deg,#07050d,#05040a)}
+.wrap{width:min(100%,520px);min-height:100dvh;margin:auto;padding:18px 14px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.back{color:#d68cff;text-decoration:none;font-weight:800}.brand{text-align:center;flex:1}.brand strong{display:block;font-size:18px}.brand span{font-size:11px;color:var(--muted)}
+.card{border:1px solid rgba(181,92,255,.34);border-radius:22px;background:linear-gradient(145deg,rgba(20,14,29,.97),rgba(8,7,13,.98));padding:18px;box-shadow:0 16px 35px rgba(0,0,0,.25)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.tab{border:1px solid var(--line);border-radius:13px;padding:11px;background:#171020;color:#aaa2b5;font-weight:800;cursor:pointer}.tab.active{background:#2b153d;color:#fff;border-color:#6f3499}
+form{display:grid;gap:11px}.field{display:grid;gap:6px}.field label{font-size:11px;color:#c8c1cf;font-weight:700}.field input{width:100%;border:1px solid var(--line);border-radius:13px;background:#09070e;color:#fff;padding:12px 13px;font-size:14px;outline:none}.field input:focus{border-color:#8d43c2;box-shadow:0 0 0 3px rgba(184,92,255,.1)}
+.primary,.secondary{border:0;border-radius:13px;padding:12px 14px;font-weight:900;cursor:pointer}.primary{background:linear-gradient(135deg,#c05cff,#7433dd);color:#fff}.secondary{background:#1b1227;color:#fff;border:1px solid var(--line)}
+.message{display:none;margin-top:12px;padding:10px 12px;border-radius:12px;font-size:12px}.message.show{display:block}.message.bad{background:rgba(255,107,122,.12);color:#ff9da7;border:1px solid rgba(255,107,122,.25)}.message.good{background:rgba(79,241,151,.1);color:#89f8ba;border:1px solid rgba(79,241,151,.22)}
+.profile{display:none}.profile.show{display:block}.profile-head{display:flex;align-items:center;gap:13px}.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#2b153d;color:#e3b7ff;font-size:22px;font-weight:900;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.profile h2{margin:0;font-size:19px}.profile p{margin:4px 0 0;color:var(--muted);font-size:12px}.role{display:inline-flex;margin-top:10px;padding:7px 10px;border-radius:999px;background:#2b153d;color:#df9aff;font-size:10px;font-weight:900;letter-spacing:.4px}.actions{display:grid;gap:9px;margin-top:17px}.manager{display:none}.manager.show{display:block}.note{margin-top:14px;color:#827a8b;font-size:10px;line-height:1.45;text-align:center}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <a class="back" href="./index.html">← Retour</a>
+    <div class="brand"><strong>VM RADIO</strong><span>Mon compte</span></div>
+    <div style="width:52px"></div>
+  </div>
+
+  <section class="card" id="authCard">
+    <div class="tabs">
+      <button class="tab active" id="loginTab" type="button">Connexion</button>
+      <button class="tab" id="registerTab" type="button">Créer un compte</button>
+    </div>
+
+    <form id="loginForm">
+      <div class="field"><label>E-mail</label><input id="loginEmail" type="email" autocomplete="email" required></div>
+      <div class="field"><label>Mot de passe</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <button class="primary" type="submit">Se connecter</button>
+    </form>
+
+    <form id="registerForm" hidden>
+      <div class="field"><label>Nom et prénom</label><input id="registerName" minlength="2" autocomplete="name" required></div>
+      <div class="field"><label>E-mail</label><input id="registerEmail" type="email" autocomplete="email" required></div>
+      <div class="field"><label>Mot de passe</label><input id="registerPassword" type="password" minlength="8" autocomplete="new-password" required></div>
+      <button class="primary" type="submit">Créer mon compte</button>
+    </form>
+
+    <div id="message" class="message"></div>
+    <div class="note">Les nouveaux comptes créés depuis l’application reçoivent automatiquement le rôle Utilisateur.</div>
+  </section>
+
+  <section class="card profile" id="profileCard">
+    <div class="profile-head">
+      <div class="avatar" id="avatar">V</div>
+      <div><h2 id="profileName">Compte VM RADIO</h2><p id="profileEmail"></p><span class="role" id="profileRole">UTILISATEUR</span></div>
+    </div>
+    <div class="actions">
+      <button class="secondary manager" id="managerBtn" type="button">Ouvrir VM RADIO Manager</button>
+      <button class="secondary" id="logoutBtn" type="button">Se déconnecter</button>
+    </div>
+    <div id="profileMessage" class="message"></div>
+  </section>
+</main>
+<script>
+(()=>{
+'use strict';
+const API='https://admin.vmradio.fr/api/app-auth';
+const authCard=document.getElementById('authCard');
+const profileCard=document.getElementById('profileCard');
+const loginTab=document.getElementById('loginTab');
+const registerTab=document.getElementById('registerTab');
+const loginForm=document.getElementById('loginForm');
+const registerForm=document.getElementById('registerForm');
+const message=document.getElementById('message');
+const profileMessage=document.getElementById('profileMessage');
+
+function showMessage(el,text,type='bad'){el.textContent=text;el.className='message show '+type}
+function clearMessage(el){el.textContent='';el.className='message'}
+function switchTab(which){
+  const login=which==='login';
+  loginTab.classList.toggle('active',login);registerTab.classList.toggle('active',!login);
+  loginForm.hidden=!login;registerForm.hidden=login;clearMessage(message);
+}
+loginTab.onclick=()=>switchTab('login');registerTab.onclick=()=>switchTab('register');
+
+async function api(path,options={}){
+  const r=await fetch(API+path,{credentials:'include',cache:'no-store',...options,headers:{Accept:'application/json',...(options.headers||{})}});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||d.ok===false)throw Error(d.error||'Une erreur est survenue.');
+  return d;
+}
+
+function renderUser(user){
+  authCard.style.display='none';profileCard.classList.add('show');
+  document.getElementById('profileName').textContent=user.name||'Compte VM RADIO';
+  document.getElementById('profileEmail').textContent=user.email||'';
+  document.getElementById('profileRole').textContent=String(user.roleLabel||user.role||'Utilisateur').toUpperCase();
+  const avatar=document.getElementById('avatar');avatar.innerHTML='';
+  if(user.avatarUrl){const img=document.createElement('img');img.src=user.avatarUrl;img.alt='';img.onerror=()=>{avatar.textContent=(user.name||'V').charAt(0).toUpperCase()};avatar.appendChild(img)}else avatar.textContent=(user.name||'V').charAt(0).toUpperCase();
+  document.getElementById('managerBtn').classList.toggle('show',user.managerAccess===true);
+}
+
+loginForm.onsubmit=async e=>{
+  e.preventDefault();clearMessage(message);
+  try{
+    const d=await api('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginPassword').value})});
+    renderUser(d.user);
+  }catch(err){showMessage(message,err.message)}
+};
+
+registerForm.onsubmit=async e=>{
+  e.preventDefault();clearMessage(message);
+  try{
+    const d=await api('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('registerName').value.trim(),email:document.getElementById('registerEmail').value.trim(),password:document.getElementById('registerPassword').value})});
+    renderUser(d.user);
+  }catch(err){showMessage(message,err.message)}
+};
+
+document.getElementById('logoutBtn').onclick=async()=>{
+  clearMessage(profileMessage);
+  try{await api('/logout',{method:'POST'});location.reload()}catch(err){showMessage(profileMessage,err.message)}
+};
+
+document.getElementById('managerBtn').onclick=()=>{location.href='https://admin.vmradio.fr/'};
+
+(async()=>{
+  try{const d=await api('/session');if(d.authenticated&&d.user)renderUser(d.user)}catch{}
+})();
+})();
+</script>
+</body>
+</html>
