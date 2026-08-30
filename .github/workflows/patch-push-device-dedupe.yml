@@ -1,0 +1,78 @@
+name: Patch push device dedupe
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-push-device-dedupe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch app push registration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('notifications.js')
+          s=p.read_text(encoding='utf-8')
+
+          # Bump client version so installed PWAs reload the updated push code.
+          s=s.replace("VERSION='50'","VERSION='51'",1)
+
+          # Persistent installation id: one id per browser/PWA installation.
+          anchor="const ACTIVATED_KEY='vmRadioNotificationsNativeV1',ERROR_KEY='vmRadioNotificationsLastErrorV2',VERSION='51',SITE_VERSION_KEY='vmRadioSiteVersionV1';"
+          if anchor in s and "DEVICE_ID_KEY='vmRadioPushDeviceIdV1'" not in s:
+              s=s.replace(anchor, anchor+"\nconst DEVICE_ID_KEY='vmRadioPushDeviceIdV1';", 1)
+
+          marker="function markActivated(){localStorage.setItem(ACTIVATED_KEY,'activated')}"
+          device_fn="""function getDeviceId(){let id='';try{id=String(localStorage.getItem(DEVICE_ID_KEY)||'').trim()}catch(_){}if(id)return id;try{id=(crypto&&typeof crypto.randomUUID==='function')?`vmr-${crypto.randomUUID()}`:`vmr-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;localStorage.setItem(DEVICE_ID_KEY,id)}catch(_){id=`vmr-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}return id}\n"""
+          if marker in s and 'function getDeviceId()' not in s:
+              s=s.replace(marker, device_fn+marker, 1)
+
+          new_setup="""async function setupNativePush(){const envIssue=notificationEnvironmentIssue();if(envIssue)throw new Error(envIssue);const configResponse=await fetch(API+'/config',{cache:'no-store'});const config=await configResponse.json().catch(()=>({}));if(!configResponse.ok||!config.ok||!config.publicKey)throw new Error(config.error||'Configuration Push indisponible');const registration=await navigator.serviceWorker.register(`./sw.js?vm=${VERSION}`,{scope:'./'});await navigator.serviceWorker.ready;let subscription=await registration.pushManager.getSubscription();if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:decodeKey(config.publicKey)});const response=await fetch(API+'/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription:subscription.toJSON(),source:'app',deviceId:getDeviceId(),userAgent:navigator.userAgent||''})});const data=await response.json().catch(()=>({}));if(!response.ok||!data.ok)throw new Error(data.error||'Abonnement impossible');localStorage.removeItem(ERROR_KEY);markActivated();return subscription}\nasync function syncExistingPush(subscription){if(!subscription)return null;try{const response=await fetch(API+'/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription:subscription.toJSON(),source:'app',deviceId:getDeviceId(),userAgent:navigator.userAgent||''})});const data=await response.json().catch(()=>({}));if(!response.ok||!data.ok)throw new Error(data.error||'Synchronisation Push impossible');localStorage.removeItem(ERROR_KEY);markActivated();return data}catch(error){console.warn('VM RADIO push sync:',error);localStorage.setItem(ERROR_KEY,String(error?.message||error));return null}}\n"""
+          s,n=re.subn(r"async function setupNativePush\(\)\{.*?\}\nasync function activateNotifications", new_setup+"async function activateNotifications", s, count=1, flags=re.S)
+          if n!=1:
+              raise SystemExit('setupNativePush introuvable')
+
+          old="if(browserNotificationsGranted()&&subscription){markActivated();return}"
+          new="if(browserNotificationsGranted()&&subscription){await syncExistingPush(subscription);markActivated();return}"
+          if old in s:
+              s=s.replace(old,new,1)
+          elif new not in s:
+              raise SystemExit('setupPrompt sync anchor introuvable')
+
+          p.write_text(s,encoding='utf-8')
+
+          # Multiple legacy endpoints on the same browser now replace the same visible notification
+          # without sounding/vibrating repeatedly.
+          p=Path('web-push-sw-handler.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('renotify:true','renotify:false')
+          p.write_text(s,encoding='utf-8')
+
+          # Force installed PWAs to update the service worker and client script.
+          p=Path('sw.js')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'importScripts\("\./web-push-sw-handler\.js\?v=[^"\)]*"\);','importScripts("./web-push-sw-handler.js?v=2");',s,count=1)
+          s=re.sub(r'const CACHE_NAME = "[^"]+";','const CACHE_NAME = "vm-radio-app-v59-device-dedupe";',s,count=1)
+          s=s.replace('./notifications.js?v=native1','./notifications.js?v=device-dedupe1')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'VM RADIO Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add notifications.js web-push-sw-handler.js sw.js
+          if git diff --cached --quiet; then
+            echo 'Nothing to patch.'
+            exit 0
+          fi
+          git commit -m 'Dedoublonne les appareils de notification'
+          git push
