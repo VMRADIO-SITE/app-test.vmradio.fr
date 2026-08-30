@@ -10,6 +10,23 @@
   const displayName=u=>clean(u?.name||u?.display_name||u?.email?.split('@')?.[0]||'VM RADIO');
   const normalizeUser=u=>u?{...u,display_name:displayName(u)}:null;
 
+  function syncWelcomeName(user=currentUser){
+    if(!user)return;
+    const splash=document.getElementById('vmWelcomeSplash');
+    if(!splash)return;
+    const name=displayName(user);
+    if(!name)return;
+    const card=splash.querySelector('.vmWelcomeCard')||splash.firstElementChild||splash;
+    let line=splash.querySelector('#vm-account-welcome-line');
+    if(!line){
+      line=document.createElement('div');
+      line.id='vm-account-welcome-line';
+      const title=splash.querySelector('.vmWelcomeTitle');
+      if(title)title.insertAdjacentElement('afterend',line);else card.appendChild(line);
+    }
+    line.textContent='Bienvenue '+name+' 💜';
+  }
+
   function syncAccountNameFields(user=currentUser){
     if(!user)return;
     const name=displayName(user);
@@ -21,6 +38,7 @@
       if(!clean(input.value))input.value=name;
       input.dataset.vmAccountDefaultName=name;
     });
+    syncWelcomeName(user);
   }
 
   const saveSession=(user)=>{
@@ -51,7 +69,7 @@
 .vm-account-field{display:block;margin:10px 0}.vm-account-field span{display:block;margin:0 0 5px;color:#cfc7d6;font-size:10px}.vm-account-field input{width:100%;height:46px;border:1px solid #4d315d;border-radius:12px;background:#09070e;color:#fff;padding:0 13px;outline:none;box-sizing:border-box}.vm-account-field input:focus{border-color:#b85cff;box-shadow:0 0 0 3px rgba(184,92,255,.12)}
 #vm-account-name-wrap.hidden{display:none}.vm-account-main{width:100%;margin-top:14px;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,#c05cff,#7026d4);color:#fff;font-weight:900;cursor:pointer}.vm-account-main:disabled{opacity:.55;cursor:wait}#vm-account-status{min-height:18px;margin-top:10px;text-align:center;color:#d9a7ff;font-size:11px}.vm-account-note{margin-top:12px;color:#766e7e;text-align:center;font-size:9px;line-height:1.4}
 #vm-account-badge{display:inline-flex;align-items:center;gap:6px;margin:7px auto 0;padding:6px 10px;border:1px solid rgba(184,92,255,.4);border-radius:999px;background:rgba(12,7,18,.82);color:#eadfff;font:800 10px/1 Arial,sans-serif;box-shadow:0 0 15px rgba(184,92,255,.12)}#vm-account-badge:before{content:'●';color:#b85cff;font-size:8px}
-#vm-account-welcome-line{margin:8px 0 0;text-align:center;color:#d9a7ff;font-weight:900;font-size:14px}
+#vm-account-welcome-line{margin:8px 0 0;text-align:center;color:#d9a7ff;font-weight:900;font-size:14px;line-height:1.2}
 `;document.head.appendChild(s)}
 
   function createModal(){
@@ -90,8 +108,7 @@
     let badge=document.getElementById('vm-account-badge');
     if(!badge){badge=document.createElement('div');badge.id='vm-account-badge';const logo=document.querySelector('header img,.brand img,.logo img,img[alt*="VM RADIO" i]');const host=logo?.parentElement||document.querySelector('header,.brand,.logo')||document.body;if(host===document.body){badge.style.cssText+='position:fixed;top:8px;right:10px;z-index:9999'}host.appendChild(badge)}
     badge.textContent=name;
-    const splash=document.getElementById('vmWelcomeSplash');
-    if(splash&&!document.getElementById('vm-account-welcome-line')){const line=document.createElement('div');line.id='vm-account-welcome-line';line.textContent='Bienvenue '+name+' 💜';const target=splash.querySelector('h1,h2,.title')||splash.firstElementChild||splash;target.insertAdjacentElement('afterend',line)}
+    syncWelcomeName(user);
     syncAccountNameFields(user);
   }
 
@@ -121,9 +138,9 @@
     setTimeout(afterNotifications,600)
   }
 
-  const accountFieldObserver=new MutationObserver(()=>syncAccountNameFields());
+  const accountFieldObserver=new MutationObserver(()=>{syncAccountNameFields();syncWelcomeName()});
   accountFieldObserver.observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>syncAccountNameFields(),0));
+  window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>{syncAccountNameFields();syncWelcomeName()},0));
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
