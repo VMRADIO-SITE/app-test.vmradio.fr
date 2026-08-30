@@ -114,6 +114,6 @@
   }
 
   async function sync(){try{const {r,d}=await api('/session');if(r.ok&&d?.authenticated&&d?.user){saveUser(d.user);ensureMenu();return true}}catch{}user=readUser();if(user){ensureMenu();return true}return false}
-  function boot(){user=readUser();if(user)ensureMenu();sync();new MutationObserver(()=>{if(user&&!document.getElementById('vm-account-home'))ensureMenu()}).observe(document.documentElement,{childList:true,subtree:true});window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>{if(user)ensureMenu()},0))}
+  function boot(){user=readUser();if(user)ensureMenu();sync();new MutationObserver(()=>{if(user&&!document.getElementById('vm-account-home'))ensureMenu()}).observe(document.documentElement,{childList:true,subtree:true});window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>{if(user)ensureMenu()},0));window.addEventListener('vmradio:accountchange',e=>{const next=e?.detail?.user||readUser();if(next){saveUser(next);setTimeout(()=>ensureMenu(),0)}else{user=null;document.getElementById('vm-account-home')?.remove()}})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
