@@ -10,23 +10,6 @@
   const displayName=u=>clean(u?.name||u?.display_name||u?.email?.split('@')?.[0]||'VM RADIO');
   const normalizeUser=u=>u?{...u,display_name:displayName(u)}:null;
 
-  function syncWelcomeName(user=currentUser){
-    if(!user)return;
-    const splash=document.getElementById('vmWelcomeSplash');
-    if(!splash)return;
-    const name=displayName(user);
-    if(!name)return;
-    const card=splash.querySelector('.vmWelcomeCard')||splash.firstElementChild||splash;
-    let line=splash.querySelector('#vm-account-welcome-line');
-    if(!line){
-      line=document.createElement('div');
-      line.id='vm-account-welcome-line';
-      const title=splash.querySelector('.vmWelcomeTitle');
-      if(title)title.insertAdjacentElement('afterend',line);else card.appendChild(line);
-    }
-    line.textContent='Bienvenue '+name+' 💜';
-  }
-
   function syncAccountNameFields(user=currentUser){
     if(!user)return;
     const name=displayName(user);
@@ -38,7 +21,6 @@
       if(!clean(input.value))input.value=name;
       input.dataset.vmAccountDefaultName=name;
     });
-    syncWelcomeName(user);
   }
 
   const saveSession=(user)=>{
@@ -63,20 +45,21 @@
 
   function styles(){if(document.getElementById('vm-account-style'))return;const s=document.createElement('style');s.id='vm-account-style';s.textContent=`
 #vm-account-overlay{position:fixed;inset:0;z-index:2147483646;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);font-family:Arial,Helvetica,sans-serif}#vm-account-overlay.open{display:flex}
-#vm-account-card{width:min(100%,430px);padding:24px;border:1px solid rgba(184,92,255,.7);border-radius:24px;background:radial-gradient(circle at 50% 0,rgba(184,92,255,.16),transparent 42%),linear-gradient(145deg,#12091c,#07050c);box-shadow:0 20px 70px rgba(0,0,0,.65),0 0 30px rgba(184,92,255,.2);color:#fff}
+#vm-account-card{width:min(100%,430px);max-height:calc(100vh - 32px);overflow:auto;padding:24px;border:1px solid rgba(184,92,255,.7);border-radius:24px;background:radial-gradient(circle at 50% 0,rgba(184,92,255,.16),transparent 42%),linear-gradient(145deg,#12091c,#07050c);box-shadow:0 20px 70px rgba(0,0,0,.65),0 0 30px rgba(184,92,255,.2);color:#fff}
 #vm-account-card h2{margin:0;text-align:center;font-size:24px}#vm-account-card .sub{margin:8px 0 18px;text-align:center;color:#bdb4c8;font-size:12px;line-height:1.45}
 .vm-account-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:15px;padding:4px;border:1px solid #352342;border-radius:12px;background:#09070e}.vm-account-tab{border:0;border-radius:9px;padding:10px;background:transparent;color:#a89faf;font-weight:800;cursor:pointer}.vm-account-tab.active{background:linear-gradient(135deg,#b85cff,#7428d5);color:#fff}
 .vm-account-field{display:block;margin:10px 0}.vm-account-field span{display:block;margin:0 0 5px;color:#cfc7d6;font-size:10px}.vm-account-field input{width:100%;height:46px;border:1px solid #4d315d;border-radius:12px;background:#09070e;color:#fff;padding:0 13px;outline:none;box-sizing:border-box}.vm-account-field input:focus{border-color:#b85cff;box-shadow:0 0 0 3px rgba(184,92,255,.12)}
-#vm-account-name-wrap.hidden{display:none}.vm-account-main{width:100%;margin-top:14px;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,#c05cff,#7026d4);color:#fff;font-weight:900;cursor:pointer}.vm-account-main:disabled{opacity:.55;cursor:wait}#vm-account-status{min-height:18px;margin-top:10px;text-align:center;color:#d9a7ff;font-size:11px}.vm-account-note{margin-top:12px;color:#766e7e;text-align:center;font-size:9px;line-height:1.4}
+#vm-account-name-wrap.hidden{display:none}.vm-account-main{width:100%;margin-top:14px;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,#c05cff,#7026d4);color:#fff;font-weight:900;cursor:pointer}.vm-account-main:disabled{opacity:.55;cursor:wait}#vm-account-status{min-height:18px;margin-top:10px;text-align:center;color:#d9a7ff;font-size:11px}.vm-account-note{margin-top:12px;color:#8d8495;text-align:center;font-size:9px;line-height:1.45}
+.vm-account-privacy{margin-top:12px;border:1px solid rgba(184,92,255,.24);border-radius:12px;background:rgba(184,92,255,.05);overflow:hidden}.vm-account-privacy summary{list-style:none;cursor:pointer;padding:10px 11px;color:#d9b8f4;font-size:10px;font-weight:900;text-align:center}.vm-account-privacy summary::-webkit-details-marker{display:none}.vm-account-privacy summary:before{content:'🔒 ';}.vm-account-privacy[open] summary{border-bottom:1px solid rgba(184,92,255,.16)}.vm-account-privacy-body{padding:10px 12px;color:#a99eaf;font-size:9px;line-height:1.55}.vm-account-privacy-body p{margin:0 0 8px}.vm-account-privacy-body p:last-child{margin-bottom:0}.vm-account-privacy-body strong{color:#e7dced}.vm-account-privacy-body a{color:#d7a7ff;text-decoration:underline;text-underline-offset:2px}.vm-account-legal-mini{margin-top:9px;text-align:center;color:#746b7b;font-size:8px;line-height:1.4}
 #vm-account-badge{display:inline-flex;align-items:center;gap:6px;margin:7px auto 0;padding:6px 10px;border:1px solid rgba(184,92,255,.4);border-radius:999px;background:rgba(12,7,18,.82);color:#eadfff;font:800 10px/1 Arial,sans-serif;box-shadow:0 0 15px rgba(184,92,255,.12)}#vm-account-badge:before{content:'●';color:#b85cff;font-size:8px}
-#vm-account-welcome-line{margin:8px 0 0;text-align:center;color:#d9a7ff;font-weight:900;font-size:14px;line-height:1.2}
+#vm-account-welcome-line{margin:8px 0 0;text-align:center;color:#d9a7ff;font-weight:900;font-size:14px}
 `;document.head.appendChild(s)}
 
   function createModal(){
     styles();
     let o=document.getElementById('vm-account-overlay');if(o)return o;
     o=document.createElement('div');o.id='vm-account-overlay';
-    o.innerHTML=`<section id="vm-account-card" role="dialog" aria-modal="true"><h2>Ton espace VM RADIO 💜</h2><p class="sub">Crée ton mini compte pour retrouver ton prénom, tes J’aime et tes notifications après une réinstallation.</p><div class="vm-account-tabs"><button class="vm-account-tab active" data-mode="register" type="button">Créer mon compte</button><button class="vm-account-tab" data-mode="login" type="button">Me connecter</button></div><label class="vm-account-field" id="vm-account-name-wrap"><span>Prénom ou pseudo</span><input id="vm-account-name" maxlength="40" autocomplete="nickname" placeholder="Ex. Valentin"></label><label class="vm-account-field"><span>Email</span><input id="vm-account-email" type="email" maxlength="180" autocomplete="email" placeholder="ton@email.fr"></label><label class="vm-account-field"><span>Mot de passe</span><input id="vm-account-password" type="password" minlength="8" autocomplete="current-password" placeholder="6 caractères minimum"></label><button class="vm-account-main" id="vm-account-submit" type="button">Créer mon compte</button><div id="vm-account-status"></div><div class="vm-account-note">Ton email sert uniquement à retrouver ton mini compte VM RADIO. Ton prénom/pseudo est celui affiché dans l'appli.</div></section>`;
+    o.innerHTML=`<section id="vm-account-card" role="dialog" aria-modal="true"><h2>Ton espace VM RADIO 💜</h2><p class="sub">Crée ton mini compte pour retrouver ton prénom, tes J’aime et tes notifications après une réinstallation.</p><div class="vm-account-tabs"><button class="vm-account-tab active" data-mode="register" type="button">Créer mon compte</button><button class="vm-account-tab" data-mode="login" type="button">Me connecter</button></div><label class="vm-account-field" id="vm-account-name-wrap"><span>Prénom ou pseudo</span><input id="vm-account-name" maxlength="40" autocomplete="nickname" placeholder="Ex. Valentin"></label><label class="vm-account-field"><span>Email</span><input id="vm-account-email" type="email" maxlength="180" autocomplete="email" placeholder="ton@email.fr"></label><label class="vm-account-field"><span>Mot de passe</span><input id="vm-account-password" type="password" minlength="8" autocomplete="current-password" placeholder="8 caractères minimum"></label><button class="vm-account-main" id="vm-account-submit" type="button">Créer mon compte</button><div id="vm-account-status"></div><div class="vm-account-note">Ton adresse e-mail sert à créer et retrouver ton compte. Ton prénom/pseudo personnalise l’application. Le mot de passe est conservé sous forme sécurisée et non en clair.</div><details class="vm-account-privacy"><summary>Protection de vos données</summary><div class="vm-account-privacy-body"><p><strong>Responsable du traitement :</strong> VM RADIO — contact@vmradio.fr.</p><p><strong>Données utilisées :</strong> prénom ou pseudo, adresse e-mail, données nécessaires à l’authentification et informations liées au compte.</p><p><strong>Finalités :</strong> création, sécurisation et gestion du compte, personnalisation de l’application et conservation des préférences associées au compte.</p><p><strong>Durée :</strong> les données du compte sont conservées tant que le compte existe, sauf obligation légale imposant une conservation différente.</p><p><strong>Vos droits :</strong> vous pouvez demander l’accès, la rectification, l’effacement, la limitation ou, lorsque les conditions sont réunies, la portabilité de vos données. Vous pouvez modifier ou supprimer votre compte depuis l’application et contacter VM RADIO à contact@vmradio.fr.</p><p>Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">CNIL</a>.</p><p>Le traitement des données personnelles est encadré notamment par le <strong>Règlement (UE) 2016/679 (RGPD)</strong> et la <strong>loi n° 78-17 du 6 janvier 1978 modifiée, dite « Informatique et Libertés »</strong>.</p></div></details><div class="vm-account-legal-mini">En créant un compte, vous reconnaissez avoir pris connaissance des informations relatives au traitement de vos données personnelles.</div></section>`;
     document.body.appendChild(o);
     let mode='register';
     const tabs=[...o.querySelectorAll('.vm-account-tab')],nameWrap=o.querySelector('#vm-account-name-wrap'),submit=o.querySelector('#vm-account-submit'),status=o.querySelector('#vm-account-status');
@@ -108,7 +91,8 @@
     let badge=document.getElementById('vm-account-badge');
     if(!badge){badge=document.createElement('div');badge.id='vm-account-badge';const logo=document.querySelector('header img,.brand img,.logo img,img[alt*="VM RADIO" i]');const host=logo?.parentElement||document.querySelector('header,.brand,.logo')||document.body;if(host===document.body){badge.style.cssText+='position:fixed;top:8px;right:10px;z-index:9999'}host.appendChild(badge)}
     badge.textContent=name;
-    syncWelcomeName(user);
+    const splash=document.getElementById('vmWelcomeSplash');
+    if(splash&&!document.getElementById('vm-account-welcome-line')){const line=document.createElement('div');line.id='vm-account-welcome-line';line.textContent='Bienvenue '+name+' 💜';const target=splash.querySelector('h1,h2,.title')||splash.firstElementChild||splash;target.insertAdjacentElement('afterend',line)}
     syncAccountNameFields(user);
   }
 
@@ -138,9 +122,9 @@
     setTimeout(afterNotifications,600)
   }
 
-  const accountFieldObserver=new MutationObserver(()=>{syncAccountNameFields();syncWelcomeName()});
+  const accountFieldObserver=new MutationObserver(()=>syncAccountNameFields());
   accountFieldObserver.observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>{syncAccountNameFields();syncWelcomeName()},0));
+  window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>syncAccountNameFields(),0));
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
