@@ -10,6 +10,19 @@
   const displayName=u=>clean(u?.name||u?.display_name||u?.email?.split('@')?.[0]||'VM RADIO');
   const normalizeUser=u=>u?{...u,display_name:displayName(u)}:null;
 
+  function syncAccountNameFields(user=currentUser){
+    if(!user)return;
+    const name=displayName(user);
+    if(!name)return;
+    const selectors=['#dedName','#vmreqName'];
+    selectors.forEach(selector=>{
+      const input=document.querySelector(selector);
+      if(!input)return;
+      if(!clean(input.value))input.value=name;
+      input.dataset.vmAccountDefaultName=name;
+    });
+  }
+
   const saveSession=(user)=>{
     user=normalizeUser(user);
     try{
@@ -18,6 +31,7 @@
     }catch{}
     currentUser=user;
     personalize(user);
+    syncAccountNameFields(user);
   };
   const clearSession=()=>{try{localStorage.removeItem(USER_KEY)}catch{}currentUser=null};
 
@@ -78,6 +92,7 @@
     badge.textContent=name;
     const splash=document.getElementById('vmWelcomeSplash');
     if(splash&&!document.getElementById('vm-account-welcome-line')){const line=document.createElement('div');line.id='vm-account-welcome-line';line.textContent='Bienvenue '+name+' 💜';const target=splash.querySelector('h1,h2,.title')||splash.firstElementChild||splash;target.insertAdjacentElement('afterend',line)}
+    syncAccountNameFields(user);
   }
 
   function showPersonalWelcome(user){
@@ -102,8 +117,13 @@
   async function boot(){
     styles();
     let cached=null;try{cached=JSON.parse(localStorage.getItem(USER_KEY)||'null')}catch{}
-    if(cached)personalize(cached);
+    if(cached){currentUser=normalizeUser(cached);personalize(currentUser);syncAccountNameFields(currentUser)}
     setTimeout(afterNotifications,600)
   }
+
+  const accountFieldObserver=new MutationObserver(()=>syncAccountNameFields());
+  accountFieldObserver.observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('vmradio:pagechange',()=>setTimeout(()=>syncAccountNameFields(),0));
+
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
