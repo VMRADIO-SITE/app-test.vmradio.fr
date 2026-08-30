@@ -1,3 +1,4 @@
+<!-- VM RADIO logo source v20260830-logo2 -->
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -39,7 +40,6 @@
     <clipPath id="clip"><rect x="72" y="72" width="880" height="880" rx="190"/></clipPath>
   </defs>
 
-  <!-- Transparent outside the rounded app tile -->
   <g filter="url(#shadow)">
     <rect x="72" y="72" width="880" height="880" rx="190" fill="url(#bg)"/>
     <rect x="78" y="78" width="868" height="868" rx="184" fill="none" stroke="url(#rim)" stroke-width="20"/>
@@ -53,13 +53,11 @@
     <path d="M90 190 C180 110 260 90 382 98" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="28"/>
   </g>
 
-  <!-- Brand mark -->
   <path d="M292 315 L360 246 L448 350 L512 286 L602 386 L716 244"
         fill="none" stroke="#b923ff" stroke-opacity="0.75" stroke-width="48" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
   <path d="M292 315 L360 246 L448 350 L512 286 L602 386 L716 244"
         fill="none" stroke="#ffffff" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowSmall)"/>
 
-  <!-- Waveform -->
   <g transform="translate(0,14)" filter="url(#glowSmall)" stroke="url(#radio)" stroke-width="16" stroke-linecap="round">
     <line x1="330" y1="438" x2="330" y2="476"/>
     <line x1="366" y1="416" x2="366" y2="498"/>
@@ -76,11 +74,9 @@
   <line x1="266" y1="471" x2="304" y2="471" stroke="#d553ff" stroke-width="12" stroke-linecap="round" filter="url(#glowSmall)"/>
   <line x1="716" y1="471" x2="754" y2="471" stroke="#d553ff" stroke-width="12" stroke-linecap="round" filter="url(#glowSmall)"/>
 
-  <!-- VM RADIO -->
   <text x="512" y="674" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="124" font-weight="900" letter-spacing="-5" fill="#180020" stroke="#7d20d8" stroke-width="14" opacity="0.75" filter="url(#glowSmall)">VM RADIO</text>
   <text x="512" y="658" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="124" font-weight="900" letter-spacing="-5" fill="#ffffff">VM <tspan fill="url(#radio)">RADIO</tspan></text>
 
-  <!-- APPLI pill -->
   <rect x="278" y="716" width="468" height="104" rx="52" fill="url(#pill)" stroke="#9d37ff" stroke-width="8" filter="url(#glowSmall)"/>
   <line x1="322" y1="768" x2="366" y2="768" stroke="#bf6bff" stroke-width="7" stroke-linecap="round"/>
   <line x1="658" y1="768" x2="702" y2="768" stroke="#bf6bff" stroke-width="7" stroke-linecap="round"/>
