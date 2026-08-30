@@ -26,6 +26,146 @@ function ensureStyle(){
   const s=document.createElement('style');
   s.id='vm-player-source-halo-style';
   s.textContent=`
+/* === VM RADIO APP — DESIGN TABLEAU DE BORD ADMIN 2026 ===
+   La bannière dédicaces et les barres de navigation gardent volontairement
+   leurs couleurs actuelles. */
+:root{
+  --vm-admin-bg:#f5f5fa;
+  --vm-admin-panel:#ffffff;
+  --vm-admin-panel-soft:#faf9fc;
+  --vm-admin-line:#e8e5ef;
+  --vm-admin-purple:#6d28d9;
+  --vm-admin-purple2:#8b5cf6;
+  --vm-admin-text:#171421;
+  --vm-admin-muted:#777381;
+  --vm-admin-shadow:0 9px 30px rgba(42,31,69,.065);
+}
+html,body{
+  background:#f5f5fa!important;
+  color:var(--vm-admin-text)!important;
+}
+body{
+  background:
+    radial-gradient(circle at 85% -10%,rgba(139,92,246,.08),transparent 28rem),
+    radial-gradient(circle at -5% 95%,rgba(109,40,217,.05),transparent 25rem),
+    var(--vm-admin-bg)!important;
+  background-attachment:fixed!important;
+}
+.app,.home-content,.vm-page-content{
+  background:transparent!important;
+  color:var(--vm-admin-text)!important;
+}
+
+/* Cartes principales */
+.player-shell,
+.home-original-module>.card,
+.home-original-module>.promo,
+.dedication-form,
+.music-program,
+.tile,
+.vm-home-list-card,
+.program-panel,
+.next,
+.card,
+.promo{
+  background:rgba(255,255,255,.97)!important;
+  border:1px solid var(--vm-admin-line)!important;
+  box-shadow:var(--vm-admin-shadow)!important;
+  color:var(--vm-admin-text)!important;
+}
+.player-shell,
+.home-original-module>.card,
+.home-original-module>.promo,
+.dedication-form,
+.music-program,
+.card,
+.promo{
+  border-radius:20px!important;
+}
+.player-shell:before{display:none!important}
+
+/* Typographie */
+.player-shell h1,
+.home-original-module .card h2,
+.home-original-module .title,
+.vm-home-list-info strong,
+.section-head h2,
+.program-main strong,
+.tile b,
+.dedication-form-head h2,
+.dedications-head h1{
+  color:var(--vm-admin-text)!important;
+}
+.artist,
+.home-original-module .artist,
+.vm-home-list-info span,
+.vm-home-list-info small,
+.home-original-module .time,
+.module-subtitle,
+.tile small,
+.program-main span,
+.dedications-head p,
+.dedication-form-head p,
+.time,
+.next small{
+  color:var(--vm-admin-muted)!important;
+}
+.eyebrow,.section-head a,.program-main small{
+  color:var(--vm-admin-purple)!important;
+}
+
+/* Petites cartes / lignes */
+.next,
+.program-panel,
+.vm-home-list-card,
+.tile{
+  border-radius:14px!important;
+}
+.tile em,
+.program-tab.active{
+  background:#f3efff!important;
+  color:var(--vm-admin-purple)!important;
+}
+.program-tabs{
+  background:#faf9fc!important;
+  border:1px solid var(--vm-admin-line)!important;
+}
+.program-tab{color:#777381!important}
+.program-panel.active-panel{
+  background:#faf7ff!important;
+  border-color:#d8c8f5!important;
+}
+
+/* Formulaire dédicace : la carte devient claire, la bannière en haut ne change pas. */
+#dedicationForm input,
+#dedicationForm textarea{
+  background:#fff!important;
+  color:var(--vm-admin-text)!important;
+  border:1px solid var(--vm-admin-line)!important;
+}
+#dedicationForm input::placeholder,
+#dedicationForm textarea::placeholder{color:#9893a1!important}
+#dedicationForm input:focus,
+#dedicationForm textarea:focus{
+  border-color:#9d75ee!important;
+  box-shadow:0 0 0 4px rgba(124,58,237,.09)!important;
+}
+#dedicationForm button,
+.play{
+  background:linear-gradient(135deg,var(--vm-admin-purple),var(--vm-admin-purple2))!important;
+  color:#fff!important;
+  box-shadow:0 7px 18px rgba(109,40,217,.18)!important;
+}
+.round{color:var(--vm-admin-text)!important}
+#play.play:not(.is-playing)::before{border-left-color:#fff!important}
+#play.play.is-playing::before,#play.play.is-playing::after{background:#fff!important}
+
+/* Progression et séparateurs */
+.progress{background:#ece8f2!important}
+.progress b{background:linear-gradient(90deg,var(--vm-admin-purple),var(--vm-admin-purple2))!important}
+.now-next{border-top-color:var(--vm-admin-line)!important}
+
+/* Halo source conservé : seule la carte autour devient claire. */
 img.vm-source-halo{
   position:relative!important;
   z-index:2!important;
@@ -49,10 +189,10 @@ img.vm-source-halo[data-vm-source-kind="jingle"]{--vm-source-color:#ec4899}
   justify-content:center!important;
   flex-wrap:wrap!important;
   gap:8px 14px!important;
-  border:1px solid rgba(255,255,255,.10)!important;
+  border:1px solid var(--vm-admin-line)!important;
   border-radius:999px!important;
-  background:rgba(8,5,13,.58)!important;
-  color:#bdb5c7!important;
+  background:#faf9fc!important;
+  color:var(--vm-admin-muted)!important;
   font:700 10px/1.2 Arial,Helvetica,sans-serif!important;
   box-sizing:border-box!important;
 }
@@ -65,8 +205,14 @@ img.vm-source-halo[data-vm-source-kind="jingle"]{--vm-source-color:#ec4899}
 .vm-source-legend[data-active-kind="rotation"] .vm-source-legend-item[data-kind="rotation"],
 .vm-source-legend[data-active-kind="request"] .vm-source-legend-item[data-kind="request"],
 .vm-source-legend[data-active-kind="emission"] .vm-source-legend-item[data-kind="emission"],
-.vm-source-legend[data-active-kind="jingle"] .vm-source-legend-item[data-kind="jingle"]{opacity:1!important;color:#fff!important;transform:scale(1.04)}
-@media(max-width:600px){.vm-source-legend{margin-top:10px!important;padding:7px 8px!important;gap:6px 10px!important;font-size:8.5px!important;border-radius:16px!important}.vm-source-legend-item::before{width:7px;height:7px}}
+.vm-source-legend[data-active-kind="jingle"] .vm-source-legend-item[data-kind="jingle"]{opacity:1!important;color:var(--vm-admin-text)!important;transform:scale(1.04)}
+
+/* IMPORTANT : aucune couleur imposée ici à .nav, .bottom-nav,
+   #vmSharedDedicationBar ou .dedication-banner. */
+@media(max-width:600px){
+  .vm-source-legend{margin-top:10px!important;padding:7px 8px!important;gap:6px 10px!important;font-size:8.5px!important;border-radius:16px!important}
+  .vm-source-legend-item::before{width:7px;height:7px}
+}
 @supports not (color:color-mix(in srgb,red,blue)){
   img.vm-source-halo[data-vm-source-kind="rotation"]{box-shadow:0 0 0 1px #a855f7,0 0 14px #a855f7,0 0 28px rgba(168,85,247,.55)!important}
   img.vm-source-halo[data-vm-source-kind="request"]{box-shadow:0 0 0 1px #f5a524,0 0 14px #f5a524,0 0 28px rgba(245,165,36,.55)!important}
