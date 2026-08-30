@@ -1,31 +1,26 @@
 name: Install VM RADIO app logo
 
-on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/install-vm-radio-app-logo.yml'
+on: push
 
 permissions:
   contents: write
 
 jobs:
   install-logo:
-    if: github.event.head_commit.message == 'chore: install VM RADIO app logo workflow'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Prepare Python
+      - name: Install Pillow
         run: python3 -m pip install --quiet pillow
 
       - name: Install new transparent logo and refresh caches
-        shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           from PIL import Image
-          import base64, re, shutil
+          import base64, re
 
           root = Path('.')
           version = '20260830-logo1'
@@ -40,15 +35,11 @@ jobs:
               path = Path(path)
               path.parent.mkdir(parents=True, exist_ok=True)
               img = im.resize((size, size), Image.Resampling.LANCZOS)
-              # Palette optimise le poids tout en gardant la transparence.
               img = img.quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
               img.save(path, 'PNG', optimize=True)
 
-          # Logo principal / accueil / popup
           save_png(root / 'vm-radio-appli-logo.png', 384)
           save_png(root / 'vm-radio-home-logo.png', 384)
-
-          # Favicons et icones PWA
           save_png(root / 'favicon-32.png', 32)
           save_png(root / 'favicon-64.png', 64)
           save_png(root / 'apple-touch-icon.png', 180)
@@ -59,7 +50,6 @@ jobs:
           ico = im.resize((256, 256), Image.Resampling.LANCZOS)
           ico.save(root / 'favicon.ico', format='ICO', sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])
 
-          # Popup de bienvenue + toute reference restante a l'ancien logo JPEG.
           for pattern in ('*.html', '*.js', '*.css'):
               for p in root.glob(pattern):
                   s = p.read_text(encoding='utf-8')
@@ -73,7 +63,6 @@ jobs:
                   if s != old:
                       p.write_text(s, encoding='utf-8')
 
-          # Manifest PWA : garder les noms historiques mais renouveler le cache.
           manifest = root / 'manifest.webmanifest'
           if manifest.exists():
               s = manifest.read_text(encoding='utf-8')
@@ -81,7 +70,6 @@ jobs:
               s = re.sub(r'vmradio-app-icon-512\.png(?:\?v=[^"\']+)?', f'vmradio-app-icon-512.png?v={version}', s)
               manifest.write_text(s, encoding='utf-8')
 
-          # Nouveau cache du service worker pour forcer les nouvelles icones.
           sw = root / 'sw.js'
           if sw.exists():
               s = sw.read_text(encoding='utf-8')
@@ -90,14 +78,12 @@ jobs:
                   s = s.replace('const APP_SHELL = [', 'const APP_SHELL = [\n  "./vm-radio-appli-logo.png",', 1)
               sw.write_text(s, encoding='utf-8')
 
-          # Nettoyage des fichiers temporaires utilises uniquement pour cette migration.
           source.unlink(missing_ok=True)
           staged.unlink(missing_ok=True)
-
           print('VM RADIO logo installed:', version)
           PY
 
-      - name: Commit logo update
+      - name: Commit and push
         run: |
           git config user.name 'VM RADIO'
           git config user.email 'actions@vmradio.fr'
