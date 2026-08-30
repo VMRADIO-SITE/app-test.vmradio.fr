@@ -15,6 +15,7 @@ body{background:radial-gradient(circle at 50% 0%,rgba(126,42,210,.2),transparent
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.tab{border:1px solid var(--line);border-radius:13px;padding:11px;background:#171020;color:#aaa2b5;font-weight:800;cursor:pointer}.tab.active{background:#2b153d;color:#fff;border-color:#6f3499}
 form{display:grid;gap:11px}.field{display:grid;gap:6px}.field label{font-size:11px;color:#c8c1cf;font-weight:700}.field input{width:100%;border:1px solid var(--line);border-radius:13px;background:#09070e;color:#fff;padding:12px 13px;font-size:14px;outline:none}.field input:focus{border-color:#8d43c2;box-shadow:0 0 0 3px rgba(184,92,255,.1)}
 .primary,.secondary{border:0;border-radius:13px;padding:12px 14px;font-weight:900;cursor:pointer}.primary{background:linear-gradient(135deg,#c05cff,#7433dd);color:#fff}.secondary{background:#1b1227;color:#fff;border:1px solid var(--line)}
+.manager-bridge{width:100%;margin-top:10px}
 .message{display:none;margin-top:12px;padding:10px 12px;border-radius:12px;font-size:12px}.message.show{display:block}.message.bad{background:rgba(255,107,122,.12);color:#ff9da7;border:1px solid rgba(255,107,122,.25)}.message.good{background:rgba(79,241,151,.1);color:#89f8ba;border:1px solid rgba(79,241,151,.22)}
 .profile{display:none}.profile.show{display:block}.profile-head{display:flex;align-items:center;gap:13px}.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#2b153d;color:#e3b7ff;font-size:22px;font-weight:900;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.profile h2{margin:0;font-size:19px}.profile p{margin:4px 0 0;color:var(--muted);font-size:12px}.role{display:inline-flex;margin-top:10px;padding:7px 10px;border-radius:999px;background:#2b153d;color:#df9aff;font-size:10px;font-weight:900;letter-spacing:.4px}.actions{display:grid;gap:9px;margin-top:17px}.manager{display:none}.manager.show{display:block}.note{margin-top:14px;color:#827a8b;font-size:10px;line-height:1.45;text-align:center}
 </style>
@@ -38,6 +39,7 @@ form{display:grid;gap:11px}.field{display:grid;gap:6px}.field label{font-size:11
       <div class="field"><label>Mot de passe</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
       <button class="primary" type="submit">Se connecter</button>
     </form>
+    <button class="secondary manager-bridge" id="managerSessionBtn" type="button">Utiliser ma session Manager</button>
 
     <form id="registerForm" hidden>
       <div class="field"><label>Nom et prénom</label><input id="registerName" minlength="2" autocomplete="name" required></div>
@@ -47,7 +49,7 @@ form{display:grid;gap:11px}.field{display:grid;gap:6px}.field label{font-size:11
     </form>
 
     <div id="message" class="message"></div>
-    <div class="note">Les nouveaux comptes créés depuis l’application reçoivent automatiquement le rôle Utilisateur.</div>
+    <div class="note">Les nouveaux comptes créés depuis l’application reçoivent automatiquement le rôle Utilisateur. Les comptes Propriétaire, Administrateur et Modérateur peuvent aussi reprendre leur session Manager.</div>
   </section>
 
   <section class="card profile" id="profileCard">
@@ -72,6 +74,7 @@ const loginTab=document.getElementById('loginTab');
 const registerTab=document.getElementById('registerTab');
 const loginForm=document.getElementById('loginForm');
 const registerForm=document.getElementById('registerForm');
+const managerSessionBtn=document.getElementById('managerSessionBtn');
 const message=document.getElementById('message');
 const profileMessage=document.getElementById('profileMessage');
 
@@ -80,7 +83,7 @@ function clearMessage(el){el.textContent='';el.className='message'}
 function switchTab(which){
   const login=which==='login';
   loginTab.classList.toggle('active',login);registerTab.classList.toggle('active',!login);
-  loginForm.hidden=!login;registerForm.hidden=login;clearMessage(message);
+  loginForm.hidden=!login;registerForm.hidden=login;managerSessionBtn.hidden=!login;clearMessage(message);
 }
 loginTab.onclick=()=>switchTab('login');registerTab.onclick=()=>switchTab('register');
 
@@ -100,6 +103,11 @@ function renderUser(user){
   if(user.avatarUrl){const img=document.createElement('img');img.src=user.avatarUrl;img.alt='';img.onerror=()=>{avatar.textContent=(user.name||'V').charAt(0).toUpperCase()};avatar.appendChild(img)}else avatar.textContent=(user.name||'V').charAt(0).toUpperCase();
   document.getElementById('managerBtn').classList.toggle('show',user.managerAccess===true);
 }
+
+managerSessionBtn.onclick=()=>{
+  const back=location.origin+location.pathname;
+  location.href='https://admin.vmradio.fr/api/app-auth/manager-bridge?return='+encodeURIComponent(back);
+};
 
 loginForm.onsubmit=async e=>{
   e.preventDefault();clearMessage(message);
