@@ -1,0 +1,43 @@
+name: Bump TikTok feed cache
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bump-tiktok-feed-cache.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Bump TikTok feed script version
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('tiktok.html')
+          s=p.read_text(encoding='utf-8')
+          new,n=re.subn(r'tiktok-admin-feed\.js\?v=[^"\']+', 'tiktok-admin-feed.js?v=20260830-delete-sync2', s)
+          if n<1:
+              raise SystemExit('Référence tiktok-admin-feed.js introuvable')
+          p.write_text(new,encoding='utf-8')
+          print('Référence mise à jour:',n)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "VM RADIO"
+          git config user.email "contact@vmradio.fr"
+          git add tiktok.html
+          if git diff --cached --quiet; then
+            echo "Aucun changement"
+          else
+            git commit -m "Actualise le flux TikTok après suppression"
+            git push origin main
+          fi
