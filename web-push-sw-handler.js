@@ -6,5 +6,5 @@ self.addEventListener('push',event=>{
   const icon=String(payload.icon||'./vmradio-app-icon-192.png');
   const tag=String(payload.tag||'vm-radio-native');
   const url=String(payload.url||'./');
-  event.waitUntil(self.registration.showNotification(title,{body,icon,badge:icon,tag,renotify:true,data:{url}}));
+  event.waitUntil(self.registration.showNotification(title,{body,icon,badge:icon,tag,renotify:false,data:{url}}));
 });

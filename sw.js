@@ -1,7 +1,7 @@
-importScripts("./web-push-sw-handler.js?v=1");
+importScripts("./web-push-sw-handler.js?v=2");
 
 // v57 : controles audio natifs iPhone sur le vrai element audio DOM.
-const CACHE_NAME = "vm-radio-app-v58-logo2";
+const CACHE_NAME = "vm-radio-app-v59-device-dedupe";
 const APP_SHELL = [
   "./vm-radio-appli-logo.png",
   "./",
@@ -14,7 +14,7 @@ const APP_SHELL = [
   "./vmradio-app-icon-192.png",
   "./vmradio-app-icon-512.png",
   "./manifest.webmanifest",
-  "./notifications.js?v=native1",
+  "./notifications.js?v=device-dedupe1",
   "./dedications-feed.js?v=5",
   "./audio-recovery.js?v=6",
   "./pwa-install-tracker.js?v=20260828-topd1",
@@ -101,7 +101,7 @@ self.addEventListener("fetch", event => {
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
           if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=6"></script></body>');
           if (!injected.includes("player-source-badge.js")) injected = injected.replace(/<\/body>/i, '<script src="./player-source-badge.js?v=20260829-sourcehalo1"></script></body>');
-          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./notifications.js?v=native1"></script></body>');
+          injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./notifications.js?v=device-dedupe1"></script></body>');
 
           const headers = new Headers(response.headers);
           headers.delete("content-length");
