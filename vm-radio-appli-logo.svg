@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b0057"/>
+      <stop offset="0.48" stop-color="#5b16a7"/>
+      <stop offset="1" stop-color="#130021"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.18" stop-color="#f3c8ff"/>
+      <stop offset="0.52" stop-color="#bb39ff"/>
+      <stop offset="1" stop-color="#6510d8"/>
+    </linearGradient>
+    <linearGradient id="radio" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8547ff"/>
+      <stop offset="0.5" stop-color="#d74cff"/>
+      <stop offset="1" stop-color="#8e20ff"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#39105d"/>
+      <stop offset="1" stop-color="#180024"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0.2" cy="0.08" r="0.85">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.38"/>
+      <stop offset="0.24" stop-color="#d98cff" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="16" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowSmall" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+    <clipPath id="clip"><rect x="72" y="72" width="880" height="880" rx="190"/></clipPath>
+  </defs>
+
+  <!-- Transparent outside the rounded app tile -->
+  <g filter="url(#shadow)">
+    <rect x="72" y="72" width="880" height="880" rx="190" fill="url(#bg)"/>
+    <rect x="78" y="78" width="868" height="868" rx="184" fill="none" stroke="url(#rim)" stroke-width="20"/>
+    <rect x="94" y="94" width="836" height="836" rx="168" fill="none" stroke="#f2c9ff" stroke-opacity="0.33" stroke-width="5"/>
+  </g>
+
+  <g clip-path="url(#clip)">
+    <rect x="72" y="72" width="880" height="880" fill="url(#shine)"/>
+    <path d="M70 810 C220 690 282 958 460 870 C620 790 720 902 952 770" fill="none" stroke="#a02cff" stroke-opacity="0.28" stroke-width="70" filter="url(#glow)"/>
+    <path d="M700 105 C840 130 918 215 946 355" fill="none" stroke="#e65bff" stroke-opacity="0.34" stroke-width="36" filter="url(#glowSmall)"/>
+    <path d="M90 190 C180 110 260 90 382 98" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="28"/>
+  </g>
+
+  <!-- Brand mark -->
+  <path d="M292 315 L360 246 L448 350 L512 286 L602 386 L716 244"
+        fill="none" stroke="#b923ff" stroke-opacity="0.75" stroke-width="48" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  <path d="M292 315 L360 246 L448 350 L512 286 L602 386 L716 244"
+        fill="none" stroke="#ffffff" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowSmall)"/>
+
+  <!-- Waveform -->
+  <g transform="translate(0,14)" filter="url(#glowSmall)" stroke="url(#radio)" stroke-width="16" stroke-linecap="round">
+    <line x1="330" y1="438" x2="330" y2="476"/>
+    <line x1="366" y1="416" x2="366" y2="498"/>
+    <line x1="402" y1="392" x2="402" y2="522"/>
+    <line x1="438" y1="422" x2="438" y2="492"/>
+    <line x1="474" y1="374" x2="474" y2="540"/>
+    <line x1="510" y1="404" x2="510" y2="510"/>
+    <line x1="546" y1="386" x2="546" y2="528"/>
+    <line x1="582" y1="420" x2="582" y2="494"/>
+    <line x1="618" y1="396" x2="618" y2="518"/>
+    <line x1="654" y1="420" x2="654" y2="494"/>
+    <line x1="690" y1="440" x2="690" y2="474"/>
+  </g>
+  <line x1="266" y1="471" x2="304" y2="471" stroke="#d553ff" stroke-width="12" stroke-linecap="round" filter="url(#glowSmall)"/>
+  <line x1="716" y1="471" x2="754" y2="471" stroke="#d553ff" stroke-width="12" stroke-linecap="round" filter="url(#glowSmall)"/>
+
+  <!-- VM RADIO -->
+  <text x="512" y="674" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="124" font-weight="900" letter-spacing="-5" fill="#180020" stroke="#7d20d8" stroke-width="14" opacity="0.75" filter="url(#glowSmall)">VM RADIO</text>
+  <text x="512" y="658" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="124" font-weight="900" letter-spacing="-5" fill="#ffffff">VM <tspan fill="url(#radio)">RADIO</tspan></text>
+
+  <!-- APPLI pill -->
+  <rect x="278" y="716" width="468" height="104" rx="52" fill="url(#pill)" stroke="#9d37ff" stroke-width="8" filter="url(#glowSmall)"/>
+  <line x1="322" y1="768" x2="366" y2="768" stroke="#bf6bff" stroke-width="7" stroke-linecap="round"/>
+  <line x1="658" y1="768" x2="702" y2="768" stroke="#bf6bff" stroke-width="7" stroke-linecap="round"/>
+  <text x="512" y="790" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="800" letter-spacing="14" fill="#ffffff">APPLI</text>
+</svg>
