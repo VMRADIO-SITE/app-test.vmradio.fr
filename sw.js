@@ -1,8 +1,9 @@
 importScripts("./web-push-sw-handler.js?v=1");
 
 // v57 : controles audio natifs iPhone sur le vrai element audio DOM.
-const CACHE_NAME = "vm-radio-app-v57";
+const CACHE_NAME = "vm-radio-app-v58-logo2";
 const APP_SHELL = [
+  "./vm-radio-appli-logo.png",
   "./",
   "./index.html",
   "./dedicaces.html",

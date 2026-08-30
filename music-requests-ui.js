@@ -4,7 +4,7 @@
 if(window.__VMRADIO_REQUEST_UI__)return;window.__VMRADIO_REQUEST_UI__=true;
 const API='https://admin.vmradio.fr/api/public/requests';
 const CATALOG=API+'/catalog';
-const DEFAULT_COVER='VM-RADIO-POPUP-LOGO.jpeg';
+const DEFAULT_COVER='vm-radio-appli-logo.png?v=20260830-logo2';
 let catalog=[],selected=null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function history(){try{return JSON.parse(localStorage.getItem('vmradio_request_history')||'[]')}catch{return[]}}
