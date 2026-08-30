@@ -3,6 +3,7 @@
 
   const API='https://admin.vmradio.fr/api/public/top-titres';
   const VOTER_KEY='vmradioTopTitresVoterIdV3';
+  const NAME_KEY='vmradioTopTitresVoterNameV1';
   const FALLBACK='https://valentinrasle7070vr-debug.github.io/VM-RADIO/assets/vm-radio-default-cover.jpeg';
   const TOP_LIMIT=4;
   let busy=false;
@@ -10,6 +11,7 @@
   let topBusy=false;
 
   function clean(v){return String(v??'').trim();}
+  function cleanName(v){return clean(v).replace(/\s+/g,' ').replace(/[<>]/g,'').slice(0,40);}
   function slug(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,120);}
   function track(){
     return {
@@ -26,181 +28,84 @@
     id=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
     localStorage.setItem(VOTER_KEY,id);return id;
   }
+  function voterName(){
+    let name=cleanName(localStorage.getItem(NAME_KEY));
+    if(name)return name;
+    name=cleanName(window.prompt('Pour aimer ce titre, entre ton prénom ou ton pseudo :','')||'');
+    if(name)localStorage.setItem(NAME_KEY,name);
+    return name;
+  }
   function toast(text){
     let n=document.getElementById('notice');
-    if(!n){
-      n=document.createElement('div');
-      n.id='notice';
-      n.className='notice';
-      document.body.appendChild(n);
-    }
-    n.textContent=text;
-    n.classList.add('show');
-    clearTimeout(n.__vmTimer);
-    n.__vmTimer=setTimeout(()=>n.classList.remove('show'),3200);
+    if(!n){n=document.createElement('div');n.id='notice';n.className='notice';document.body.appendChild(n);}
+    n.textContent=text;n.classList.add('show');clearTimeout(n.__vmTimer);n.__vmTimer=setTimeout(()=>n.classList.remove('show'),3200);
   }
   function heart(){return document.getElementById('heart');}
   function paint(voted){
     const h=heart();if(!h)return;
-    h.type='button';
-    h.disabled=false;
-    h.removeAttribute('disabled');
-    h.style.pointerEvents='auto';
-    h.style.opacity='1';
-    h.classList.toggle('active',!!voted);
-    h.textContent=voted?'♥':'♡';
-    h.setAttribute('aria-pressed',voted?'true':'false');
-    h.dataset.vmTopD1='1';
+    h.type='button';h.disabled=false;h.removeAttribute('disabled');h.style.pointerEvents='auto';h.style.opacity='1';
+    h.classList.toggle('active',!!voted);h.textContent=voted?'♥':'♡';h.setAttribute('aria-pressed',voted?'true':'false');h.dataset.vmTopD1='1';
   }
-  function unlock(){
-    const h=heart();if(!h)return;
-    h.type='button';
-    h.disabled=false;
-    h.removeAttribute('disabled');
-    h.style.pointerEvents='auto';
-    h.style.opacity='1';
-  }
+  function unlock(){const h=heart();if(!h)return;h.type='button';h.disabled=false;h.removeAttribute('disabled');h.style.pointerEvents='auto';h.style.opacity='1';}
   async function fetchJson(url,options={}){
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),8000);
-    try{
-      const r=await fetch(url,{...options,signal:controller.signal});
-      const d=await r.json().catch(()=>({}));
-      return {r,d};
-    }finally{clearTimeout(timer);}
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),8000);
+    try{const r=await fetch(url,{...options,signal:controller.signal});const d=await r.json().catch(()=>({}));return {r,d};}finally{clearTimeout(timer);}
   }
 
   function topBox(){return document.querySelector('#top-titres [data-favorites]');}
   function topMessage(text){
-    const box=topBox();if(!box)return;
-    box.innerHTML='';
-    const p=document.createElement('div');
-    p.textContent=text;
-    p.style.cssText='padding:10px 0;color:#aaa5b4;font-size:12px;line-height:1.4';
-    box.appendChild(p);
+    const box=topBox();if(!box)return;box.innerHTML='';const p=document.createElement('div');p.textContent=text;p.style.cssText='padding:10px 0;color:#aaa5b4;font-size:12px;line-height:1.4';box.appendChild(p);
   }
   function renderTopTitres(items){
     const box=topBox();if(!box)return;
-    const list=Array.isArray(items)?items.slice(0,TOP_LIMIT):[];
-    box.innerHTML='';
-    if(!list.length){
-      topMessage('Aucun J’aime pour le moment.');
-      return;
-    }
+    const list=Array.isArray(items)?items.slice(0,TOP_LIMIT):[];box.innerHTML='';
+    if(!list.length){topMessage('Aucun J’aime pour le moment.');return;}
     list.forEach((item,index)=>{
-      const row=document.createElement('div');
-      row.className='vm-home-list-card';
-
-      const image=document.createElement('img');
-      image.alt='Pochette '+clean(item?.title||'Top Titres');
-      image.loading='lazy';
-      image.decoding='async';
-      image.src=clean(item?.cover)||FALLBACK;
-      image.onerror=()=>{image.onerror=null;image.src=FALLBACK;};
-
-      const info=document.createElement('div');
-      info.className='vm-home-list-info';
-
-      const title=document.createElement('strong');
-      title.dataset.topTitle='';
-      title.textContent=clean(item?.title)||'Titre inconnu';
-
-      const artist=document.createElement('span');
-      artist.textContent=clean(item?.artist)||'Music IA By Valentin';
-
-      const votes=Number(item?.votes||0);
-      const meta=document.createElement('small');
-      meta.textContent=`#${index+1} · ${votes} J’aime`;
-
-      info.append(title,artist,meta);
-      row.append(image,info);
-      box.appendChild(row);
+      const row=document.createElement('div');row.className='vm-home-list-card';
+      const image=document.createElement('img');image.alt='Pochette '+clean(item?.title||'Top Titres');image.loading='lazy';image.decoding='async';image.src=clean(item?.cover)||FALLBACK;image.onerror=()=>{image.onerror=null;image.src=FALLBACK;};
+      const info=document.createElement('div');info.className='vm-home-list-info';
+      const title=document.createElement('strong');title.dataset.topTitle='';title.textContent=clean(item?.title)||'Titre inconnu';
+      const artist=document.createElement('span');artist.textContent=clean(item?.artist)||'Music IA By Valentin';
+      const votes=Number(item?.votes||0);const meta=document.createElement('small');meta.textContent=`#${index+1} · ${votes} J’aime`;
+      const names=Array.isArray(item?.voters)?item.voters.map(cleanName).filter(Boolean):[];
+      if(names.length){const liked=document.createElement('small');liked.className='vm-top-liked-by';const shown=names.slice(0,3);liked.textContent='Aimé par '+shown.join(', ')+(names.length>3?` +${names.length-3}`:'');liked.style.cssText='display:block;margin-top:3px;color:#a78bfa;font-size:10px;line-height:1.3';info.append(title,artist,meta,liked);}else info.append(title,artist,meta);
+      row.append(image,info);box.appendChild(row);
     });
   }
   async function refreshTopTitres(){
-    const box=topBox();
-    if(!box||topBusy)return;
-    topBusy=true;
-    if(!box.children.length)topMessage('Chargement du classement…');
-    try{
-      const u=new URL(API);
-      u.searchParams.set('limit',String(TOP_LIMIT));
-      u.searchParams.set('_',String(Date.now()));
-      const {r,d}=await fetchJson(u,{cache:'no-store',mode:'cors',headers:{Accept:'application/json'}});
-      if(!r.ok||d?.ok!==true)throw new Error(d?.error||('HTTP '+r.status));
-      renderTopTitres(d?.items||[]);
-    }catch(e){
-      console.warn('[VM RADIO] affichage Top Titres',e);
-      if(!box.querySelector('.vm-home-list-card'))topMessage('Classement momentanément indisponible.');
-    }finally{topBusy=false;}
+    const box=topBox();if(!box||topBusy)return;topBusy=true;if(!box.children.length)topMessage('Chargement du classement…');
+    try{const u=new URL(API);u.searchParams.set('limit',String(TOP_LIMIT));u.searchParams.set('_',String(Date.now()));const {r,d}=await fetchJson(u,{cache:'no-store',mode:'cors',headers:{Accept:'application/json'}});if(!r.ok||d?.ok!==true)throw new Error(d?.error||('HTTP '+r.status));renderTopTitres(d?.items||[]);}catch(e){console.warn('[VM RADIO] affichage Top Titres',e);if(!box.querySelector('.vm-home-list-card'))topMessage('Classement momentanément indisponible.');}finally{topBusy=false;}
   }
 
   async function status(){
-    const t=track();
-    if(!t.title||/^vm radio$/i.test(t.title)){votedId='';paint(false);return;}
+    const t=track();if(!t.title||/^vm radio$/i.test(t.title)){votedId='';paint(false);return;}
     const id=idOf(t);
-    try{
-      const u=new URL(API+'/vote-status');
-      u.searchParams.set('voter_id',voterId());u.searchParams.set('track_id',id);u.searchParams.set('_',Date.now());
-      const {r,d}=await fetchJson(u,{cache:'no-store',mode:'cors',headers:{Accept:'application/json'}});
-      const voted=r.ok&&d?.voted===true;
-      votedId=voted?id:'';paint(voted);
-    }catch(e){votedId='';paint(false);console.warn('[VM RADIO] état Top Titres',e);}
+    try{const u=new URL(API+'/vote-status');u.searchParams.set('voter_id',voterId());u.searchParams.set('track_id',id);u.searchParams.set('_',Date.now());const {r,d}=await fetchJson(u,{cache:'no-store',mode:'cors',headers:{Accept:'application/json'}});const voted=r.ok&&d?.voted===true;votedId=voted?id:'';paint(voted);}catch(e){votedId='';paint(false);console.warn('[VM RADIO] état Top Titres',e);}
   }
   async function vote(){
     if(busy)return;
     const t=track();const id=idOf(t);
-    toast('Envoi du J’aime…');
     if(!t.title||/^vm radio$/i.test(t.title)){toast('Titre en cours indisponible.');return;}
     if(votedId===id){toast('Ce titre est déjà dans tes J’aime.');paint(true);return;}
-    busy=true;unlock();
+    const name=voterName();if(!name){toast('Entre ton prénom ou ton pseudo pour aimer ce titre.');return;}
+    toast('Envoi du J’aime…');busy=true;unlock();
     try{
-      const {r,d}=await fetchJson(API+'/vote',{
-        method:'POST',mode:'cors',cache:'no-store',
-        headers:{'Content-Type':'text/plain;charset=UTF-8',Accept:'application/json'},
-        body:JSON.stringify({title:t.title,artist:t.artist,cover:t.cover,voter_id:voterId()})
-      });
+      const {r,d}=await fetchJson(API+'/vote',{method:'POST',mode:'cors',cache:'no-store',headers:{'Content-Type':'text/plain;charset=UTF-8',Accept:'application/json'},body:JSON.stringify({title:t.title,artist:t.artist,cover:t.cover,voter_id:voterId(),voter_name:name})});
       if(!r.ok||d?.ok!==true)throw new Error(d?.details||d?.error||('HTTP '+r.status));
-      votedId=id;paint(true);
-      toast(d?.already_voted?'Ce titre est déjà dans tes J’aime.':'Ajouté au Top Titres 💜');
-      window.dispatchEvent(new CustomEvent('vmradio:top-titres-voted',{detail:d?.item||null}));
-    }catch(e){
-      votedId='';paint(false);
-      const msg=e?.name==='AbortError'?'délai réseau dépassé':String(e?.message||e).slice(0,90);
-      toast('Vote impossible : '+msg);
-      console.warn('[VM RADIO] vote Top Titres',e);
-    }finally{busy=false;unlock();}
+      votedId=id;paint(true);toast(d?.already_voted?'Ce titre est déjà dans tes J’aime.':'Ajouté au Top Titres 💜');window.dispatchEvent(new CustomEvent('vmradio:top-titres-voted',{detail:d?.item||null}));
+    }catch(e){votedId='';paint(false);const msg=e?.name==='AbortError'?'délai réseau dépassé':String(e?.message||e).slice(0,90);toast('Vote impossible : '+msg);console.warn('[VM RADIO] vote Top Titres',e);}finally{busy=false;unlock();}
   }
 
   function bindHeart(){
-    const h=heart();
-    if(!h)return;
-    unlock();
-    if(h.dataset.vmTopBound==='1')return;
-    h.dataset.vmTopBound='1';
-    h.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      vote();
-    },true);
+    const h=heart();if(!h)return;unlock();if(h.dataset.vmTopBound==='1')return;h.dataset.vmTopBound='1';h.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();vote();},true);
   }
-
   function boot(){
-    bindHeart();
-    status();
-    refreshTopTitres();
+    bindHeart();status();refreshTopTitres();
     const h=heart();if(h)new MutationObserver(()=>{unlock();bindHeart();}).observe(h,{attributes:true,attributeFilter:['disabled','style']});
     const title=document.getElementById('title');if(title)new MutationObserver(()=>setTimeout(status,80)).observe(title,{childList:true,subtree:true,characterData:true});
-    setInterval(()=>{bindHeart();unlock();},500);
-    setInterval(refreshTopTitres,30000);
-    window.addEventListener('focus',()=>{status();refreshTopTitres();});
-    window.addEventListener('pageshow',()=>{bindHeart();unlock();status();refreshTopTitres();});
-    window.addEventListener('vmradio:top-titres-voted',()=>setTimeout(refreshTopTitres,120));
-    window.addEventListener('vmradio:pagechange',e=>{
-      const route=String(e?.detail?.route||'').toLowerCase();
-      if(!route||route==='index.html')setTimeout(refreshTopTitres,80);
-    });
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshTopTitres();});
+    setInterval(()=>{bindHeart();unlock();},500);setInterval(refreshTopTitres,30000);
+    window.addEventListener('focus',()=>{status();refreshTopTitres();});window.addEventListener('pageshow',()=>{bindHeart();unlock();status();refreshTopTitres();});window.addEventListener('vmradio:top-titres-voted',()=>setTimeout(refreshTopTitres,120));
+    window.addEventListener('vmradio:pagechange',e=>{const route=String(e?.detail?.route||'').toLowerCase();if(!route||route==='index.html')setTimeout(refreshTopTitres,80);});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshTopTitres();});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
