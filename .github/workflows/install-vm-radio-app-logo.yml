@@ -1,6 +1,10 @@
 name: Install VM RADIO app logo
 
-on: push
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'vm-radio-appli-logo.svg'
 
 permissions:
   contents: write
@@ -11,45 +15,45 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install Pillow
-        run: python3 -m pip install --quiet pillow
+      - name: Install renderer
+        run: python3 -m pip install --quiet pillow cairosvg
 
-      - name: Install new transparent logo and refresh caches
+      - name: Render logo assets and refresh references
         run: |
           python3 - <<'PY'
           from pathlib import Path
           from PIL import Image
-          import base64, re
+          import cairosvg, io, re
 
           root = Path('.')
-          version = '20260830-logo1'
-          staged = root / '.github' / 'vm-radio-logo-master.b64'
-          raw = ''.join(staged.read_text(encoding='utf-8').split())
-          source = root / '.github' / 'vm-radio-logo-master.png'
-          source.write_bytes(base64.b64decode(raw))
+          version = '20260830-logo2'
+          svg = root / 'vm-radio-appli-logo.svg'
 
-          im = Image.open(source).convert('RGBA')
+          png_1024 = cairosvg.svg2png(bytestring=svg.read_bytes(), output_width=1024, output_height=1024)
+          master = Image.open(io.BytesIO(png_1024)).convert('RGBA')
 
           def save_png(path, size):
-              path = Path(path)
-              path.parent.mkdir(parents=True, exist_ok=True)
-              img = im.resize((size, size), Image.Resampling.LANCZOS)
-              img = img.quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
-              img.save(path, 'PNG', optimize=True)
+              p = root / path
+              p.parent.mkdir(parents=True, exist_ok=True)
+              img = master.resize((size, size), Image.Resampling.LANCZOS)
+              img.save(p, 'PNG', optimize=True)
 
-          save_png(root / 'vm-radio-appli-logo.png', 384)
-          save_png(root / 'vm-radio-home-logo.png', 384)
-          save_png(root / 'favicon-32.png', 32)
-          save_png(root / 'favicon-64.png', 64)
-          save_png(root / 'apple-touch-icon.png', 180)
-          save_png(root / 'vmradio-app-icon-192.png', 192)
-          save_png(root / 'vmradio-app-icon-512.png', 512)
-          save_png(root / 'icons' / 'icon192-fixed.png', 192)
+          save_png('vm-radio-appli-logo.png', 512)
+          save_png('vm-radio-home-logo.png', 512)
+          save_png('favicon-32.png', 32)
+          save_png('favicon-64.png', 64)
+          save_png('apple-touch-icon.png', 180)
+          save_png('vmradio-app-icon-192.png', 192)
+          save_png('vmradio-app-icon-512.png', 512)
+          save_png('icons/icon192-fixed.png', 192)
 
-          ico = im.resize((256, 256), Image.Resampling.LANCZOS)
+          ico = master.resize((256, 256), Image.Resampling.LANCZOS)
           ico.save(root / 'favicon.ico', format='ICO', sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])
 
+          # Popup accueil + pochette par defaut des demandes.
           for pattern in ('*.html', '*.js', '*.css'):
               for p in root.glob(pattern):
                   s = p.read_text(encoding='utf-8')
@@ -73,21 +77,18 @@ jobs:
           sw = root / 'sw.js'
           if sw.exists():
               s = sw.read_text(encoding='utf-8')
-              s = re.sub(r'const CACHE_NAME\s*=\s*["\'][^"\']+["\']', 'const CACHE_NAME = "vm-radio-app-v58-logo1"', s, count=1)
+              s = re.sub(r'const CACHE_NAME\s*=\s*["\'][^"\']+["\']', 'const CACHE_NAME = "vm-radio-app-v58-logo2"', s, count=1)
               if '"./vm-radio-appli-logo.png"' not in s and 'const APP_SHELL = [' in s:
                   s = s.replace('const APP_SHELL = [', 'const APP_SHELL = [\n  "./vm-radio-appli-logo.png",', 1)
               sw.write_text(s, encoding='utf-8')
 
-          source.unlink(missing_ok=True)
-          staged.unlink(missing_ok=True)
-          print('VM RADIO logo installed:', version)
+          print('Rendered VM RADIO logo assets:', version)
           PY
 
-      - name: Commit and push
+      - name: Commit generated assets
         run: |
           git config user.name 'VM RADIO'
           git config user.email 'actions@vmradio.fr'
-          git rm -f .github/workflows/install-vm-radio-app-logo.yml
           git add -A
-          git commit -m 'Update VM RADIO app logo, welcome popup and PWA icons'
+          git commit -m 'Update VM RADIO logo, welcome popup and PWA icons' || exit 0
           git push
