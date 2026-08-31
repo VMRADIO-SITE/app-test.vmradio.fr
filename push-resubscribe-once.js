@@ -98,7 +98,7 @@ function showPrompt(){
   overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:18px;font-family:Arial,Helvetica,sans-serif';
   overlay.innerHTML=`
     <section style="width:min(100%,430px);padding:28px 22px;border:2px solid #b85cff;border-radius:26px;background:linear-gradient(145deg,#09050e,#170a22);box-shadow:0 0 34px rgba(151,48,255,.52);color:#fff;text-align:center">
-      <img src="./VM-RADIO-POPUP-LOGO.jpeg?v=1" alt="VM RADIO" style="width:92px;height:92px;object-fit:contain;margin:0 auto 12px;display:block">
+      <img src="./vm-radio-appli-logo.png?v=20260831-popup-official2" alt="VM RADIO" style="width:92px;height:92px;object-fit:contain;margin:0 auto 12px;display:block">
       <h2 style="margin:0;font-size:27px">Réactiver les notifications</h2>
       <p style="margin:12px 0 18px;color:#d5ccdd;line-height:1.45;font-size:15px">Suite à la mise à jour de VM RADIO, ton appareil doit renouveler son abonnement aux notifications.</p>
       <div id="vm-push-resubscribe-status" style="min-height:21px;margin:0 0 12px;color:#d9b8ff;font-weight:700;font-size:13px"></div>
