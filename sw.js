@@ -1,7 +1,7 @@
 importScripts("./web-push-sw-handler.js?v=2");
 
-// v57 : controles audio natifs iPhone sur le vrai element audio DOM.
-const CACHE_NAME = "vm-radio-app-v59-device-dedupe";
+// HLS natif iPhone : ne jamais mettre le flux live en cache.
+const CACHE_NAME = "vm-radio-app-v60-hls-native";
 const APP_SHELL = [
   "./vm-radio-appli-logo.png",
   "./",
@@ -16,7 +16,7 @@ const APP_SHELL = [
   "./manifest.webmanifest",
   "./notifications.js?v=device-dedupe1",
   "./dedications-feed.js?v=5",
-  "./audio-recovery.js?v=6",
+  "./audio-recovery.js?v=9",
   "./pwa-install-tracker.js?v=20260828-topd1",
   "./top-titres-heart.js?v=20260828-1",
   "./player-source-badge.js?v=20260829-sourcehalo1",
@@ -62,11 +62,25 @@ self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
+  if (url.pathname.endsWith("/compte.html")) {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   if (url.pathname.endsWith("/telecharger.html")) {
     event.respondWith(fetch(event.request, { cache: "no-store" }));
     return;
   }
-  if (/radio|stream|audio/i.test(url.pathname)) return;
+
+  // Flux audio live : accès réseau direct, sans cache Service Worker.
+  if (
+    /radio|stream|audio/i.test(url.pathname) ||
+    url.pathname.startsWith("/hls-live/") ||
+    /\.(?:m3u8|ts)$/i.test(url.pathname)
+  ) return;
 
   event.respondWith(
     fetch(event.request, { cache: "no-store" }).then(async response => {
@@ -94,12 +108,12 @@ self.addEventListener("fetch", event => {
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-client\.js[^"']*["'][^>]*><\/script>/gi, '');
           injected = injected.replace(/\s*<script[^>]+src=["'][^"']*web-push-prompt\.js[^"']*["'][^>]*><\/script>/gi, '');
 
-          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260829-lockscreen-native1');
-          injected = injected.replace(/audio-recovery\.js(?:\?[^"']*)?/gi, 'audio-recovery.js?v=6');
+          injected = injected.replace(/vm-radio-flux-central\.js(?:\?[^"']*)?/gi, 'vm-radio-flux-central.js?v=20260831-hls-native-github1');
+          injected = injected.replace(/audio-recovery\.js(?:\?[^"']*)?/gi, 'audio-recovery.js?v=9');
           injected = injected.replace(/player-source-badge\.js(?:\?[^"']*)?/gi, 'player-source-badge.js?v=20260829-sourcehalo1');
 
           if (!injected.includes("./dedications-feed.js")) injected = injected.replace(/<\/body>/i, '<script src="./dedications-feed.js?v=5"></script></body>');
-          if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=6"></script></body>');
+          if (!injected.includes("./audio-recovery.js")) injected = injected.replace(/<\/body>/i, '<script src="./audio-recovery.js?v=9"></script></body>');
           if (!injected.includes("player-source-badge.js")) injected = injected.replace(/<\/body>/i, '<script src="./player-source-badge.js?v=20260829-sourcehalo1"></script></body>');
           injected = injected.replace(/<\/body>/i, '<script src="./pwa-install-tracker.js?v=20260828-topd1"></script><script src="./top-titres-heart.js?v=20260828-1"></script><script src="./notifications.js?v=device-dedupe1"></script></body>');
 
