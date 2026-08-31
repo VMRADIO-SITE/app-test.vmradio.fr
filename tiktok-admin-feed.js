@@ -5,11 +5,16 @@
   let busy=false;
   let lastSignature='';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const previewSrc=url=>{
+    const s=String(url||'').trim();
+    if(!s)return '';
+    return s.replace(/#.*$/,'')+'#t=0.1';
+  };
 
   function renderVideo(v){
     const id=Number(v.id)||0;
     const title=esc(v.title||'Vidéo VM RADIO');
-    if(v.type==='mp4')return `<article class="tiktok-video vm-local-video" data-admin-video="${id}"><div class="tiktok-player"><video controls playsinline preload="auto" src="${esc(v.url)}" title="${title}" style="width:100%;height:100%;object-fit:contain;background:#000;display:block"></video></div></article>`;
+    if(v.type==='mp4')return `<article class="tiktok-video vm-local-video" data-admin-video="${id}"><div class="tiktok-player"><video controls playsinline webkit-playsinline crossorigin="anonymous" preload="auto" src="${esc(previewSrc(v.url))}" title="${title}" style="width:100%;height:100%;object-fit:contain;background:#000;display:block"></video></div></article>`;
     return `<article class="tiktok-video" data-admin-video="${id}"><div class="tiktok-player"><iframe allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="${title}" src="${esc(v.embedUrl||v.url)}"></iframe></div></article>`;
   }
 
@@ -18,6 +23,9 @@
 
   function fitLocalVideos(root=document){
     root.querySelectorAll?.('.vm-local-video video').forEach(video=>{
+      if(video.dataset.vmPreviewBound==='1')return;
+      video.dataset.vmPreviewBound='1';
+
       const apply=()=>{
         const w=Number(video.videoWidth)||1;
         const h=Number(video.videoHeight)||1;
@@ -32,8 +40,8 @@
       const forcePreview=()=>{
         try{
           if(video.duration && isFinite(video.duration)){
-            const t=Math.min(0.08, Math.max(0.01, video.duration/1000));
-            if(video.currentTime < 0.01) video.currentTime=t;
+            const t=Math.min(0.12,Math.max(0.03,video.duration/1000));
+            if(video.currentTime<0.02)video.currentTime=t;
           }
           video.pause();
         }catch(e){}
@@ -51,6 +59,9 @@
 
       video.addEventListener('loadeddata',forcePreview,{once:true});
       video.addEventListener('canplay',forcePreview,{once:true});
+      video.addEventListener('seeked',()=>video.pause(),{once:true});
+
+      try{if(video.readyState===0)video.load()}catch(e){}
     });
   }
 
@@ -68,6 +79,7 @@
       if(!r.ok||!d.ok||!Array.isArray(d.videos))throw Error('Flux TikTok indisponible');
       const sig=signature(d.videos);
       if(force||sig!==lastSignature||boxes().some(x=>x.dataset.vmTikTokManaged!=='1')){lastSignature=sig;render(d.videos)}
+      else fitLocalVideos(document);
     }catch(e){console.warn('VM RADIO TikTok Manager:',e)}finally{busy=false}
   }
 
@@ -75,8 +87,8 @@
     refresh(true);
     const observer=new MutationObserver(()=>{if(boxes().some(x=>x.dataset.vmTikTokManaged!=='1'))refresh(true)});
     observer.observe(document.body,{childList:true,subtree:true});
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(true)});
-    window.addEventListener('focus',()=>refresh(true));
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden){fitLocalVideos(document);refresh(false)}});
+    window.addEventListener('focus',()=>{fitLocalVideos(document);refresh(false)});
     setInterval(()=>{if(!document.hidden)refresh(false)},POLL_MS);
   }
 
