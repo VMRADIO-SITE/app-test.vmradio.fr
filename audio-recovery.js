@@ -1,7 +1,10 @@
 (() => {
   'use strict';
 
-  const STREAM_URL = 'https://radio.vmradio.fr/listen/vm_radio/radio.mp3';
+  const STREAM_URL =
+    window.__VMRADIO_STREAM_URL__ ||
+    'https://radio.vmradio.fr/listen/vm_radio/radio.mp3';
+  const HLS_MODE = /\.m3u8(?:$|\?)/i.test(STREAM_URL);
   const AUDIO_SELECTORS = ['#audio', 'audio'];
   const KEY = 'vmradio-audio-wanted';
   const STALL_DELAY = 9000;
@@ -98,6 +101,9 @@
   };
 
   const recover = reason => {
+    /* Safari/iPhone gère nativement le HLS : ne jamais refaire src/load/play. */
+    if (HLS_MODE) return;
+
     const a = getAudio();
     const now = Date.now();
     if (!a || !wanted || manualPause || reconnecting) return;
@@ -130,6 +136,7 @@
   };
 
   const armStallRecovery = reason => {
+    if (HLS_MODE) return;
     if (!wanted || manualPause || reconnecting) return;
     clearTimeout(stallTimer);
     stallTimer = setTimeout(() => {
@@ -143,8 +150,8 @@
 
   const bind = () => {
     const a = getAudio();
-    if (!a || a.__vmAudioRecoveryV6) return !!a;
-    a.__vmAudioRecoveryV6 = true;
+    if (!a || a.__vmAudioRecoveryV9) return !!a;
+    a.__vmAudioRecoveryV9 = true;
 
     if (readWanted() && !a.paused) wanted = true;
 
@@ -169,9 +176,6 @@
       clearTimers();
       if (!internalPause) stopListenerPresence();
       if (internalPause) return;
-
-      // Toute pause réelle du lecteur (bouton app, écran verrouillé,
-      // écouteurs/Bluetooth) doit être respectée comme une pause utilisateur.
       manualPause = true;
       saveWanted(false);
     });
