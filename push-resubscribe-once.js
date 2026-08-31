@@ -2,9 +2,9 @@
 'use strict';
 
 const API='https://admin.vmradio.fr/api/public/push';
-const RESET_KEY='vmRadioPushResubscribe20260831V1';
+const RESET_KEY='vmRadioPushResubscribe20260831V2';
 const DEVICE_ID_KEY='vmRadioPushDeviceIdV1';
-const SW_VERSION='20260831-push-resubscribe1';
+const SW_VERSION='20260831-push-resubscribe2';
 
 function decodeKey(value){
   const s=String(value||'').replace(/-/g,'+').replace(/_/g,'/');
@@ -22,7 +22,7 @@ async function run(){
   if(!('serviceWorker'in navigator)||!('PushManager'in window))return;
 
   try{
-    console.info('[VM RADIO] Réinitialisation Push : démarrage');
+    console.info('[VM RADIO] Réinitialisation Push V2 : démarrage');
 
     const configResponse=await fetch(API+'/config',{cache:'no-store'});
     const config=await configResponse.json().catch(()=>({}));
@@ -63,15 +63,16 @@ async function run(){
     if(!response.ok||!data.ok)throw new Error(data.error||'Réabonnement Push impossible');
 
     localStorage.setItem(RESET_KEY,'done');
+    localStorage.removeItem('vmRadioPushResubscribe20260831V1');
     localStorage.removeItem('vmRadioNotificationsLastErrorV2');
     localStorage.setItem('vmRadioNotificationsNativeV1','activated');
 
-    console.info('[VM RADIO] Réinitialisation Push : OK',{
+    console.info('[VM RADIO] Réinitialisation Push V2 : OK',{
       endpoint:subscription.endpoint,
       id:data.id||null
     });
   }catch(error){
-    console.error('[VM RADIO] Réinitialisation Push : erreur',error);
+    console.error('[VM RADIO] Réinitialisation Push V2 : erreur',error);
     try{localStorage.removeItem(RESET_KEY)}catch(_){}
   }
 }
