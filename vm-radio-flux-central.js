@@ -72,3 +72,117 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 
 (function(){if(document.querySelector('script[data-vm-source-badge]'))return;const s=document.createElement('script');s.src='player-source-badge.js?v=20260829-1';s.async=true;s.dataset.vmSourceBadge='1';document.head.appendChild(s)})();
+
+/* Disposition compacte des cartes EN DIRECT / À SUIVRE */
+(function(){
+  if(document.getElementById('vm-programme-layout-v2'))return;
+  const style=document.createElement('style');
+  style.id='vm-programme-layout-v2';
+  style.textContent=`
+#programme-direct .now,
+#programme-next .next{
+  display:grid!important;
+  grid-template-columns:104px minmax(0,1fr)!important;
+  align-items:center!important;
+  column-gap:16px!important;
+  row-gap:0!important;
+  width:100%!important;
+}
+#programme-direct .now>.cover,
+#programme-next .next>.cover,
+#programme-direct [data-current-cover],
+#programme-next [data-next-cover]{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:104px!important;
+  height:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  min-height:104px!important;
+  max-height:104px!important;
+  margin:0!important;
+  align-self:center!important;
+}
+#programme-direct .now>div,
+#programme-next .next>div{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:0!important;
+  width:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  gap:0!important;
+  text-align:left!important;
+}
+#programme-direct .title,
+#programme-next .title{
+  width:100%!important;
+  margin:0!important;
+  text-align:left!important;
+  line-height:1.15!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+#programme-direct .artist,
+#programme-next .artist{
+  width:100%!important;
+  margin:7px 0 0!important;
+  text-align:left!important;
+  line-height:1.25!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+#programme-direct .time,
+#programme-next .time{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:13px 0 0!important;
+  text-align:left!important;
+  white-space:nowrap!important;
+}
+#programme-direct .time span,
+#programme-next .time span{
+  display:inline!important;
+  margin:0!important;
+  flex:0 0 auto!important;
+}
+#programme-direct [data-current-requester],
+#programme-next [data-next-requester]{
+  text-align:left!important;
+  margin-top:5px!important;
+}
+@media(max-width:390px){
+  #programme-direct .now,
+  #programme-next .next{
+    grid-template-columns:88px minmax(0,1fr)!important;
+    column-gap:12px!important;
+  }
+  #programme-direct .now>.cover,
+  #programme-next .next>.cover,
+  #programme-direct [data-current-cover],
+  #programme-next [data-next-cover]{
+    width:88px!important;
+    height:88px!important;
+    min-width:88px!important;
+    max-width:88px!important;
+    min-height:88px!important;
+    max-height:88px!important;
+  }
+  #programme-direct .time,
+  #programme-next .time{
+    margin-top:10px!important;
+    font-size:12px!important;
+  }
+}
+  `;
+  document.head.appendChild(style);
+})();
