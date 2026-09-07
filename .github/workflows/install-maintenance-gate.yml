@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'maintenance-gate.js'
+      - 'maintenance-audio-sync.js'
       - '.github/workflows/install-maintenance-gate.yml'
   workflow_dispatch:
 
@@ -19,44 +20,68 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Inject maintenance gate in HTML pages
+      - name: Inject maintenance scripts in HTML pages
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
-          tag = '<script src="/maintenance-gate.js?v=20260906-test-maintenance-v1"></script>'
+          gate_tag = '<script src="/maintenance-gate.js?v=20260907-test-maintenance-v3"></script>'
+          audio_tag = '<script src="/maintenance-audio-sync.js?v=20260907-test-maintenance-audio-v1"></script>'
           changed = []
 
           for path in Path('.').glob('*.html'):
               text = path.read_text(encoding='utf-8')
-              if 'maintenance-gate.js' in text:
-                  continue
+              original = text
 
-              if '<head>' in text:
-                  text = text.replace('<head>', '<head>\n' + tag, 1)
-              elif '<head ' in text:
-                  pos = text.find('>\n', text.find('<head '))
-                  if pos != -1:
-                      text = text[:pos+2] + tag + '\n' + text[pos+2:]
-                  else:
-                      continue
-              else:
-                  continue
+              if re.search(r'<script src="/?maintenance-gate\.js\?v=[^"]+"></script>', text):
+                  text = re.sub(
+                      r'<script src="/?maintenance-gate\.js\?v=[^"]+"></script>',
+                      gate_tag,
+                      text,
+                      count=1
+                  )
+              elif '<head>' in text:
+                  text = text.replace('<head>', '<head>\n' + gate_tag, 1)
 
-              path.write_text(text, encoding='utf-8')
-              changed.append(str(path))
+              if re.search(r'<script src="/?maintenance-audio-sync\.js\?v=[^"]+"></script>', text):
+                  text = re.sub(
+                      r'<script src="/?maintenance-audio-sync\.js\?v=[^"]+"></script>',
+                      audio_tag,
+                      text,
+                      count=1
+                  )
+              elif gate_tag in text:
+                  text = text.replace(gate_tag, gate_tag + '\n' + audio_tag, 1)
+              elif '<head>' in text:
+                  text = text.replace('<head>', '<head>\n' + audio_tag, 1)
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
 
           print('Pages modifiées:', ', '.join(changed) if changed else 'aucune')
           PY
 
-      - name: Commit injected gate
+      - name: Commit injected scripts
         run: |
           if git diff --quiet; then
             echo "Aucun changement à committer"
             exit 0
           fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add '*.html'
-          git commit -m "Load maintenance gate on test app pages"
-          git push
+          git commit -m "Load synchronized maintenance audio on test app"
+
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin main; then
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep $((attempt * 2))
+          done
+
+          echo "Impossible de publier les pages HTML après plusieurs tentatives."
+          exit 1
