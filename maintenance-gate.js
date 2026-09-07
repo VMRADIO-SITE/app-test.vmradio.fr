@@ -1,16 +1,55 @@
-/* VM RADIO TEST — maintenance synchronisée avec l'antenne VPS, audio conservé */
+/* VM RADIO TEST — popup + jingle maintenance synchronisés localement */
 (function(){
   'use strict';
-  if(window.__VMRADIO_APP_MAINTENANCE_GATE_V3__)return;
-  window.__VMRADIO_APP_MAINTENANCE_GATE_V3__=true;
+  if(window.__VMRADIO_APP_MAINTENANCE_GATE_V4__)return;
+  window.__VMRADIO_APP_MAINTENANCE_GATE_V4__=true;
 
   var STATE_ENDPOINT='https://admin.vmradio.fr/api/public/maintenance';
-  var NOWPLAYING_ENDPOINT='https://admin.vmradio.fr/api/public/radio/nowplaying';
+  var MAINTENANCE_AUDIO='https://radio.vmradio.fr/engine/media-file?file='+encodeURIComponent('La Musique Revient.mp3');
   var POLL_MS=250;
 
   var overlay=null;
   var active=false;
   var busy=false;
+  var liveWasMuted=false;
+  var liveWasPlaying=false;
+  var startedFromMaintenanceButton=false;
+  var maintenancePrimed=false;
+
+  var maintenanceAudio=new Audio();
+  maintenanceAudio.src=MAINTENANCE_AUDIO;
+  maintenanceAudio.preload='auto';
+  maintenanceAudio.loop=true;
+  maintenanceAudio.playsInline=true;
+  maintenanceAudio.setAttribute('playsinline','');
+  maintenanceAudio.setAttribute('webkit-playsinline','');
+  maintenanceAudio.muted=true;
+
+  function getLiveAudio(){
+    return window.VMRadioPlayer?.audio||document.getElementById('audio')||document.querySelector('audio');
+  }
+
+  function safePlay(audio){
+    try{
+      var p=audio.play();
+      if(p&&typeof p.catch==='function')p.catch(function(){});
+    }catch(_){}
+  }
+
+  function primeMaintenanceAudio(){
+    if(maintenancePrimed)return;
+    maintenanceAudio.muted=true;
+    maintenanceAudio.volume=1;
+    try{maintenanceAudio.currentTime=0;}catch(_){}
+    try{
+      var p=maintenanceAudio.play();
+      if(p&&typeof p.then==='function'){
+        p.then(function(){maintenancePrimed=true;}).catch(function(){});
+      }else{
+        maintenancePrimed=true;
+      }
+    }catch(_){}
+  }
 
   function blockEvent(event){
     if(!active)return;
@@ -24,8 +63,77 @@
     document.addEventListener(name,blockEvent,true);
   });
 
-  function getAudio(){
-    return window.VMRadioPlayer?.audio||document.getElementById('audio')||document.querySelector('audio');
+  function maybePrimeFromPlayerGesture(event){
+    if(active)return;
+    var target=event.target;
+    var button=target&&target.closest?target.closest('#play,#playBtn,.play-btn,[data-play-player]'):null;
+    if(button)primeMaintenanceAudio();
+  }
+
+  document.addEventListener('pointerdown',maybePrimeFromPlayerGesture,true);
+  document.addEventListener('touchstart',maybePrimeFromPlayerGesture,true);
+
+  function startLocalMaintenanceAudio(force){
+    var live=getLiveAudio();
+
+    if(live){
+      if(!active){
+        liveWasMuted=!!live.muted;
+        liveWasPlaying=!live.paused&&!live.ended;
+      }
+
+      if(liveWasPlaying||force){
+        try{live.muted=true;}catch(_){}
+      }
+    }
+
+    if(!(liveWasPlaying||force)){
+      maintenanceAudio.muted=true;
+      return;
+    }
+
+    if(live){
+      try{maintenanceAudio.volume=Number.isFinite(live.volume)?live.volume:1;}catch(_){maintenanceAudio.volume=1;}
+    }
+
+    try{maintenanceAudio.currentTime=0;}catch(_){}
+    maintenanceAudio.muted=false;
+    safePlay(maintenanceAudio);
+  }
+
+  function stopLocalMaintenanceAudio(){
+    maintenanceAudio.muted=true;
+
+    var live=getLiveAudio();
+    if(live){
+      try{live.muted=liveWasMuted;}catch(_){}
+
+      if(startedFromMaintenanceButton&&live.paused){
+        try{
+          var p=live.play();
+          if(p&&typeof p.catch==='function')p.catch(function(){});
+        }catch(_){}
+      }
+    }
+
+    liveWasPlaying=false;
+    startedFromMaintenanceButton=false;
+  }
+
+  function listenDuringMaintenance(){
+    var live=getLiveAudio();
+    startedFromMaintenanceButton=true;
+    liveWasPlaying=true;
+
+    if(live){
+      try{live.muted=true;}catch(_){}
+      safePlay(live);
+      try{maintenanceAudio.volume=Number.isFinite(live.volume)?live.volume:1;}catch(_){maintenanceAudio.volume=1;}
+    }
+
+    try{maintenanceAudio.currentTime=0;}catch(_){}
+    maintenanceAudio.muted=false;
+    safePlay(maintenanceAudio);
   }
 
   function buildOverlay(){
@@ -43,8 +151,8 @@
       '<div style="font-size:48px;line-height:1">🛠️</div>'+ 
       '<h1 style="margin:16px 0 10px;font-size:30px;line-height:1.15">Maintenance en cours</h1>'+ 
       '<p style="margin:0;color:#d6c9e4;font-size:15px;line-height:1.6">L’application VM RADIO est temporairement indisponible pendant une intervention technique.</p>'+ 
-      '<div style="margin-top:20px;color:#c477f3;font-size:13px;font-weight:900;letter-spacing:.2px">La musique continue sur VM RADIO.</div>'+ 
-      '<button id="vmMaintenanceListen" type="button" style="margin-top:16px;border:0;border-radius:14px;padding:11px 16px;background:#8f42e6;color:#fff;font-weight:800;cursor:pointer">Écouter VM RADIO</button>'+ 
+      '<div style="margin-top:20px;color:#c477f3;font-size:13px;font-weight:900;letter-spacing:.2px">La musique continue.</div>'+ 
+      '<button id="vmMaintenanceListen" type="button" style="margin-top:16px;border:0;border-radius:14px;padding:11px 16px;background:#8f42e6;color:#fff;font-weight:800;cursor:pointer">Écouter le jingle</button>'+ 
       '</div>';
 
     document.body.appendChild(overlay);
@@ -54,17 +162,7 @@
       listen.addEventListener('click',function(event){
         event.preventDefault();
         event.stopPropagation();
-        try{
-          if(window.VMRadioPlayer&&typeof window.VMRadioPlayer.play==='function'){
-            window.VMRadioPlayer.play();
-            return;
-          }
-          var audio=getAudio();
-          if(audio){
-            var p=audio.play();
-            if(p&&typeof p.catch==='function')p.catch(function(){});
-          }
-        }catch(_){}
+        listenDuringMaintenance();
       });
     }
 
@@ -82,30 +180,38 @@
     if(document.body)document.body.style.overflow='';
   }
 
-  function showMaintenance(){
+  function enterMaintenance(){
+    if(active){
+      buildOverlay();
+      return;
+    }
+
+    var live=getLiveAudio();
+    liveWasMuted=live?!!live.muted:false;
+    liveWasPlaying=live?!live.paused&&!live.ended:false;
+
     active=true;
     document.documentElement.dataset.vmMaintenance='on';
+
+    /* Le jingle local et le popup basculent dans le même tour JS. */
+    startLocalMaintenanceAudio(false);
     buildOverlay();
   }
 
-  function hideMaintenance(){
+  function leaveMaintenance(){
+    if(!active){
+      removeOverlay();
+      return;
+    }
+
+    stopLocalMaintenanceAudio();
     active=false;
     document.documentElement.dataset.vmMaintenance='off';
     removeOverlay();
   }
 
-  function radioMode(data){
-    return String(
-      data?.raw?.engine?.current?.type||
-      data?.engine?.current?.type||
-      data?.now_playing?.playlist||
-      data?.playlist||
-      ''
-    ).trim().toLowerCase();
-  }
-
-  async function getJson(url){
-    var response=await fetch(url+(url.includes('?')?'&':'?')+'_vm='+Date.now(),{
+  async function getState(){
+    var response=await fetch(STATE_ENDPOINT+'?_vm='+Date.now(),{
       method:'GET',
       cache:'no-store',
       credentials:'omit',
@@ -120,33 +226,15 @@
     if(busy)return;
     busy=true;
     try{
-      var values=await Promise.all([
-        getJson(STATE_ENDPOINT),
-        getJson(NOWPLAYING_ENDPOINT)
-      ]);
-
-      var state=values[0];
-      var now=values[1];
-      var requested=state.app===true;
-      var mode=radioMode(now);
-      var radioMaintenance=mode==='maintenance'||mode.indexOf('maintenance')!==-1;
-
-      if(requested&&radioMaintenance){
-        showMaintenance();
-        return;
-      }
-
-      if(!requested&&!radioMaintenance){
-        hideMaintenance();
-        return;
-      }
-
-      if(active)buildOverlay();
+      var state=await getState();
+      if(state.app===true)enterMaintenance();
+      else leaveMaintenance();
     }catch(_){}
     finally{busy=false;}
   }
 
   function start(){
+    try{maintenanceAudio.load();}catch(_){}
     check();
     setInterval(check,POLL_MS);
     setInterval(function(){if(active)buildOverlay();},1000);
